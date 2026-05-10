@@ -1,0 +1,32 @@
+# Godot 4 build artifacts
+.godot/
+*.import/
+*.import
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build exports
+exports/
+
+# lemond — bundled LLM server (binary + models are large)
+lemond/lemond
+lemond/lemond.exe
+lemond/lemonade
+lemond/lemonade.exe
+lemond/models/
+lemond/extra_models/
+lemond/bin/
+lemond/.lemond.pid
+lemond/lemond.log
+
+# Scripts (not ignored — they're part of the repo)
+# scripts/

@@ -1,0 +1,24 @@
+{
+  "lemonade_version": "10.3.0",
+  "server": {
+    "data_dir": "./lemond",
+    "binary_linux": "lemond",
+    "binary_windows": "lemond.exe",
+    "host": "127.0.0.1",
+    "port": 13305,
+    "api_key": "novelgen-dev-key",
+    "health_check_interval_ms": 2000,
+    "startup_timeout_s": 60,
+    "manage_server_lifecycle": true
+  },
+  "model": {
+    "name": "Gemma-4-26B-A4B-it-GGUF",
+    "ctx_size": 16384,
+    "max_tokens": 2048
+  },
+  "client": {
+    "request_timeout_s": 60,
+    "max_retries": 2,
+    "retry_backoff_ms": 1000
+  }
+}

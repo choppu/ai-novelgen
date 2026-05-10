@@ -1,0 +1,72 @@
+{
+    "Qwen3.5-9B-GGUF": {
+        "checkpoint": "unsloth/Qwen3.5-9B-GGUF:Qwen3.5-9B-UD-Q4_K_XL.gguf",
+        "recipe": "llamacpp",
+        "suggested": true,
+        "labels": [
+            "tool-calling"
+        ],
+        "size": 5.97
+    },
+    "Gemma-4-26B-A4B-it-GGUF": {
+        "checkpoint": "unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M",
+        "recipe": "llamacpp",
+        "suggested": true,
+        "labels": [
+            "hot",
+            "tool-calling",
+            "llamacpp"
+        ],
+        "size": 16.9
+    },
+    "Whisper-Small": {
+        "checkpoints": {
+            "main": "ggerganov/whisper.cpp:ggml-small.bin",
+            "npu_cache": "amd/whisper-small-onnx-npu:ggml-small-encoder-vitisai.rai"
+        },
+        "recipe": "whispercpp",
+        "suggested": true,
+        "labels": [
+            "audio",
+            "transcription"
+        ],
+        "size": 0.466
+    },
+    "Whisper-Medium": {
+        "checkpoints": {
+            "main": "ggerganov/whisper.cpp:ggml-medium.bin",
+            "npu_cache": "amd/whisper-medium-onnx-npu:ggml-medium-encoder-vitisai.rai"
+        },
+        "recipe": "whispercpp",
+        "suggested": true,
+        "labels": [
+            "audio",
+            "transcription"
+        ],
+        "size": 1.42
+    },
+    "Whisper-Large-v3-Turbo": {
+        "checkpoints": {
+            "main": "ggerganov/whisper.cpp:ggml-large-v3-turbo.bin",
+            "npu_cache": "amd/whisper-large-turbo-onnx-npu:ggml-large-v3-turbo-encoder-vitisai.rai"
+        },
+        "recipe": "whispercpp",
+        "suggested": true,
+        "labels": [
+            "audio",
+            "transcription",
+            "hot"
+        ],
+        "size": 1.55
+    }, 
+    "kokoro-v1": {
+        "checkpoint": "mikkoph/kokoro-onnx",
+        "recipe": "kokoro",
+        "suggested": true,
+        "labels": [
+            "tts",
+            "speech"
+        ],
+        "size": 0.34
+    }
+}

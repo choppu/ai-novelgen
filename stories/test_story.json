@@ -1,0 +1,510 @@
+{
+  "metadata": {
+	"title": "The Whispering Manor — Test Story",
+	"author": "Engine Test",
+	"start_scene": "manor_entrance"
+  },
+  "flags": {
+	"met_guard": {
+	  "initial": false
+	},
+	"found_letter": {
+	  "initial": false
+	},
+	"read_letter": {
+	  "initial": false
+	},
+	"searched_library": {
+	  "initial": false
+	},
+	"trust_guard": {
+	  "initial": false
+	},
+	"found_library_secret": {
+	  "initial": false
+	}
+  },
+  "relationships": {
+	"Guard": 0,
+	"Librarian": 0,
+	"A.F.": 0
+  },
+  "characters": {
+	"Guard": {
+	  "name": "John Lonewood",
+	  "appearance": "A weathered man in a dark uniform, cap pulled low over tired eyes. A scar runs along his jawline. He carries himself with the tension of someone who has been waiting for trouble.",
+	  "background": "Former estate servant who stayed on as a night guard after the master of the house disappeared. He knows more about what happened than he lets on. He was loyal to Archer Fleming, who confided in him before vanishing.",
+	  "temperament": "Suspicious, cautious, and guarded with strangers. Slow to trust but deeply loyal once he does. Speaks in short, measured sentences. Has a dry, understated wit that emerges only when comfortable.",
+	  "mood": "Wary and watchful. He suspects the player is connected to whatever is happening at the manor and is trying to figure out whether to help or hinder them.",
+	  "can_reveal": [
+		"the_mysterious_letter",
+		"guard_suspicion",
+        "silver_letter_opener"
+	  ]
+	},
+	"Librarian": {
+	  "name": "Mrs. Whitmore",
+	  "appearance": "An elderly woman with silver hair pinned severely at the back. She wears spectacles on a chain and moves through the library shelves with the unhurried grace of someone who belongs among the books. Her fingers are always stained with ink.",
+	  "background": "The manor's librarian for over forty years. She has tended every book in this collection and knows their secrets. A.F. was her closest friend and confidant — she was devastated when A.F. disappeared and has been secretly searching for answers ever since.",
+	  "temperament": "Patient and scholarly, with a gentle warmth that belies a steel resolve. She speaks formally but kindly. She has little patience for foolishness but great patience for genuine curiosity. She values trust above all else.",
+	  "mood": "Hopeful yet guarded. She has been waiting for someone with the right instincts to find the secret compartment. She will test the player before revealing anything significant.",
+	  "can_reveal": [
+		"library_secret",
+        "af_identity"
+	  ]
+	},
+	"A.F.": {
+	  "name": "Archer Fleming",
+	  "appearance": "A man in his late forties with sharp features and intense eyes. He dressed in fine but practical clothing. A silver pocket watch hangs from his waistcoat — the same one seen in the photograph.",
+	  "background": "The master of Blackwood Manor. A.F. discovered a family secret decades old — one connected to the manor's original owners and a hidden ledger of wrongdoing. He was close to uncovering the truth when he vanished three nights ago. He sent the letter to the player, whom he believed could finish what he started. Whether he is alive or dead remains unknown.",
+	  "temperament": "Intelligent, driven, and methodical. He speaks with precision and conviction. When discussing the secret, his words carry urgency and fear. He trusts few people and those he does trust, he trusts completely.",
+	  "mood": "Desperate and determined. He is racing against an unknown threat. Every word he speaks carries the weight of someone who knows the stakes are life and death.",
+	  "can_reveal": [
+		"af_identity",
+		"library_secret",
+        "the_mysterious_letter"
+	  ]
+	}
+  },
+  "clues": {
+	"the_mysterious_letter": {
+	  "description": "A crumpled letter found on the grounds, addressed to the player",
+	  "sources": [
+        "Guard"
+	  ],
+	  "connections": [
+		"library_secret",
+        "af_identity"
+	  ],
+	  "is_red_herring": false,
+	  "tiers": [
+		{
+		  "tier": 1,
+		  "text": "The guard mentions finding a crumpled letter on the grounds",
+		  "requires_trust": 0,
+		  "requires_flags": [
+            "found_letter"
+		  ]
+		},
+		{
+		  "tier": 2,
+		  "text": "The guard reveals the letter mentions something hidden in the library",
+		  "requires_trust": 2,
+		  "requires_flags": [
+            "found_letter"
+		  ]
+		},
+		{
+		  "tier": 3,
+		  "text": "The guard reveals the initials 'A.F.' and warns to trust no one",
+		  "requires_trust": 4,
+		  "requires_flags": [
+            "found_letter"
+		  ]
+		}
+	  ]
+	},
+	"guard_suspicion": {
+	  "description": "The guard seems to know more than he lets on about recent events",
+	  "sources": [
+        "Guard"
+	  ],
+	  "connections": [
+        "the_mysterious_letter"
+	  ],
+	  "is_red_herring": false,
+	  "tiers": [
+		{
+		  "tier": 1,
+		  "text": "The guard acts evasive when asked about the master of the house",
+		  "requires_trust": 0,
+		  "requires_flags": []
+		},
+		{
+		  "tier": 2,
+		  "text": "The guard admits the master disappeared three nights ago",
+		  "requires_trust": 3,
+		  "requires_flags": []
+		}
+	  ]
+	},
+	"silver_letter_opener": {
+	  "description": "A silver letter opener found half-buried in the rose garden mud",
+	  "sources": [
+        "Guard"
+	  ],
+	  "connections": [
+		"the_mysterious_letter",
+        "library_secret"
+	  ],
+	  "is_red_herring": true,
+	  "tiers": [
+		{
+		  "tier": 1,
+		  "text": "The guard mentions finding a silver object in the garden",
+		  "requires_trust": 0,
+		  "requires_flags": []
+		}
+	  ]
+	},
+	"library_secret": {
+	  "description": "A hidden compartment behind the third book on the middle shelf",
+	  "sources": [],
+	  "connections": [
+		"the_mysterious_letter",
+        "af_identity"
+	  ],
+	  "is_red_herring": false,
+	  "tiers": [
+		{
+		  "tier": 1,
+		  "text": "Discovery of a hidden compartment with a brass key and photograph",
+		  "requires_trust": 0,
+		  "requires_flags": [],
+		  "set_flags": {
+			"found_library_secret": true
+		  }
+		}
+	  ]
+	},
+	"af_identity": {
+	  "description": "The identity of A.F. — connected to the photograph and ledger entry",
+	  "sources": [],
+	  "connections": [
+		"the_mysterious_letter",
+        "library_secret"
+	  ],
+	  "is_red_herring": false,
+	  "tiers": [
+		{
+		  "tier": 1,
+		  "text": "A.F. disappeared three nights ago according to the ledger",
+		  "requires_trust": 0,
+		  "requires_flags": []
+		}
+	  ]
+	}
+  },
+  "scenes": {
+	"manor_entrance": {
+	  "description": "You stand before the iron gates of Blackwood Manor. Rain drums against your coat as a flickering lantern illuminates the overgrown path ahead. A stone guardhouse sits to your left.",
+	  "background": null,
+	  "characters": [],
+	  "dialogue": [
+		{
+		  "speaker": "",
+		  "text": "The manor looms in the storm, its windows dark save for a single flickering light on the second floor."
+		},
+		{
+		  "speaker": "Guard",
+		  "text": "Halt. Nobody's been expected tonight. State your business."
+		}
+	  ],
+	  "choices": [
+		{
+		  "id": "talk_to_guard",
+		  "label": "Explain you were invited by the master of the house",
+		  "target": "guardhouse",
+		  "set_flags": {
+			"met_guard": true,
+			"found_letter": true
+		  }
+		},
+		{
+		  "id": "sneak_past",
+		  "label": "Slip past the guardhouse into the grounds",
+		  "target": "garden"
+		}
+	  ],
+	  "on_enter": {
+		"set_flags": {}
+	  }
+	},
+	"guardhouse": {
+	  "description": "Inside the cramped guardhouse, maps of the estate are pinned to a corkboard. The guard studies you with narrowed eyes.",
+	  "background": null,
+	  "characters": [
+        "Guard"
+	  ],
+	  "dialogue": [
+		{
+		  "speaker": "Guard",
+		  "text": "The master? He hasn't received any invitations. But... I found this letter on the grounds this morning."
+		},
+		{
+		  "speaker": "Guard",
+		  "text": "It's addressed to you. Strange business, this is."
+		}
+	  ],
+	  "choices": [
+		{
+		  "id": "enter_main_hall",
+		  "label": "Enter the manor",
+		  "target": "main_hall"
+		}
+	  ],
+	  "on_enter": {
+		"set_flags": {
+		  "met_guard": true
+		},
+		"set_relationships": {
+		  "Guard": 1
+		}
+	  }
+	},
+	"guardhouse_back": {
+	  "description": "You are back in the guardhouse. The guard is surprised to see you back.",
+	  "background": null,
+	  "characters": [
+        "Guard"
+	  ],
+	  "dialogue": [
+		{
+		  "speaker": "Guard",
+		  "text": "You, again?"
+		}
+	  ],
+	  "choices": [
+		{
+		  "id": "enter_main_hall",
+		  "label": "Enter the manor",
+		  "target": "main_hall"
+		}
+	  ]
+	},	
+	"garden": {
+	  "description": "You slip through the gardens in the pouring rain. Thorny hedges line a winding path toward the manor's rear entrance. A fountain stands dry in the center of a courtyard.",
+	  "background": null,
+	  "characters": [],
+	  "dialogue": [
+		{
+		  "speaker": "",
+		  "text": "Something glints among the roses. You kneel and find a silver letter opener, half-buried in the mud."
+		}
+	  ],
+	  "choices": [
+		{
+		  "id": "enter_from_garden",
+		  "label": "Approach the rear entrance",
+		  "target": "main_hall"
+		}
+	  ],
+	  "on_enter": {
+		"set_flags": {}
+	  }
+	},
+	"main_hall": {
+	  "description": "The grand hall of Blackwood Manor stretches before you. A sweeping staircase leads to a shadowed upper floor. Portraits of stern ancestors line the walls. A door to the right bears a brass plaque: 'Library.'",
+	  "background": null,
+	  "characters": [],
+	  "dialogue": [
+		{
+		  "speaker": "",
+		  "text": "The air is thick with the scent of old paper and damp stone. Somewhere upstairs, a clock ticks steadily."
+		}
+	  ],
+	  "choices": [
+		{
+		  "id": "go_to_library",
+		  "label": "Enter the library",
+		  "target": "library"
+		},
+		{
+		  "id": "go_upstairs",
+		  "label": "Climb the staircase",
+		  "target": "upstairs"
+		},
+		{
+		  "id": "read_letter",
+		  "label": "Read the letter you found",
+		  "target": "main_hall_letter",
+		  "requires_flags": {
+			"found_letter": true
+		  },
+		  "set_flags": {
+			"read_letter": true
+		  }
+		},
+		{
+		  "id": "return_to_guard",
+		  "label": "Go back to talk to the guard",
+		  "target": "guardhouse_back",
+		  "requires_flags": {
+			"met_guard": true
+		  }
+		}
+	  ],
+	  "on_enter": {
+		"set_flags": {}
+	  }
+	},
+	"main_hall_letter": {
+	  "description": "You unfold the crumpled letter by the light of a wall sconce. The handwriting is hurried, almost desperate.",
+	  "background": null,
+	  "characters": [],
+	  "dialogue": [
+		{
+		  "speaker": "",
+		  "text": "\"If you are reading this, I am already gone. The secret is in the library — look behind the third volume on the middle shelf. Trust no one. — A.F.\""
+		}
+	  ],
+	  "choices": [
+		{
+		  "id": "return_to_hall",
+		  "label": "Return to the hall",
+		  "target": "main_hall"
+		}
+	  ],
+	  "on_enter": {
+		"set_flags": {}
+	  }
+	},
+	"library": {
+	  "description": "The library is a cavern of books. Floor-to-ceiling shelves groan under the weight of leather-bound volumes. An elderly woman looks up from a massive ledger, her spectacles catching the lamplight.",
+	  "background": null,
+	  "characters": [
+        "Librarian"
+	  ],
+	  "dialogue": [
+		{
+		  "speaker": "",
+		  "text": "You count the volumes on the middle shelf. The third book feels... different. Its spine is slightly warped."
+		}
+	  ],
+	  "choices": [
+		{
+		  "id": "search_behind_book",
+		  "label": "Pull the third book and look behind it",
+		  "target": "library_secret",
+		  "requires_flags": {
+			"read_letter": true
+		  }
+		},
+		{
+		  "id": "leave_library",
+		  "label": "Leave the library for now",
+		  "target": "main_hall"
+		},
+		{
+		  "id": "ask_librarian_about_af",
+		  "label": "Ask the librarian about A.F.",
+		  "target": "library_secret",
+		  "requires_flags": {
+			"read_letter": true
+		  }
+		}
+	  ],
+	  "on_enter": {
+		"set_flags": {
+		  "searched_library": true
+		}
+	  }
+	},
+	"library_secret": {
+	  "description": "Behind the book, you find a narrow compartment carved into the shelving. Inside lies a small brass key and a photograph of two people standing before this very manor — decades ago. The Librarian approaches quietly, her expression grave.",
+	  "background": null,
+	  "characters": [
+        "Librarian"
+	  ],
+	  "dialogue": [
+		{
+		  "speaker": "",
+		  "text": "The key is warm to the touch, as though someone has been holding it recently. The photograph shows a man and a woman, both young, both smiling — but something in the background of the photo catches your eye. A figure, standing in the doorway, watching."
+		}
+	  ],
+	  "choices": [
+		{
+		  "id": "take_key_and_leave",
+		  "label": "Take the key and return to the hall",
+		  "target": "main_hall"
+		},
+		{
+		  "id": "ask_librarian_about_photo",
+		  "label": "Ask the librarian about the photograph",
+		  "target": "main_hall"
+		}
+	  ],
+	  "on_enter": {
+		"set_flags": {}
+	  }
+	},
+	"upstairs": {
+	  "description": "The upstairs corridor is dim. Doors line both sides, most locked. At the far end, a single door stands ajar, spilling warm light into the hallway.",
+	  "background": null,
+	  "characters": [],
+	  "dialogue": [
+		{
+		  "speaker": "",
+		  "text": "The ticking clock grows louder. You realize it's coming from behind the open door."
+		}
+	  ],
+	  "choices": [
+		{
+		  "id": "enter_room",
+		  "label": "Enter the room",
+		  "target": "study"
+		},
+		{
+		  "id": "go_back_down",
+		  "label": "Return downstairs",
+		  "target": "main_hall"
+		}
+	  ],
+	  "on_enter": {
+		"set_flags": {}
+	  }
+	},
+	"study": {
+	  "description": "A study. An enormous desk dominates the room, covered in papers and an open ledger. The clock on the mantelpiece reads 11:47. A fire crackles in the hearth — though no one tends it. A figure stands by the window, half in shadow, watching you with intense eyes.",
+	  "background": null,
+	  "characters": [
+        "A.F."
+	  ],
+	  "dialogue": [
+		{
+		  "speaker": "",
+		  "text": "The ledger is open to a page listing names and dates. The last entry reads: 'A.F. — Disappeared. 3 nights ago.' The fire pops, and for a moment, you think you see a shadow move in the corner of the room."
+		}
+	  ],
+	  "choices": [
+		{
+		  "id": "end_test",
+		  "label": "[END] Conclude test story",
+		  "target": "ending"
+		},
+		{
+		  "id": "leave_study",
+		  "label": "Leave the study",
+		  "target": "main_hall"
+		},
+		{
+		  "id": "ask_af_about_secret",
+		  "label": "Confront A.F. about the secret",
+		  "target": "main_hall"
+		}
+	  ],
+	  "on_enter": {
+		"set_flags": {}
+	  }
+	},
+	"ending": {
+	  "description": "The rain has stopped. Moonlight breaks through the clouds, illuminating Blackwood Manor in silver. Whatever secrets this house holds, you know your investigation has only just begun.",
+	  "background": null,
+	  "characters": [
+		"Guard",
+		"Librarian",
+        "A.F."
+	  ],
+	  "dialogue": [
+		{
+		  "speaker": "",
+		  "text": "[TEST COMPLETE — All scenes navigable, flags tracked, choices gated correctly. Clue system operational.]"
+		}
+	  ],
+	  "choices": [],
+	  "on_enter": {
+		"set_flags": {}
+	  }
+	}
+  }
+}

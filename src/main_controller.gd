@@ -236,7 +236,7 @@ func _setup_scene_manager() -> void:
 
 
 func _load_story() -> void:
-	var story_path = "res://stories/test_story.json"
+	var story_path = GameConfig.get_story_path()
 	_scene_manager.load_story(story_path)
 
 

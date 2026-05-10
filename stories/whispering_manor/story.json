@@ -188,7 +188,8 @@
   "scenes": {
 	"manor_entrance": {
 	  "description": "You stand before the iron gates of Blackwood Manor. Rain drums against your coat as a flickering lantern illuminates the overgrown path ahead. A stone guardhouse sits to your left.",
-	  "background": null,
+	  "background": "backgrounds/manor_exterior.png",
+	  "music": "music/ambient_storm.ogg",
 	  "characters": [],
 	  "dialogue": [
 		{
@@ -222,7 +223,7 @@
 	},
 	"guardhouse": {
 	  "description": "Inside the cramped guardhouse, maps of the estate are pinned to a corkboard. The guard studies you with narrowed eyes.",
-	  "background": null,
+	  "background": "backgrounds/guardhouse_interior.png",
 	  "characters": [
         "Guard"
 	  ],
@@ -254,7 +255,7 @@
 	},
 	"guardhouse_back": {
 	  "description": "You are back in the guardhouse. The guard is surprised to see you back.",
-	  "background": null,
+	  "background": "backgrounds/guardhouse_interior.png",
 	  "characters": [
         "Guard"
 	  ],
@@ -274,7 +275,7 @@
 	},	
 	"garden": {
 	  "description": "You slip through the gardens in the pouring rain. Thorny hedges line a winding path toward the manor's rear entrance. A fountain stands dry in the center of a courtyard.",
-	  "background": null,
+	  "background": "backgrounds/garden_rain.png",
 	  "characters": [],
 	  "dialogue": [
 		{
@@ -295,7 +296,7 @@
 	},
 	"main_hall": {
 	  "description": "The grand hall of Blackwood Manor stretches before you. A sweeping staircase leads to a shadowed upper floor. Portraits of stern ancestors line the walls. A door to the right bears a brass plaque: 'Library.'",
-	  "background": null,
+	  "background": "backgrounds/main_hall.png",
 	  "characters": [],
 	  "dialogue": [
 		{
@@ -340,7 +341,7 @@
 	},
 	"main_hall_letter": {
 	  "description": "You unfold the crumpled letter by the light of a wall sconce. The handwriting is hurried, almost desperate.",
-	  "background": null,
+	  "background": "backgrounds/main_hall_close.png",
 	  "characters": [],
 	  "dialogue": [
 		{
@@ -361,7 +362,7 @@
 	},
 	"library": {
 	  "description": "The library is a cavern of books. Floor-to-ceiling shelves groan under the weight of leather-bound volumes. An elderly woman looks up from a massive ledger, her spectacles catching the lamplight.",
-	  "background": null,
+	  "background": "backgrounds/library.png",
 	  "characters": [
         "Librarian"
 	  ],
@@ -402,7 +403,7 @@
 	},
 	"library_secret": {
 	  "description": "Behind the book, you find a narrow compartment carved into the shelving. Inside lies a small brass key and a photograph of two people standing before this very manor — decades ago. The Librarian approaches quietly, her expression grave.",
-	  "background": null,
+	  "background": "backgrounds/library_secret.png",
 	  "characters": [
         "Librarian"
 	  ],
@@ -430,7 +431,7 @@
 	},
 	"upstairs": {
 	  "description": "The upstairs corridor is dim. Doors line both sides, most locked. At the far end, a single door stands ajar, spilling warm light into the hallway.",
-	  "background": null,
+	  "background": "backgrounds/upstairs_corridor.png",
 	  "characters": [],
 	  "dialogue": [
 		{
@@ -456,7 +457,7 @@
 	},
 	"study": {
 	  "description": "A study. An enormous desk dominates the room, covered in papers and an open ledger. The clock on the mantelpiece reads 11:47. A fire crackles in the hearth — though no one tends it. A figure stands by the window, half in shadow, watching you with intense eyes.",
-	  "background": null,
+	  "background": "backgrounds/study.png",
 	  "characters": [
         "A.F."
 	  ],
@@ -489,7 +490,8 @@
 	},
 	"ending": {
 	  "description": "The rain has stopped. Moonlight breaks through the clouds, illuminating Blackwood Manor in silver. Whatever secrets this house holds, you know your investigation has only just begun.",
-	  "background": null,
+	  "background": "backgrounds/manor_moonlight.png",
+	  "music": "music/ending_theme.ogg",
 	  "characters": [
 		"Guard",
 		"Librarian",

@@ -127,8 +127,8 @@ func _on_dialogue_response(raw_response: Variant, error: String) -> void:
 		generation_error.emit("LLM did not use the respond tool")
 		return
 
-	var tool_call = raw_response["tool_call"]
-	var arguments = tool_call.get("arguments", {})
+	var tool_call_result = raw_response["tool_call"]
+	var arguments = tool_call_result.get("arguments", {})
 
 	if arguments is not Dictionary or arguments.is_empty():
 		generation_error.emit("LLM respond tool called with empty arguments")
@@ -136,7 +136,7 @@ func _on_dialogue_response(raw_response: Variant, error: String) -> void:
 
 	var response = _LlmResponseParserScript.parse_from_tool_arguments(arguments)
 	print("[LLM] Tool call received: name=%s, dialogue=%s" % [
-		tool_call.get("name", "?"),
+		tool_call_result.get("name", "?"),
 		response.dialogue.substr(0, 80)
 	])
 

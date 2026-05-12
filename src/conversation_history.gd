@@ -14,6 +14,7 @@ const _ESTIMATED_CHARS_PER_TOKEN: int = 4
 ## Add a user (player) message to the history.
 func add_user_input(text: String) -> void:
 	_messages.append({"role": "user", "content": text})
+	@warning_ignore("INTEGER_DIVISION")
 	_approximate_token_count += text.length() / _ESTIMATED_CHARS_PER_TOKEN
 	_maybe_trim()
 
@@ -22,6 +23,7 @@ func add_user_input(text: String) -> void:
 ## Used for both NPC dialogue responses AND scene opening lines.
 func add_llm_reply(text: String) -> void:
 	_messages.append({"role": "assistant", "content": text})
+	@warning_ignore("INTEGER_DIVISION")
 	_approximate_token_count += text.length() / _ESTIMATED_CHARS_PER_TOKEN
 	_maybe_trim()
 

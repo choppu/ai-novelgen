@@ -15,6 +15,7 @@ extends Control
 var _background: BackgroundRect
 var _description_flash: DescriptionFlash
 var _dialogue_box: DialogueBox
+var _npc_chat_panel: NpcChatPanel
 var _choice_overlay: ChoiceOverlay
 var _loading_indicator: LoadingIndicator
 var _error_banner: ErrorBanner
@@ -72,6 +73,7 @@ const _DialogueBoxScript := preload("res://src/ui/dialogue_box.gd")
 const _ChoiceOverlayScript := preload("res://src/ui/choice_overlay.gd")
 const _LoadingIndicatorScript := preload("res://src/ui/loading_indicator.gd")
 const _ErrorBannerScript := preload("res://src/ui/error_banner.gd")
+const _NpcChatPanelScript := preload("res://src/ui/npc_chat_panel.gd")
 
 
 # ── Lifecycle ──────────────────────────────────────────────────
@@ -88,29 +90,6 @@ func _exit_tree() -> void:
 		_server.stop()
 
 
-# ── Input ──────────────────────────────────────────────────────
-
-func _input(event: InputEvent) -> void:
-	# Advance dialogue on click, Space, or Enter (only when not in LLM input mode).
-	# Using _input() instead of _unhandled_input() so GUI controls (buttons)
-	# receive mouse events first. If a button consumes the click, we never see it.
-	if _dialogue_state == "typing":
-		if _is_advance_event(event):
-			_dialogue_box.finish_typing()
-	elif _dialogue_state == "idle":
-		if _is_advance_event(event):
-			_advance_dialogue()
-
-
-func _is_advance_event(event: InputEvent) -> bool:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		return true
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_SPACE or event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
-			return true
-	return false
-
-
 # ── UI Creation ────────────────────────────────────────────────
 
 func _create_ui() -> void:
@@ -122,17 +101,22 @@ func _create_ui() -> void:
 	_description_flash = _DescriptionFlashScript.new()
 	add_child(_description_flash)
 
-	# Dialogue box (bottom of screen)
+	# Dialogue box (bottom of screen, exploration mode only)
 	_dialogue_box = _DialogueBoxScript.new()
 	_dialogue_box.text_finished.connect(_on_text_finished)
-	_dialogue_box.input_submitted.connect(_on_input_submitted)
-	_dialogue_box.connect_back_button(_exit_dialogue_mode)
+	_dialogue_box.advance_requested.connect(_advance_dialogue)
 	add_child(_dialogue_box)
 
 	# Choice overlay (full screen, appears after dialogue)
 	_choice_overlay = _ChoiceOverlayScript.new()
 	_choice_overlay.choice_pressed.connect(_on_choice_pressed)
 	add_child(_choice_overlay)
+	
+	# NPC chat panel (full-screen IRC-style chat, dialogue mode only)
+	_npc_chat_panel = _NpcChatPanelScript.new()
+	_npc_chat_panel.message_sent.connect(_on_chat_message_sent)
+	_npc_chat_panel.back_pressed.connect(_exit_dialogue_mode)
+	add_child(_npc_chat_panel)
 
 	# Loading indicator (center screen)
 	_loading_indicator = _LoadingIndicatorScript.new()
@@ -228,7 +212,7 @@ func _on_scene_changed(_scene_id: String, scene_data: Dictionary) -> void:
 
 func _on_dialogue_generated(response: Variant) -> void:
 	_show_loading(false)
-	_set_input_enabled(true)
+	_npc_chat_panel.set_input_enabled(true)
 	_waiting_for_llm = false
 
 	var target_npc = _dialogue_npc
@@ -275,12 +259,8 @@ func _on_dialogue_generated(response: Variant) -> void:
 			_npc_emotional_mood = 0
 			print("Relationship with %s decreased to %d" % [target_npc, GameState.get_relationship(target_npc)])
 
-	# Add LLM response to dialogue queue and display it
-	var npc_display_name = _dialogue_npc
-	_dialogue_queue.append({"speaker": npc_display_name, "text": validated.dialogue})
-	_current_line_index = _dialogue_queue.size() - 1
-	_dialogue_state = "idle"
-	_show_current_line()
+	# Add LLM response to chat
+	_npc_chat_panel.append_message(_dialogue_npc, validated.dialogue, false)
 
 
 func _on_generation_error(error_msg: String) -> void:
@@ -292,22 +272,17 @@ func _on_generation_error(error_msg: String) -> void:
 
 # ── Player input handling ──────────────────────────────────────
 
-func _on_input_submitted(text: String) -> void:
+func _on_chat_message_sent(text: String) -> void:
 	if text.is_empty():
 		return
 	_process_player_input(text)
 
 
 func _process_player_input(text: String) -> void:
-	# Add player input to dialogue queue (shown as narration-style, no speaker name)
-	_dialogue_queue.append({"speaker": "", "text": text})
-	_current_line_index = _dialogue_queue.size() - 1
-	_show_current_line()
-	# Player text is shown instantly (no typewriter for player input)
-	_dialogue_box.finish_typing()
-
-	_dialogue_box.clear_input()
-	_set_input_enabled(false)
+	# Add player message to chat
+	_npc_chat_panel.append_message("You", text, true)
+	_npc_chat_panel.clear_input()
+	_npc_chat_panel.set_input_enabled(false)
 	_show_loading(true, "Thinking")
 	_waiting_for_llm = true
 
@@ -371,19 +346,21 @@ func _display_scene(scene_data: Dictionary) -> void:
 	# ── Mode-dependent behavior ──
 	if _mode == "dialogue":
 		_display_dialogue_mode()
+		# Chat panel handles all display; skip dialogue box flow
+		_dialogue_state = "idle"
 	else:
 		_display_explore_mode()
 
-	# ── Start showing dialogue ──
-	if _dialogue_queue.size() > 0:
-		_dialogue_state = "idle"
-		_current_line_index = 0
-		_show_current_line()
-	else:
-		# No dialogue lines — show choices immediately
-		_dialogue_state = "choices"
-		_dialogue_box.hide_box()
-		_show_choices()
+		# ── Start showing dialogue ──
+		if _dialogue_queue.size() > 0:
+			_dialogue_state = "idle"
+			_current_line_index = 0
+			_show_current_line()
+		else:
+			# No dialogue lines — show choices immediately
+			_dialogue_state = "choices"
+			_dialogue_box.hide_box()
+			_show_choices()
 
 
 # ── Dialogue Advancement ───────────────────────────────────────
@@ -422,14 +399,8 @@ func _advance_dialogue() -> void:
 	if _current_line_index >= _dialogue_queue.size():
 		# All dialogue lines done
 		_dialogue_state = "choices"
-		if _mode == "dialogue":
-			# Keep dialogue box visible, clear text, wait for player input
-			_dialogue_box.set_speaker(_dialogue_npc)
-			_dialogue_box.set_input_mode(true)
-			_dialogue_box.set_input_enabled(true)
-		else:
-			_dialogue_box.hide_box()
-			_show_choices()
+		_dialogue_box.hide_box()
+		_show_choices()
 		return
 
 	_dialogue_state = "idle"
@@ -486,11 +457,20 @@ func _on_choice_pressed(choice_id: String, npc_name: String) -> void:
 # ── Explore / Dialogue Mode ────────────────────────────────────
 
 func _display_explore_mode() -> void:
-	_dialogue_box.set_input_mode(false)
+	pass
 
 
 func _display_dialogue_mode() -> void:
-	_dialogue_box.set_input_mode(true)
+	_npc_chat_panel.show_panel()
+	# Populate chat with scene dialogue from this NPC
+	var scene_data = _scene_manager.get_current_scene()
+	var dialogue = scene_data.get("dialogue", [])
+	for line in dialogue:
+		if line is Dictionary and line.get("speaker", "") == _dialogue_npc:
+			var text = line.get("text", "")
+			if not text.is_empty():
+				_npc_chat_panel.append_message(_dialogue_npc, text, false)
+	_npc_chat_panel.set_input_enabled(true)
 
 
 func _enter_dialogue_mode(npc_name: String) -> void:
@@ -508,12 +488,16 @@ func _enter_dialogue_mode(npc_name: String) -> void:
 			if not text.is_empty():
 				history.add_llm_reply(text)
 
-	# Redisplay scene in dialogue mode
+	# Clear chat and redisplay scene in dialogue mode
+	_npc_chat_panel.clear_messages()
 	_display_scene(current_scene)
 
 
 func _exit_dialogue_mode() -> void:
 	var exiting_npc = _dialogue_npc
+
+	_npc_chat_panel.hide_panel()
+	_npc_chat_panel.clear_messages()
 
 	_mode = "explore"
 	_npc_emotional_mood = 0
@@ -544,7 +528,10 @@ func _show_error(message: String) -> void:
 
 
 func _set_input_enabled(enabled: bool) -> void:
-	_dialogue_box.set_input_enabled(enabled)
+	if _mode == "dialogue":
+		_npc_chat_panel.set_input_enabled(enabled)
+	else:
+		pass  # dialogue box has no input in explore mode
 
 
 # ── Background ──────────────────────────────────────────────────

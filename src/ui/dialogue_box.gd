@@ -4,18 +4,13 @@
 ##   • NPC name display with player/NPC colour distinction
 ##   • Typewriter text animation with instant-skip on click
 ##   • Blinking "▼" continue indicator
-##   • Optional LLM input bar (back button + LineEdit + send button)
 ##
 ## Usage:
 ##   var box = DialogueBox.new()
-##   box.connect_back_button(_exit_dialogue)
 ##   add_child(box)
 ##   box.text_finished.connect(_on_text_finished)
-##   box.input_submitted.connect(_on_input_submitted)
 ##   box.set_speaker("Alice")
 ##   box.start_typing("Hello there!")
-##   # ... later ...
-##   box.set_input_mode(true)  # show LLM input bar
 
 extends Control
 class_name DialogueBox
@@ -26,8 +21,8 @@ class_name DialogueBox
 ## Emitted when typewriter finishes (or is skipped to the end).
 signal text_finished()
 
-## Emitted when the player submits text via the input bar.
-signal input_submitted(text: String)
+## Emitted when the player clicks or presses Space/Enter to advance.
+signal advance_requested()
 
 
 # ── Internal nodes ──────────────────────────────────────────────
@@ -37,18 +32,12 @@ var _name_label: Label
 var _text_label: Label
 var _continue_indicator: Label
 
-var _input_hbox: HBoxContainer
-var _back_button: Button
-var _input_line: LineEdit
-var _send_button: Button
-
 var _typewriter_timer: Timer
 var _blink_timer: Timer
 
 var _typewriter_text: String = ""
 var _typewriter_char_index: int = 0
 var _is_typing: bool = false
-var _back_callback: Callable
 
 
 # ── Public API ──────────────────────────────────────────────────
@@ -107,49 +96,13 @@ func is_typing() -> bool:
 	return _is_typing
 
 
-## Show or hide the LLM input bar (back + text + send).
-func set_input_mode(enabled: bool) -> void:
-	_input_hbox.visible = enabled
-	_back_button.visible = enabled
-	if enabled:
-		_input_line.grab_focus()
-
-
-## Enable/disable the input controls.
-func set_input_enabled(enabled: bool) -> void:
-	_input_line.editable = enabled
-	_send_button.disabled = not enabled
-	if enabled and _input_hbox.visible:
-		_input_line.grab_focus()
-
-
-## Clear the input text field.
-func clear_input() -> void:
-	_input_line.clear()
-
-
-## Get the current input text.
-func get_input_text() -> String:
-	return _input_line.text
-
-
-## Store a callable to be connected to the back button press.
-## Safe to call before the node is added to the scene tree.
-func connect_back_button(callable: Callable) -> void:
-	_back_callback = callable
-	if is_instance_valid(_back_button):
-		_back_button.pressed.connect(callable)
-
-
 # ── Construction ────────────────────────────────────────────────
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	mouse_filter = Control.MOUSE_FILTER_PASS
 	_build_dialogue_panel()
-	_build_input_bar()
 	_build_timers()
-	if not _back_callback.is_null() and is_instance_valid(_back_button):
-		_back_button.pressed.connect(_back_callback)
 
 
 func _build_dialogue_panel() -> void:
@@ -207,41 +160,6 @@ func _build_dialogue_panel() -> void:
 	hbox.add_child(_continue_indicator)
 
 
-func _build_input_bar() -> void:
-	_input_hbox = HBoxContainer.new()
-	_input_hbox.add_theme_constant_override("separation", 8)
-	_input_hbox.custom_minimum_size = Vector2(0, 44)
-	_input_hbox.visible = false
-	_margin.add_child(_input_hbox)
-
-	_input_line = LineEdit.new()
-	_input_line.placeholder_text = "What do you want to say?"
-	_input_line.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_input_line.text_submitted.connect(func(t): input_submitted.emit(t))
-	_input_line.add_theme_color_override("font_color", VNTheme.TEXT_COLOR)
-	_input_line.add_theme_color_override("placeholder_font_color", VNTheme.LOADING_COLOR)
-	var input_bg = StyleBoxFlat.new()
-	input_bg.bg_color = VNTheme.INPUT_BG_COLOR
-	input_bg.set_corner_radius_all(6)
-	input_bg.set_border_width_all(1)
-	input_bg.border_color = VNTheme.INPUT_BORDER_COLOR
-	_input_line.add_theme_stylebox_override("panel", input_bg)
-	_input_hbox.add_child(_input_line)
-
-	_back_button = Button.new()
-	_back_button.text = "← Back"
-	_back_button.custom_minimum_size = Vector2(80, 0)
-	VNTheme.style_choice_button(_back_button)
-	_input_hbox.add_child(_back_button)
-
-	_send_button = Button.new()
-	_send_button.text = "Send"
-	_send_button.custom_minimum_size = Vector2(80, 0)
-	_send_button.pressed.connect(func(): input_submitted.emit(_input_line.text))
-	VNTheme.style_choice_button(_send_button)
-	_input_hbox.add_child(_send_button)
-
-
 func _build_timers() -> void:
 	_typewriter_timer = Timer.new()
 	_typewriter_timer.wait_time = VNTheme.TYPEWRITER_SPEED
@@ -273,3 +191,30 @@ func _on_blink_tick() -> void:
 func _stop_blinking() -> void:
 	_blink_timer.stop()
 	_continue_indicator.visible = false
+
+
+# ── Input ───────────────────────────────────────────────────────
+
+func _input(event: InputEvent) -> void:
+	if not visible:
+		return
+
+	if _is_advance_event(event):
+		if _is_typing:
+			finish_typing()
+		elif _dialogue_state_is_idle():
+			advance_requested.emit()
+
+
+func _is_advance_event(event: InputEvent) -> bool:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		return true
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_SPACE or event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
+			return true
+	return false
+
+
+## Whether the box is waiting for the player to advance (typewriter done, continue blinking).
+func _dialogue_state_is_idle() -> bool:
+	return not _is_typing and _continue_indicator.visible

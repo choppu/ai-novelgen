@@ -122,8 +122,8 @@ func _on_summary_response(raw_response: Variant, error: String) -> void:
 		push_error("Memory summarization: LLM did not use the summarize_memory tool")
 		return
 
-	var tool_call = raw_response["tool_call"]
-	var arguments = tool_call.get("arguments", {})
+	var tool_call_result = raw_response["tool_call"]
+	var arguments = tool_call_result.get("arguments", {})
 
 	if arguments is not Dictionary or arguments.is_empty():
 		push_error("Memory summarization: summarize_memory tool called with empty arguments")

@@ -10,6 +10,17 @@ extends Control
 class_name ErrorBanner
 
 
+# ── Input handling ──────────────────────────────────────────────
+## Ignore mouse input so clicks pass through to buttons/input below.
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	## Consume keyboard events while visible so they don't propagate
+	## to _unhandled_input on parent nodes.
+	if visible and event is InputEventKey:
+		get_viewport().set_input_as_handled()
+
+
 # ── Internal nodes ──────────────────────────────────────────────
 var _label: Label
 
@@ -35,6 +46,7 @@ func hide_error() -> void:
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_build_label()
 
 

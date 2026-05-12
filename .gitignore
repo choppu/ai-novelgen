@@ -1,7 +1,5 @@
 # Godot 4 build artifacts
 .godot/
-*.import/
-*.import
 
 # OS files
 .DS_Store

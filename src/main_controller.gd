@@ -1,23 +1,24 @@
-## MainController — Builds the UI and connects it to the SceneManager and LLM pipeline.
+## MainController — Japanese Visual Novel style UI.
 ##
 ## Attached to the root Control node in main.tscn.
-## All UI is created programmatically.
+## Delegates UI rendering to self-contained components in src/ui/.
+##
+## Layout:
+##   Background (full screen)
+##   └── Top area: scene description flash (auto-fades)
+##   └── Bottom: dialogue box (NPC name + text + continue indicator)
+##   └── Overlay: choice buttons (appear after dialogue completes)
 extends Control
 
 
-## ── UI Nodes (created in _ready) ──────────────────────────────
-var _description_label: Label
-var _dialogue_container: VBoxContainer
-var _dialogue_scroll: ScrollContainer
-var _choices_container: VBoxContainer
-var _root_box: VBoxContainer
+## ── UI Components ──────────────────────────────────────────────
+var _background: BackgroundRect
+var _description_flash: DescriptionFlash
+var _dialogue_box: DialogueBox
+var _choice_overlay: ChoiceOverlay
+var _loading_indicator: LoadingIndicator
+var _error_banner: ErrorBanner
 
-## ── LLM UI ────────────────────────────────────────────────────
-var _input_line: LineEdit
-var _send_button: Button
-var _loading_label: Label
-var _error_banner: Label
-var _npc_name_label: Label
 
 ## ── Engine ────────────────────────────────────────────────────
 var _scene_manager
@@ -33,13 +34,25 @@ var _clue_evaluator
 
 ## ── Game Mode ─────────────────────────────────────────────────
 ## "explore" = showing scene choices, input hidden
-## "dialogue" = chatting with NPC, input visible, only "End dialogue" choice
+## "dialogue" = chatting with NPC, input visible, back button to exit
 var _mode: String = "explore"
 
-## NPC currently being talked to (set when entering dialogue mode, cleared on exit)
+## NPC currently being talked to
 var _dialogue_npc: String = ""
-## Accumulated emotional mood for the current dialogue NPC (triggers relationship changes).
 var _npc_emotional_mood: int = 0
+
+## ── Dialogue State Machine ────────────────────────────────────
+## "idle" = waiting for player to advance
+## "typing" = typewriter effect in progress
+## "choices" = showing choice buttons
+var _dialogue_state: String = "idle"
+
+## True while waiting for LLM to respond (blocks dialogue advancement)
+var _waiting_for_llm: bool = false
+
+## Queue of dialogue lines to display (scene dialogue + LLM responses)
+var _dialogue_queue: Array = []
+var _current_line_index: int = 0
 
 ## Preload scripts
 const _SceneManagerScript := preload("res://src/scene_manager.gd")
@@ -52,19 +65,13 @@ const _CluePrerequisiteEvaluatorScript := preload("res://src/clue_prerequisite_e
 const _EmotionalStatesScript = preload("res://src/emotional_states.gd")
 const _NPCMemoryScript = preload("res://src/npc_memory.gd")
 
-
-## ── Colours / styling ─────────────────────────────────────────
-var _bg_color := Color(0.08, 0.08, 0.10, 1.0)
-var _text_color := Color(0.90, 0.90, 0.88, 1.0)
-var _accent_color := Color(0.898, 0.923, 0.97, 1.0)
-var _speaker_color := Color(0.936, 0.967, 1.0, 1.0)
-var _narration_color := Color(0.70, 0.70, 0.68, 1.0)
-var _button_color := Color(0.18, 0.25, 0.40, 1.0)
-var _button_hover_color := Color(0.28, 0.38, 0.58, 1.0)
-var _button_focus_color := Color(0.35, 0.48, 0.70, 1.0)
-var _input_bg_color := Color(0.12, 0.12, 0.15, 1.0)
-var _error_bg_color := Color(0.50, 0.15, 0.15, 0.9)
-var _loading_color := Color(0.50, 0.50, 0.55, 1.0)
+## Preload UI components
+const _BackgroundRectScript := preload("res://src/ui/background_rect.gd")
+const _DescriptionFlashScript := preload("res://src/ui/description_flash.gd")
+const _DialogueBoxScript := preload("res://src/ui/dialogue_box.gd")
+const _ChoiceOverlayScript := preload("res://src/ui/choice_overlay.gd")
+const _LoadingIndicatorScript := preload("res://src/ui/loading_indicator.gd")
+const _ErrorBannerScript := preload("res://src/ui/error_banner.gd")
 
 
 # ── Lifecycle ──────────────────────────────────────────────────
@@ -75,156 +82,65 @@ func _ready() -> void:
 	_setup_clue_system()
 	_setup_llm_pipeline()
 	_load_story()
-	# ScrollContainer sizes scrollable area from child's custom_minimum_size,
-	# not from size flags. Set the VBox width after layout settles.
-	call_deferred("_fix_dialogue_width")
-	resized.connect(_fix_dialogue_width)
 
 func _exit_tree() -> void:
 	if _server != null:
 		_server.stop()
 
 
-## Set dialogue container width to fill the ScrollContainer.
-func _fix_dialogue_width() -> void:
-	# Account for scrollbar (~14px) and margin container padding (~8px each side)
-	var available = _dialogue_scroll.get_rect().size.x
-	_dialogue_container.custom_minimum_size.x = available
+# ── Input ──────────────────────────────────────────────────────
 
+func _input(event: InputEvent) -> void:
+	# Advance dialogue on click, Space, or Enter (only when not in LLM input mode).
+	# Using _input() instead of _unhandled_input() so GUI controls (buttons)
+	# receive mouse events first. If a button consumes the click, we never see it.
+	if _dialogue_state == "typing":
+		if _is_advance_event(event):
+			_dialogue_box.finish_typing()
+	elif _dialogue_state == "idle":
+		if _is_advance_event(event):
+			_advance_dialogue()
+
+
+func _is_advance_event(event: InputEvent) -> bool:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		return true
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_SPACE or event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
+			return true
+	return false
+
+
+# ── UI Creation ────────────────────────────────────────────────
 
 func _create_ui() -> void:
-	# Root vertical layout
-	_root_box = VBoxContainer.new()
-	_root_box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_root_box.add_theme_constant_override("separation", 12)
-	add_child(_root_box)
+	# Scene background image (on top of solid bg, behind UI)
+	_background = _BackgroundRectScript.new()
+	add_child(_background)
 
-	# ── NPC name / portrait area ──
-	_npc_name_label = Label.new()
-	_npc_name_label.text = ""
-	_npc_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	_npc_name_label.add_theme_color_override("font_color", _speaker_color)
-	_npc_name_label.add_theme_font_size_override("font_size", 24)
-	_npc_name_label.add_theme_font_override("font", ThemeDB.fallback_font)
-	_npc_name_label.custom_minimum_size = Vector2(0, 30)
-	_root_box.add_child(_npc_name_label)
+	# Scene description flash (top center, auto-fades)
+	_description_flash = _DescriptionFlashScript.new()
+	add_child(_description_flash)
 
-	# ── Description area ──
-	_description_label = Label.new()
-	_description_label.text = ""
-	_description_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_description_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_description_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_description_label.add_theme_color_override("font_color", _accent_color)
-	_description_label.add_theme_font_size_override("font_size", 20)
-	_description_label.custom_minimum_size = Vector2(0, 60)
-	_root_box.add_child(_description_label)
+	# Dialogue box (bottom of screen)
+	_dialogue_box = _DialogueBoxScript.new()
+	_dialogue_box.text_finished.connect(_on_text_finished)
+	_dialogue_box.input_submitted.connect(_on_input_submitted)
+	_dialogue_box.connect_back_button(_exit_dialogue_mode)
+	add_child(_dialogue_box)
 
-	# ── Dialogue area (scrollable) ──
-	_dialogue_scroll = ScrollContainer.new()
-	_dialogue_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_dialogue_scroll.custom_minimum_size = Vector2(0, 100)
-	_root_box.add_child(_dialogue_scroll)
+	# Choice overlay (full screen, appears after dialogue)
+	_choice_overlay = _ChoiceOverlayScript.new()
+	_choice_overlay.choice_pressed.connect(_on_choice_pressed)
+	add_child(_choice_overlay)
 
-	_dialogue_container = VBoxContainer.new()
-	_dialogue_container.add_theme_constant_override("separation", 8)
-	_dialogue_scroll.add_child(_dialogue_container)
+	# Loading indicator (center screen)
+	_loading_indicator = _LoadingIndicatorScript.new()
+	add_child(_loading_indicator)
 
-	# ── Loading indicator ──
-	_loading_label = Label.new()
-	_loading_label.text = ""
-	_loading_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_loading_label.add_theme_color_override("font_color", _loading_color)
-	_loading_label.add_theme_font_size_override("font_size", 18)
-	_loading_label.visible = false
-	_loading_label.custom_minimum_size = Vector2(0, 24)
-	_root_box.add_child(_loading_label)
-
-	# ── Error banner ──
-	_error_banner = Label.new()
-	_error_banner.text = ""
-	_error_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_error_banner.add_theme_color_override("font_color", Color(1.0, 0.8, 0.8, 1.0))
-	_error_banner.add_theme_font_size_override("font_size", 17)
-	_error_banner.visible = false
-	_error_banner.custom_minimum_size = Vector2(0, 28)
-	var err_bg = StyleBoxFlat.new()
-	err_bg.bg_color = _error_bg_color
-	err_bg.corner_radius_top_left = 4
-	err_bg.corner_radius_top_right = 4
-	err_bg.corner_radius_bottom_left = 4
-	err_bg.corner_radius_bottom_right = 4
-	_error_banner.add_theme_stylebox_override("normal", err_bg)
-	_root_box.add_child(_error_banner)
-
-	# ── Choices area ──
-	_choices_container = VBoxContainer.new()
-	_choices_container.add_theme_constant_override("separation", 6)
-	_choices_container.custom_minimum_size = Vector2(0, 40)
-	_root_box.add_child(_choices_container)
-
-	# ── Input area ──
-	var input_hbox = HBoxContainer.new()
-	input_hbox.add_theme_constant_override("separation", 8)
-	input_hbox.custom_minimum_size = Vector2(0, 44)
-	_root_box.add_child(input_hbox)
-
-	_input_line = LineEdit.new()
-	_input_line.placeholder_text = "What do you want to say?"
-	_input_line.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_input_line.text_submitted.connect(_on_input_submitted)
-	_input_line.add_theme_color_override("font_color", _text_color)
-	_input_line.add_theme_color_override("placeholder_font_color", _loading_color)
-	var input_bg = StyleBoxFlat.new()
-	input_bg.bg_color = _input_bg_color
-	input_bg.corner_radius_top_left = 6
-	input_bg.corner_radius_top_right = 6
-	input_bg.corner_radius_bottom_left = 6
-	input_bg.corner_radius_bottom_right = 6
-	input_bg.set_border_width_all(1)
-	input_bg.border_color = Color(0.25, 0.30, 0.40, 1.0)
-	_input_line.add_theme_stylebox_override("panel", input_bg)
-	input_hbox.add_child(_input_line)
-
-	_send_button = Button.new()
-	_send_button.text = "Send"
-	_send_button.custom_minimum_size = Vector2(80, 0)
-	_send_button.pressed.connect(_on_send_pressed)
-	_style_button(_send_button)
-	input_hbox.add_child(_send_button)
-
-	# ── Background colour via StyleBox ──
-	var bg = StyleBoxFlat.new()
-	bg.bg_color = _bg_color
-	add_theme_stylebox_override("panel", bg)
-
-
-func _style_button(btn: Button) -> void:
-	var normal = StyleBoxFlat.new()
-	normal.bg_color = _button_color
-	normal.corner_radius_top_left = 4
-	normal.corner_radius_top_right = 4
-	normal.corner_radius_bottom_left = 4
-	normal.corner_radius_bottom_right = 4
-
-	var hover = StyleBoxFlat.new()
-	hover.bg_color = _button_hover_color
-	hover.corner_radius_top_left = 4
-	hover.corner_radius_top_right = 4
-	hover.corner_radius_bottom_left = 4
-	hover.corner_radius_bottom_right = 4
-
-	var focus = StyleBoxFlat.new()
-	focus.bg_color = _button_focus_color
-	focus.corner_radius_top_left = 4
-	focus.corner_radius_top_right = 4
-	focus.corner_radius_bottom_left = 4
-	focus.corner_radius_bottom_right = 4
-
-	btn.add_theme_stylebox_override("normal", normal)
-	btn.add_theme_stylebox_override("hover", hover)
-	btn.add_theme_stylebox_override("focus", focus)
-	btn.add_theme_color_override("font_color", _text_color)
+	# Error banner (top of screen)
+	_error_banner = _ErrorBannerScript.new()
+	add_child(_error_banner)
 
 
 # ── SceneManager setup ─────────────────────────────────────────
@@ -247,11 +163,9 @@ func _setup_clue_system() -> void:
 	_clue_evaluator = _CluePrerequisiteEvaluatorScript.new(_clue_tracker)
 
 
-## Reload clue definitions from the scene manager after story load.
 func _reload_clue_definitions() -> void:
 	var clues = _scene_manager.get_clues()
 	_clue_evaluator.load_clues(clues)
-	# Sync clue tracker from GameState (in case of save/load)
 	_clue_tracker.sync_from_game_state()
 
 
@@ -275,12 +189,9 @@ func _setup_llm_pipeline() -> void:
 	_response_validator = _ResponseValidatorScript.new()
 	add_child(_response_validator)
 
-	# Memory manager — shares the HTTP client for summarization
 	_memory_manager = _NPCMemoryScript.new()
 	add_child(_memory_manager)
 	_memory_manager.set_http_client(_http_client)
-
-	# Wire memory manager into dialogue generator
 	_dialogue_generator.set_memory_manager(_memory_manager)
 
 
@@ -288,16 +199,17 @@ func _setup_llm_pipeline() -> void:
 
 func _on_story_loaded(success: bool, error_message: String) -> void:
 	if success:
-		# Load clue definitions now that story data is available
 		_reload_clue_definitions()
-		# Don't overwrite description — _on_scene_changed -> _display_scene
-		# already set it (scene_changed fires before story_loaded).
-		# Just ensure input is enabled and focused.
 		_set_input_enabled(true)
-		_input_line.grab_focus()
 	else:
-		_description_label.text = "Error: %s" % error_message
+		_show_error("Error: %s" % error_message)
 		push_error(error_message)
+
+
+func _on_text_finished() -> void:
+	# Typewriter finished — transition controller state from typing → idle
+	if _dialogue_state == "typing":
+		_dialogue_state = "idle"
 
 
 func _on_scene_changed(_scene_id: String, scene_data: Dictionary) -> void:
@@ -311,27 +223,25 @@ func _on_scene_changed(_scene_id: String, scene_data: Dictionary) -> void:
 		_dialogue_generator.get_conversation_history().clear()
 
 	if not exited_dialogue:
-		_npc_name_label.text = ""
 		_display_scene(scene_data)
-
 
 
 func _on_dialogue_generated(response: Variant) -> void:
 	_show_loading(false)
 	_set_input_enabled(true)
+	_waiting_for_llm = false
 
-	# Use the NPC we're currently talking to
 	var target_npc = _dialogue_npc
 
 	var available_clues = []
 	if not target_npc.is_empty():
-		var character_card = {}
-		character_card = _scene_manager.get_character(target_npc)
-		available_clues = _clue_evaluator.get_available_clues(target_npc, GameState.current_scene, character_card.get("can_reveal", []))
+		var character_card = _scene_manager.get_character(target_npc)
+		available_clues = _clue_evaluator.get_available_clues(
+			target_npc, GameState.current_scene,
+			character_card.get("can_reveal", [])
+		)
 
-	# Validate response (only checks LLM's claimed clues against available set)
 	var validated = _response_validator.validate(response, available_clues)
-
 	print("Validated response: %s" % validated.describe())
 
 	# Record accepted clue revelations
@@ -341,7 +251,6 @@ func _on_dialogue_generated(response: Variant) -> void:
 		GameState.record_clue(clue_id, tier)
 		print("Clue recorded: %s at tier %d" % [clue_id, tier])
 
-		# Apply set_flags from the clue's tier definition (optional)
 		var clue_def = _clue_evaluator.get_clue_definition(clue_id)
 		var tiers = clue_def.get("tiers", [])
 		if tiers is Array:
@@ -366,12 +275,18 @@ func _on_dialogue_generated(response: Variant) -> void:
 			_npc_emotional_mood = 0
 			print("Relationship with %s decreased to %d" % [target_npc, GameState.get_relationship(target_npc)])
 
-	# Display NPC dialogue
-	_add_npc_dialogue(validated.dialogue, _npc_name_label.text if not _npc_name_label.text.is_empty() else "NPC")
+	# Add LLM response to dialogue queue and display it
+	var npc_display_name = _dialogue_npc
+	_dialogue_queue.append({"speaker": npc_display_name, "text": validated.dialogue})
+	_current_line_index = _dialogue_queue.size() - 1
+	_dialogue_state = "idle"
+	_show_current_line()
+
 
 func _on_generation_error(error_msg: String) -> void:
 	_show_loading(false)
 	_set_input_enabled(true)
+	_waiting_for_llm = false
 	_show_error("Generation error: %s" % error_msg)
 
 
@@ -383,38 +298,34 @@ func _on_input_submitted(text: String) -> void:
 	_process_player_input(text)
 
 
-func _on_send_pressed() -> void:
-	var text = _input_line.text
-	if text.is_empty():
-		return
-	_process_player_input(text)
-
-
 func _process_player_input(text: String) -> void:
-	# Display player input
-	_add_player_dialogue(text)
-	_input_line.clear()
+	# Add player input to dialogue queue (shown as narration-style, no speaker name)
+	_dialogue_queue.append({"speaker": "", "text": text})
+	_current_line_index = _dialogue_queue.size() - 1
+	_show_current_line()
+	# Player text is shown instantly (no typewriter for player input)
+	_dialogue_box.finish_typing()
 
-	# Disable input during processing
+	_dialogue_box.clear_input()
 	_set_input_enabled(false)
-	_show_loading(true, "Thinking…")
+	_show_loading(true, "Thinking")
+	_waiting_for_llm = true
 
-	# Get scene context
 	var scene_data = _scene_manager.get_current_scene()
 	var scene_context = scene_data.get("description", "")
 
-	# Use the NPC we're currently talking to
 	var target_npc = _dialogue_npc
 	var character_card = {}
 	if not target_npc.is_empty():
 		character_card = _scene_manager.get_character(target_npc)
 
-	# Compute available clues for this NPC in the current scene
 	var available_clues = []
 	if not target_npc.is_empty():
-		available_clues = _clue_evaluator.get_available_clues(target_npc, GameState.current_scene, character_card.get("can_reveal", []))
+		available_clues = _clue_evaluator.get_available_clues(
+			target_npc, GameState.current_scene,
+			character_card.get("can_reveal", [])
+		)
 
-	# Send player input directly to the dialogue generator (no intent parsing)
 	_dialogue_generator.generate(
 		text,
 		character_card.get("name", target_npc),
@@ -428,44 +339,118 @@ func _process_player_input(text: String) -> void:
 	)
 
 
-# ── UI Update ──────────────────────────────────────────────────
+# ── Scene Display ──────────────────────────────────────────────
 
 func _display_scene(scene_data: Dictionary) -> void:
-	# Clear previous dialogue content.
-	var dialogue_children = _dialogue_container.get_children()
-	for child in dialogue_children:
-		child.queue_free()
-	var choice_children = _choices_container.get_children()
-	for child in choice_children:
-		child.queue_free()
+	# Clear choices
+	_choice_overlay.clear()
+	_choice_overlay.hide_overlay()
 
-	# ── Description ──
+	# Reset dialogue state
+	_dialogue_queue.clear()
+	_current_line_index = 0
+	_waiting_for_llm = false
+
+	# ── Background ──
+	_load_background(scene_data)
+
+	# ── Scene description flash ──
 	var desc = scene_data.get("description", "")
-	_description_label.text = desc if desc else GameState.current_scene
+	if not desc.is_empty():
+		_description_flash.show_text(desc)
 
-	# ── Dialogue ──
+	# ── Build dialogue queue from scene ──
 	var dialogue = scene_data.get("dialogue", [])
 	for line in dialogue:
 		if line is Dictionary:
-			var speaker = line.get("speaker", "")
-			var text = line.get("text", "")
-			_add_dialogue_line(speaker, text)
+			_dialogue_queue.append({
+				"speaker": line.get("speaker", ""),
+				"text": line.get("text", "")
+			})
 
-	# ── Mode-dependent UI ──
+	# ── Mode-dependent behavior ──
 	if _mode == "dialogue":
 		_display_dialogue_mode()
 	else:
 		_display_explore_mode()
 
+	# ── Start showing dialogue ──
+	if _dialogue_queue.size() > 0:
+		_dialogue_state = "idle"
+		_current_line_index = 0
+		_show_current_line()
+	else:
+		# No dialogue lines — show choices immediately
+		_dialogue_state = "choices"
+		_dialogue_box.hide_box()
+		_show_choices()
 
-## Show exploration UI: choices visible, input hidden.
-func _display_explore_mode() -> void:
-	_input_line.visible = false
-	_send_button.visible = false
 
-	# Synthesize "Talk to [NPC]" choices for every character in the scene
+# ── Dialogue Advancement ───────────────────────────────────────
+
+## Show the current line from the dialogue queue with typewriter effect.
+func _show_current_line() -> void:
+	if _current_line_index >= _dialogue_queue.size():
+		return
+
+	var line = _dialogue_queue[_current_line_index]
+	var speaker = line.get("speaker", "")
+	var text = line.get("text", "")
+
+	# Show dialogue box
+	_dialogue_box.show_box()
+
+	# Set speaker name
+	_dialogue_box.set_speaker(speaker, speaker == "You")
+
+	# Start typewriter
+	_dialogue_box.start_typing(text, speaker.is_empty())
+	_dialogue_state = "typing"
+
+
+func _advance_dialogue() -> void:
+	if _dialogue_state == "typing":
+		# Already handled in _unhandled_input
+		return
+
+	# Don't advance past the last line if waiting for LLM
+	if _waiting_for_llm and _current_line_index >= _dialogue_queue.size() - 1:
+		return
+
+	# Move to next line
+	_current_line_index += 1
+	if _current_line_index >= _dialogue_queue.size():
+		# All dialogue lines done
+		_dialogue_state = "choices"
+		if _mode == "dialogue":
+			# Keep dialogue box visible, clear text, wait for player input
+			_dialogue_box.set_speaker(_dialogue_npc)
+			_dialogue_box.set_input_mode(true)
+			_dialogue_box.set_input_enabled(true)
+		else:
+			_dialogue_box.hide_box()
+			_show_choices()
+		return
+
+	_dialogue_state = "idle"
+	_show_current_line()
+
+
+# ── Choice Display ─────────────────────────────────────────────
+
+func _show_choices() -> void:
+	_choice_overlay.clear()
+
+	# In dialogue mode, the back button in the input bar handles exiting.
+	# No choice overlay needed — just keep the dialogue box visible.
+	if _mode == "dialogue":
+		return
+
+	# Explore mode: synthesize "Talk to NPC" + story choices
 	var scene_data = _scene_manager.get_current_scene()
 	var characters = scene_data.get("characters", [])
+	var has_any_choice = false
+
 	if characters is Array:
 		for npc_name in characters:
 			var talk_choice = {
@@ -473,46 +458,47 @@ func _display_explore_mode() -> void:
 				"label": "Talk to %s" % npc_name,
 				"npc_name": npc_name
 			}
-			_add_choice_button(talk_choice)
+			_choice_overlay.add_choice(talk_choice)
+			has_any_choice = true
 
-	# Show story-defined choices
 	var choices = _scene_manager.get_available_choices()
-	if choices.size() == 0 and characters.is_empty():
-		_add_end_message()
-	else:
-		for choice in choices:
-			if choice is Dictionary:
-				_add_choice_button(choice)
+	for choice in choices:
+		if choice is Dictionary:
+			_choice_overlay.add_choice(choice)
+			has_any_choice = true
+
+	if not has_any_choice:
+		_choice_overlay.show_end_label()
+
+	_choice_overlay.show_overlay()
 
 
-## Show dialogue UI: input visible, only "End dialogue" button.
+func _on_choice_pressed(choice_id: String, npc_name: String) -> void:
+	_choice_overlay.hide_overlay()
+
+	if choice_id == "__talk_to__":
+		_enter_dialogue_mode(npc_name)
+		return
+
+	_scene_manager.make_choice(choice_id)
+
+
+# ── Explore / Dialogue Mode ────────────────────────────────────
+
+func _display_explore_mode() -> void:
+	_dialogue_box.set_input_mode(false)
+
+
 func _display_dialogue_mode() -> void:
-	_input_line.visible = true
-	_send_button.visible = true
-
-	# "End dialogue" button
-	var end_btn = Button.new()
-	end_btn.text = "End dialogue"
-	end_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	end_btn.custom_minimum_size = Vector2(0, 36)
-	_style_button(end_btn)
-	end_btn.pressed.connect(_exit_dialogue_mode)
-	_choices_container.add_child(end_btn)
-
-	_input_line.grab_focus()
+	_dialogue_box.set_input_mode(true)
 
 
-## Enter dialogue mode with a specific NPC.
 func _enter_dialogue_mode(npc_name: String) -> void:
 	_mode = "dialogue"
 	_npc_emotional_mood = 0
 	_dialogue_npc = npc_name
 
-	# Show NPC name
-	_npc_name_label.text = npc_name
-
-	# Add NPC's opening lines from scene dialogue to conversation history
-	# (so the NPC is aware of what they just said in the scene setup)
+	# Add NPC's opening lines to conversation history
 	var current_scene = _scene_manager.get_current_scene()
 	var history = _dialogue_generator.get_conversation_history()
 	var scene_dialogue = current_scene.get("dialogue", [])
@@ -522,21 +508,18 @@ func _enter_dialogue_mode(npc_name: String) -> void:
 			if not text.is_empty():
 				history.add_llm_reply(text)
 
-	# Redisplay scene in dialogue mode (clears choices, shows input)
-	_display_scene(_scene_manager.get_current_scene())
+	# Redisplay scene in dialogue mode
+	_display_scene(current_scene)
 
 
-## Exit dialogue mode, return to exploration.
 func _exit_dialogue_mode() -> void:
-	# Capture NPC name before clearing (needed for summarization)
 	var exiting_npc = _dialogue_npc
 
 	_mode = "explore"
 	_npc_emotional_mood = 0
 	_dialogue_npc = ""
-	_npc_name_label.text = ""
 
-	# Trigger summarization of the conversation for this NPC
+	# Trigger summarization
 	if not exiting_npc.is_empty():
 		var history = _dialogue_generator.get_conversation_history().get_messages()
 		if not history.is_empty():
@@ -547,134 +530,33 @@ func _exit_dialogue_mode() -> void:
 	_display_scene(_scene_manager.get_current_scene())
 
 
-func _add_dialogue_line(speaker: String, text: String) -> void:
-	if speaker.is_empty():
-		# Narration — use a simple Label
-		var label = Label.new()
-		label.text = text
-		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		label.size_flags_horizontal = Control.SIZE_FILL
-		label.add_theme_color_override("font_color", _narration_color)
-		label.add_theme_font_size_override("font_size", 19)
-		_dialogue_container.add_child(label)
-	else:
-		# Character dialogue — speaker name + text in a single HBox
-		var hbox = HBoxContainer.new()
-		hbox.size_flags_horizontal = Control.SIZE_FILL
-		_dialogue_container.add_child(hbox)
-
-		var name_label = Label.new()
-		name_label.text = speaker + ":"
-		name_label.add_theme_color_override("font_color", _speaker_color)
-		name_label.add_theme_font_size_override("font_size", 19)
-		hbox.add_child(name_label)
-
-		var spacer = Control.new()
-		spacer.custom_minimum_size = Vector2(6, 0)
-		hbox.add_child(spacer)
-
-		var text_label = Label.new()
-		text_label.text = text
-		text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		text_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		text_label.add_theme_color_override("font_color", _text_color)
-		text_label.add_theme_font_size_override("font_size", 19)
-		hbox.add_child(text_label)
-
-
-func _add_npc_dialogue(text: String, npc_name: String) -> void:
-	# Simple label — no typewriter for now
-	var hbox = HBoxContainer.new()
-	hbox.size_flags_horizontal = Control.SIZE_FILL
-	_dialogue_container.add_child(hbox)
-
-	var name_label = Label.new()
-	name_label.text = npc_name + ":"
-	name_label.add_theme_color_override("font_color", _speaker_color)
-	name_label.add_theme_font_size_override("font_size", 19)
-	hbox.add_child(name_label)
-
-	var spacer = Control.new()
-	spacer.custom_minimum_size = Vector2(6, 0)
-	hbox.add_child(spacer)
-
-	var text_label = Label.new()
-	text_label.text = text
-	text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	text_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	text_label.add_theme_color_override("font_color", _text_color)
-	text_label.add_theme_font_size_override("font_size", 19)
-	hbox.add_child(text_label)
-
-
-func _add_player_dialogue(text: String) -> void:
-	var label = Label.new()
-	label.text = "You: %s" % text
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.size_flags_horizontal = Control.SIZE_FILL
-	label.add_theme_color_override("font_color", Color(0.70, 0.85, 1.00, 1.0))
-	label.add_theme_font_size_override("font_size", 19)
-	_dialogue_container.add_child(label)
-
-	# Scroll to bottom
-	_scroll_to_bottom()
-
-
-func _add_choice_button(choice: Dictionary) -> void:
-	var btn = Button.new()
-	btn.text = choice.get("label", "")
-	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	btn.custom_minimum_size = Vector2(0, 36)
-	_style_button(btn)
-
-	var choice_id = choice.get("id", "")
-	var npc_name = choice.get("npc_name", "")
-	btn.pressed.connect(_on_choice_pressed.bind(choice_id, npc_name))
-
-	_choices_container.add_child(btn)
-
-
-func _add_end_message() -> void:
-	var label = Label.new()
-	label.text = "— End of story —"
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_color_override("font_color", _accent_color)
-	_choices_container.add_child(label)
-
-
-func _on_choice_pressed(choice_id: String, npc_name: String) -> void:
-	if choice_id == "__talk_to__":
-		_enter_dialogue_mode(npc_name)
-		return
-
-	_scene_manager.make_choice(choice_id)
-
-
 # ── Loading / Error states ─────────────────────────────────────
 
-func _show_loading(is_loading: bool, message: String = "Thinking…") -> void:
-	_loading_label.visible = is_loading
-	_loading_label.text = "%s..." % message if is_loading else ""
+func _show_loading(is_loading: bool, message: String = "Thinking") -> void:
+	if is_loading:
+		_loading_indicator.show_loading(message)
+	else:
+		_loading_indicator.hide_loading()
 
 
 func _show_error(message: String) -> void:
-	_error_banner.text = message
-	_error_banner.visible = true
-
-	# Auto-hide after 5 seconds
-	if _error_banner.get_parent():
-		var timer = get_tree().create_timer(5.0)
-		timer.timeout.connect(func(): _error_banner.visible = false)
+	_error_banner.show_error(message)
 
 
 func _set_input_enabled(enabled: bool) -> void:
-	_input_line.editable = enabled
-	_send_button.disabled = not enabled
-	if enabled:
-		_input_line.grab_focus()
+	_dialogue_box.set_input_enabled(enabled)
 
 
-# ── Utility ────────────────────────────────────────────────────
+# ── Background ──────────────────────────────────────────────────
 
-func _scroll_to_bottom() -> void:
-	_dialogue_scroll.scroll_vertical = floori(_dialogue_scroll.get_v_scroll_bar().max_value)
+func _load_background(scene_data: Dictionary) -> void:
+	var bg_path = scene_data.get("background", "")
+	if bg_path is String and not bg_path.is_empty():
+		var full_path = GameConfig.resolve_asset_path(bg_path)
+		var texture = load(full_path)
+		if texture is Texture2D:
+			_background.set_texture(texture)
+		else:
+			_background.hide_background()
+	else:
+		_background.hide_background()

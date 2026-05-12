@@ -41,3 +41,8 @@ func get_current_story() -> String:
 ## Get the full path to the story.json file for the current story.
 func get_story_path() -> String:
 	return "res://stories/%s/story.json" % _current_story
+
+## Resolve a story-relative asset path to a full res:// path.
+## Paths in story.json are relative to the story root folder.
+func resolve_asset_path(relative_path: String) -> String:
+	return "res://stories/%s/%s" % [_current_story, relative_path]

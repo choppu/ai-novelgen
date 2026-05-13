@@ -20,6 +20,7 @@ GameConfig="*res://src/game_config.gd"
 GameState="*res://src/game_state.gd"
 LlmConfig="*res://src/llm_config.gd"
 ServerLifecycle="*res://src/server_lifecycle.gd"
+SoundManager="*res://src/audio/sound_manager.gd"
 
 [display]
 

@@ -24,6 +24,10 @@ var _request_timeout_s: int
 var _max_retries: int
 var _retry_backoff_ms: int
 
+## ── Voice settings ──
+var _voice_model_name: String
+var _voice_name: String
+
 ## ── Server lifecycle ──
 ## When true (default), main_controller starts/stops the lemond subprocess.
 ## When false, the server is assumed to be managed externally.
@@ -73,6 +77,10 @@ func _parse_config() -> void:
 	_request_timeout_s = client.get("request_timeout_s", 60)
 	_max_retries = client.get("max_retries", 2)
 	_retry_backoff_ms = client.get("retry_backoff_ms", 1000)
+
+	var voice = _config.get("voice_model", {})
+	_voice_model_name = voice.get("name", "kokoro-v1")
+	_voice_name = voice.get("voice", "ash")
 
 
 func _log_config() -> void:
@@ -130,6 +138,15 @@ func get_request_timeout_s() -> int:
 
 func get_max_retries() -> int:
 	return _max_retries
+
+
+# ── Voice accessors ──
+
+func get_voice_model_name() -> String:
+	return _voice_model_name
+
+func get_voice_name() -> String:
+	return _voice_name
 
 
 # ── Platform-aware path resolution ──

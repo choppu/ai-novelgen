@@ -65,6 +65,11 @@ func load_story(path: String) -> bool:
 		_characters = characters_raw
 		print("Loaded %d character definitions" % _characters.size())
 
+	# Load audio event mappings from story config
+	var audio_config = _story_data.get("audio", {})
+	if audio_config is Dictionary and audio_config.size() > 0:
+		SoundEvents.load_from_config(audio_config)
+
 	# Initialize GameState from story flags
 	var initial_flags = _story_data.get("flags", {})
 	GameState.reset()

@@ -67,8 +67,8 @@ func append_message(speaker: String, text: String, is_player: bool = false) -> v
 
 	var bbcode = ""
 	if not label.is_empty():
-		bbcode += "[align=%s]%s[/align]\n" % [align, label]
-	bbcode += "[align=%s]%s[/align]\n\n" % [align, text]
+		bbcode += "[%s]%s[/%s]\n" % [align, label, align]
+	bbcode += "[%s]%s[/%s]\n\n" % [align, text, align]
 
 	_chat_rich_text.append_text(bbcode)
 	_scroll_container.scroll_vertical = int(_scroll_container.get_v_scroll_bar().max_value)
@@ -85,7 +85,7 @@ func append_system(text: String) -> void:
 ## Show a typing indicator (animated dots).
 func show_typing_indicator(speaker_name: String) -> void:
 	var color_hex = _color_to_html(VNTheme.LOADING_COLOR)
-	var bbcode = "[indent][left][b][color=%s]%s[/color][/b] [i]...[/i][/indent]\n" % [color_hex, speaker_name]
+	var bbcode = "[indent][left][b][color=%s]%s[/color][/b] [i]...[/i][/left][/indent]\n" % [color_hex, speaker_name]
 	_chat_rich_text.append_text(bbcode)
 	_scroll_container.scroll_vertical = int(_scroll_container.get_v_scroll_bar().max_value)
 
@@ -158,7 +158,7 @@ func _build_message_area() -> void:
 	_chat_rich_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_chat_rich_text.bbcode_enabled = true
 	_chat_rich_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_chat_rich_text.scroll_following = false
+	_chat_rich_text.scroll_following = true
 
 	# Default text color
 	_chat_rich_text.add_theme_color_override("default_color", VNTheme.TEXT_COLOR)
@@ -200,7 +200,9 @@ func _build_bottom_bar() -> void:
 	_back_button = Button.new()
 	_back_button.text = "← Back"
 	_back_button.custom_minimum_size = Vector2(90, 0)
-	_back_button.pressed.connect(func(): back_pressed.emit())
+	_back_button.pressed.connect(func():
+			SoundEvents.play("back_button")
+			back_pressed.emit())
 	VNTheme.style_choice_button(_back_button)
 	_bottom_hbox.add_child(_back_button)
 

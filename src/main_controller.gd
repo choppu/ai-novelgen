@@ -32,6 +32,7 @@ var _memory_manager: Node
 ## ── Clue System ───────────────────────────────────────────────
 var _clue_tracker
 var _clue_evaluator
+var _voice_generator
 
 ## ── Game Mode ─────────────────────────────────────────────────
 ## "explore" = showing scene choices, input hidden
@@ -65,6 +66,7 @@ const _ClueTrackerScript := preload("res://src/clue_tracker.gd")
 const _CluePrerequisiteEvaluatorScript := preload("res://src/clue_prerequisite_evaluator.gd")
 const _EmotionalStatesScript = preload("res://src/emotional_states.gd")
 const _NPCMemoryScript = preload("res://src/npc_memory.gd")
+const _VoiceGeneratorScript = preload("res://src/voice_generator.gd")
 
 ## Preload UI components
 const _BackgroundRectScript := preload("res://src/ui/background_rect.gd")
@@ -178,6 +180,11 @@ func _setup_llm_pipeline() -> void:
 	_memory_manager.set_http_client(_http_client)
 	_dialogue_generator.set_memory_manager(_memory_manager)
 
+	# ── Voice (TTS) ──
+	_voice_generator = _VoiceGeneratorScript.new()
+	add_child(_voice_generator)
+	_voice_generator.set_http_client(_http_client)
+
 
 # ── Signal handlers ────────────────────────────────────────────
 
@@ -205,6 +212,13 @@ func _on_scene_changed(_scene_id: String, scene_data: Dictionary) -> void:
 	# Clear conversation history on scene change
 	if _dialogue_generator:
 		_dialogue_generator.get_conversation_history().clear()
+
+	# Clear voice queue on scene change
+	if _voice_generator:
+		_voice_generator.clear()
+
+	# ── Audio: scene music + SFX ──
+	_play_scene_audio(scene_data)
 
 	if not exited_dialogue:
 		_display_scene(scene_data)
@@ -235,6 +249,9 @@ func _on_dialogue_generated(response: Variant) -> void:
 		GameState.record_clue(clue_id, tier)
 		print("Clue recorded: %s at tier %d" % [clue_id, tier])
 
+		# ── Audio: clue revealed SFX ──
+		SoundEvents.play_clue_revealed()
+
 		var clue_def = _clue_evaluator.get_clue_definition(clue_id)
 		var tiers = clue_def.get("tiers", [])
 		if tiers is Array:
@@ -261,6 +278,9 @@ func _on_dialogue_generated(response: Variant) -> void:
 
 	# Add LLM response to chat
 	_npc_chat_panel.append_message(_dialogue_npc, validated.dialogue, false)
+
+	# ── Voice: generate TTS for NPC response ──
+	_voice_generator.generate_and_play(validated.dialogue, _dialogue_npc)
 
 
 func _on_generation_error(error_msg: String) -> void:
@@ -380,6 +400,13 @@ func _show_current_line() -> void:
 	# Set speaker name
 	_dialogue_box.set_speaker(speaker, speaker == "You")
 
+	# ── Voice: generate TTS for NPC lines ──
+	if not speaker.is_empty() and speaker != "You":
+		_voice_generator.generate_and_play(text, speaker)
+
+	# ── Audio: per-line SFX (from scene JSON) ──
+	SoundEvents.play_dialogue_sfx(line)
+
 	# Start typewriter
 	_dialogue_box.start_typing(text, speaker.is_empty())
 	_dialogue_state = "typing"
@@ -445,6 +472,9 @@ func _show_choices() -> void:
 
 
 func _on_choice_pressed(choice_id: String, npc_name: String) -> void:
+	# ── Audio: choice click SFX ──
+	SoundEvents.play("choice_click")
+
 	_choice_overlay.hide_overlay()
 
 	if choice_id == "__talk_to__":
@@ -499,6 +529,10 @@ func _exit_dialogue_mode() -> void:
 	_npc_chat_panel.hide_panel()
 	_npc_chat_panel.clear_messages()
 
+	# Stop any in-progress voice generation
+	if _voice_generator:
+		_voice_generator.clear()
+
 	_mode = "explore"
 	_npc_emotional_mood = 0
 	_dialogue_npc = ""
@@ -532,6 +566,29 @@ func _set_input_enabled(enabled: bool) -> void:
 		_npc_chat_panel.set_input_enabled(enabled)
 	else:
 		pass  # dialogue box has no input in explore mode
+
+
+# ── Audio ───────────────────────────────────────────────────────
+
+func _play_scene_audio(scene_data: Dictionary) -> void:
+	# ── BGM ──
+	var music_path = scene_data.get("music", "")
+	if music_path is String and not music_path.is_empty():
+		var resolved = SoundManager.resolve_audio(music_path)
+		SoundManager.play_bgm(resolved)
+	elif scene_data.get("music", null) == null:
+		# Scene has no music key — check if we should stop or keep current
+		# Only stop if scene explicitly sets music to empty
+		pass  # keep current BGM
+	else:
+		# Explicitly no music
+		SoundManager.stop_bgm()
+
+	# ── Scene entry SFX ──
+	SoundEvents.play_scene_sfx(scene_data)
+
+	# ── Scene transition SFX ──
+	SoundEvents.play("scene_transition")
 
 
 # ── Background ──────────────────────────────────────────────────

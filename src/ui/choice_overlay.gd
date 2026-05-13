@@ -61,6 +61,9 @@ func add_choice(choice: Dictionary) -> void:
 	var npc_name = choice.get("npc_name", "")
 	btn.pressed.connect(func(): choice_pressed.emit(choice_id, npc_name))
 
+	# ── Audio: hover SFX ──
+	btn.mouse_entered.connect(func(): SoundEvents.play("choice_hover"))
+
 	_button_container.add_child(btn)
 
 

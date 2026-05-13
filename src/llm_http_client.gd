@@ -7,15 +7,24 @@ extends Node
 ## Emitted when a chat completion request finishes.
 signal chat_completed(raw_response: Variant, error: String)
 
+## Emitted when a speech generation request finishes with the raw audio buffer.
+signal speech_generated(audio_buffer: PackedByteArray, error: String)
 
-var _http_request: HTTPRequest
+
+var _chat_request: HTTPRequest
+var _speech_request: HTTPRequest
 
 
 func _ready() -> void:
-	_http_request = HTTPRequest.new()
-	_http_request.timeout = LlmConfig.get_request_timeout_s()
-	_http_request.request_completed.connect(_on_chat_request_completed)
-	add_child(_http_request)
+	_chat_request = HTTPRequest.new()
+	_chat_request.timeout = LlmConfig.get_request_timeout_s()
+	_chat_request.request_completed.connect(_on_chat_request_completed)
+	add_child(_chat_request)
+
+	_speech_request = HTTPRequest.new()
+	_speech_request.timeout = LlmConfig.get_request_timeout_s()
+	_speech_request.request_completed.connect(_on_speech_request_completed)
+	add_child(_speech_request)
 
 
 ## Send a chat completion request.
@@ -49,14 +58,45 @@ func chat_completion(
 		"Content-Type: application/json"
 	]
 
-	var error = _http_request.request(url, headers, HTTPClient.METHOD_POST, body)
+	var error = _chat_request.request(url, headers, HTTPClient.METHOD_POST, body)
 	if error != OK:
 		chat_completed.emit(null, "HTTP request failed: %d" % error)
 
 
-# ── Response handlers ──
+## Generate speech from text via the OpenAI-compatible /v1/audio/speech endpoint.
+## Returns raw audio bytes (MP3) directly in speech_generated.
+func generate_speech(text: String) -> void:
+	var base_url = LlmConfig.get_base_url()
+	var url = "%s/v1/audio/speech" % base_url
 
-func _on_chat_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+	var body_dict = {
+		"model": LlmConfig.get_voice_model_name(),
+		"input": text,
+		"voice": LlmConfig.get_voice_name(),
+		"response_format": "mp3"
+	}
+
+	var body = JSON.stringify(body_dict)
+	var headers = [
+		"Authorization: Bearer %s" % LlmConfig.get_api_key(),
+		"Content-Type: application/json"
+	]
+
+	# Force Connection: close to avoid keep-alive issues with streaming binary responses
+	headers.append("Connection: close")
+
+	var error = _speech_request.request(url, headers, HTTPClient.METHOD_POST, body)
+	if error != OK:
+		speech_generated.emit(PackedByteArray(), "HTTP request failed: %d" % error)
+
+
+# ── Chat response handler ──
+
+func _on_chat_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+	if result != OK:
+		chat_completed.emit(null, "HTTP request error %d (response_code=%d)" % [result, response_code])
+		return
+
 	if response_code == 0:
 		chat_completed.emit(null, "Connection refused — server may not be running")
 		return
@@ -69,6 +109,10 @@ func _on_chat_request_completed(_result: int, response_code: int, _headers: Pack
 		chat_completed.emit(null, "Server error: HTTP %d" % response_code)
 		return
 
+	_handle_chat_response(body)
+
+
+func _handle_chat_response(body: PackedByteArray) -> void:
 	var text = body.get_string_from_utf8()
 	var parsed = JSON.parse_string(text)
 
@@ -76,9 +120,31 @@ func _on_chat_request_completed(_result: int, response_code: int, _headers: Pack
 		chat_completed.emit(null, "Malformed JSON response: %s" % text.substr(0, 200))
 		return
 
-	# Extract raw content (includes tool_call data if present)
 	var raw = _extract_raw_content(parsed)
 	chat_completed.emit(raw, "")
+
+
+# ── Speech response handler ──
+
+func _on_speech_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+	if result != OK:
+		speech_generated.emit(PackedByteArray(), "HTTP request error %d (response_code=%d)" % [result, response_code])
+		return
+
+	if response_code == 0:
+		speech_generated.emit(PackedByteArray(), "Connection refused — server may not be running")
+		return
+
+	if response_code == 401:
+		speech_generated.emit(PackedByteArray(), "Authentication failed — check API key")
+		return
+
+	if response_code >= 400:
+		var err_text = body.get_string_from_utf8()
+		speech_generated.emit(PackedByteArray(), "Server error: HTTP %d — %s" % [response_code, err_text.substr(0, 200)])
+		return
+
+	speech_generated.emit(body, "")
 
 
 ## Extract the raw LLM content from an OpenAI-style response.

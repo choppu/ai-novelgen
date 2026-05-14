@@ -1,6 +1,6 @@
 {
   "colors": {
-    "bg":           [0.05, 0.05, 0.07, 1.0],
+    "bg":           [0.01, 0.01, 0.01, 1.0],
     "text":         [0.95, 0.95, 0.92, 1.0],
     "narration":    [0.80, 0.80, 0.78, 1.0],
     "speaker":      [0.936, 0.967, 1.0, 1.0],
@@ -24,12 +24,12 @@
   },
 
   "typography": {
-    "font_size_name":      26,
-    "font_size_dialogue":  22,
-    "font_size_description": 22,
-    "font_size_choice":    20,
-    "font_size_error":     18,
-    "font_size_continue":  20
+    "font_size_name":      44,
+    "font_size_dialogue":  38,
+    "font_size_description": 38,
+    "font_size_choice":    32,
+    "font_size_error":     30,
+    "font_size_continue":  32
   },
 
   "timing": {

@@ -549,7 +549,12 @@ func _exit_dialogue_mode() -> void:
 			var background = character.get("background", "")
 			_memory_manager.summarize(exiting_npc, history, background)
 
-	_display_scene(_scene_manager.get_current_scene())
+	# Skip re-displaying scene dialogue — go straight to choices
+	_dialogue_box.hide_box()
+	_dialogue_queue.clear()
+	_current_line_index = 0
+	_dialogue_state = "choices"
+	_show_choices()
 
 
 # ── Loading / Error states ─────────────────────────────────────

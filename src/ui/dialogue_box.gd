@@ -3,7 +3,7 @@
 ## Handles:
 ##   • NPC name display with player/NPC colour distinction
 ##   • Typewriter text animation with instant-skip on click
-##   • Blinking "▼" continue indicator
+##   • Continue indicator (ContinueIndicator sub-component)
 ##
 ## Usage:
 ##   var box = DialogueBox.new()
@@ -14,6 +14,10 @@
 
 extends Control
 class_name DialogueBox
+
+
+## Preload UI sub-components
+const _ContinueIndicatorScript := preload("res://src/ui/continue_indicator.gd")
 
 
 # ── Signals ─────────────────────────────────────────────────────
@@ -30,10 +34,9 @@ var _panel: PanelContainer
 var _margin: MarginContainer
 var _name_label: Label
 var _text_label: Label
-var _continue_indicator: Label
+var _continue_indicator: ContinueIndicator
 
 var _typewriter_timer: Timer
-var _blink_timer: Timer
 
 var _typewriter_text: String = ""
 var _typewriter_char_index: int = 0
@@ -50,7 +53,7 @@ func hide_box() -> void:
 	self.visible = false
 	_name_label.text = ""
 	_text_label.text = ""
-	_stop_blinking()
+	_continue_indicator.stop_blinking()
 	_typewriter_timer.stop()
 
 
@@ -75,8 +78,7 @@ func start_typing(full_text: String, is_narration: bool = false) -> void:
 	_text_label.add_theme_color_override("font_color",
 		VNTheme.get_narration_color() if is_narration else VNTheme.get_text_color())
 
-	_continue_indicator.visible = false
-	_stop_blinking()
+	_continue_indicator.stop_blinking()
 	_typewriter_timer.start()
 
 
@@ -86,8 +88,7 @@ func finish_typing() -> void:
 	_text_label.text = _typewriter_text
 	_is_typing = false
 
-	_continue_indicator.visible = true
-	_blink_timer.start()
+	_continue_indicator.start_blinking()
 	text_finished.emit()
 
 
@@ -139,6 +140,13 @@ func _build_dialogue_panel() -> void:
 	hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	inner_vbox.add_child(hbox)
 
+	# Text wrapper with right margin so text never touches the continue indicator
+	var text_margin = MarginContainer.new()
+	text_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	text_margin.add_theme_constant_override("margin_right", 12)
+	hbox.add_child(text_margin)
+
 	_text_label = Label.new()
 	_text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_text_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -148,17 +156,9 @@ func _build_dialogue_panel() -> void:
 	_text_label.add_theme_color_override("font_color", VNTheme.get_text_color())
 	_text_label.add_theme_font_override("font", VNTheme.get_font_dialogue())
 	_text_label.add_theme_font_size_override("font_size", VNTheme.get_font_size_dialogue())
-	hbox.add_child(_text_label)
+	text_margin.add_child(_text_label)
 
-	_continue_indicator = Label.new()
-	_continue_indicator.text = "▼"
-	_continue_indicator.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_continue_indicator.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	_continue_indicator.add_theme_color_override("font_color", VNTheme.get_text_color())
-	_continue_indicator.add_theme_font_override("font", VNTheme.get_font_dialogue())
-	_continue_indicator.add_theme_font_size_override("font_size", VNTheme.get_font_size_continue())
-	_continue_indicator.custom_minimum_size = Vector2(30, 30)
-	_continue_indicator.visible = false
+	_continue_indicator = _ContinueIndicatorScript.new()
 	hbox.add_child(_continue_indicator)
 
 
@@ -169,12 +169,6 @@ func _build_timers() -> void:
 	_typewriter_timer.timeout.connect(_on_typewriter_tick)
 	add_child(_typewriter_timer)
 
-	_blink_timer = Timer.new()
-	_blink_timer.wait_time = VNTheme.get_blink_interval()
-	_blink_timer.one_shot = false
-	_blink_timer.timeout.connect(_on_blink_tick)
-	add_child(_blink_timer)
-
 
 # ── Timer callbacks ─────────────────────────────────────────────
 
@@ -184,15 +178,6 @@ func _on_typewriter_tick() -> void:
 		_text_label.text = _typewriter_text.substr(0, _typewriter_char_index)
 	else:
 		finish_typing()
-
-
-func _on_blink_tick() -> void:
-	_continue_indicator.visible = not _continue_indicator.visible
-
-
-func _stop_blinking() -> void:
-	_blink_timer.stop()
-	_continue_indicator.visible = false
 
 
 # ── Input ───────────────────────────────────────────────────────

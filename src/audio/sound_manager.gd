@@ -154,7 +154,7 @@ func _crossfade_bgm(new_stream: AudioStream, new_path: String) -> void:
 		_db_from_linear(bgm_volume * master_volume), crossfade_duration)
 
 	# When fade completes, swap players
-	tween.tween_callback(_on_crossfade_complete).bind(new_path)
+	tween.tween_callback(_on_crossfade_complete.bind(new_path))
 
 
 func _on_crossfade_complete(new_path: String) -> void:

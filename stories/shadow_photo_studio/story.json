@@ -83,7 +83,13 @@
       "appearance": "A woman in her late twenties with dark hair pulled back in a simple ponytail. She wears a dark apron over a white shirt, the fabric stained with developer chemicals — cyanotype blue and silver nitrate brown. Her hands are always moving: adjusting a lens cap, organizing contact sheets, wiping a developing tray. Her eyes are tired but alert, the kind of tired that comes from surviving on coffee and determination. There's a small cut on her left thumb, freshly bandaged.",
       "background": "Haruka has worked as Yuki's assistant for three years. She came to the studio as a photography student struggling to find her voice, and Yuki saw something in her work that no one else did — a patience, an eye for the quiet moments that others rush past. She admires Yuki's talent fiercely but has always worried about their obsession with the 'perfect shot.' When Yuki disappeared three weeks ago, she refused to let anyone touch the studio, convinced that Yuki would return. She's been developing Yuki's last roll of film in secret, and the images have haunted her ever since. She hasn't slept properly since.",
       "temperament": "Quiet and meticulous, with a dry wit that emerges only when she's comfortable. She speaks softly but with precision — every word chosen carefully, like framing a photograph. She's deeply loyal to Yuki and fiercely defensive about their work. She values honesty above all else, which makes her current situation unbearable: she knows things she can't tell anyone, and the silence is eating her alive. When she's anxious, she fiddles with her apron strings.",
-      "mood": "Anxious and exhausted, holding herself together by sheer will. She wants desperately to believe Yuki will return, but she knows that hope is a luxury she can't afford. She's been talking to photographs instead of people, and she knows it's not healthy. She's looking for someone — anyone — who can help her make sense of what's happened."
+      "mood": "Anxious and exhausted, holding herself together by sheer will. She wants desperately to believe Yuki will return, but she knows that hope is a luxury she can't afford. She's been talking to photographs instead of people, and she knows it's not healthy. She's looking for someone — anyone — who can help her make sense of what's happened.",
+      "can_reveal": [
+        "yuki_last_assignment",
+        "strange_photograph",
+        "haruka_nightmares",
+        "haruka_last_photo"
+      ]
     },
     "Kenji": {
       "name": "Kenji (健二)",
@@ -91,7 +97,12 @@
       "appearance": "A man in his early thirties with short dark hair that's grown out a little too long. He wears a rumpled navy suit that's seen better days — the kind of suit you wear to jobs you can't afford to lose. His eyes are intelligent but shadowed with fatigue, and there's a nervous energy to his movements: tapping his fingers, shifting his weight, glancing at the door. He carries a leather satchel crammed with notebooks, press passes, and half-finished articles. A coffee stain marks the left breast pocket.",
       "background": "Kenji is a freelance journalist who has been publishing Yuki's photographs for years — street scenes, neighborhood portraits, the kind of work that captures Tokyo's hidden pulse. Their relationship was professional but warm: he used to bring Yuki coffee when they were developing late into the night, and they'd talk about composition and light until dawn. He was the last person to see Yuki alive, three weeks ago. They had an argument that Kenji won't discuss with anyone. He's been carrying guilt and fear ever since, and he's been secretly investigating what happened — not out of professional duty, but because he owes Yuki more than that.",
       "temperament": "Charming and articulate, with a natural ability to make people comfortable — years of journalism have taught him how to read a room. But there's a hardness underneath, a defensive shell built from years of rejection and near-poverty. He's ambitious and knows how to play people, but he's not cruel. He genuinely cares about Yuki and the truth. When he's uncomfortable, he smiles too much.",
-      "mood": "Restless and guilty, caught between wanting to help and being afraid of what he might find. He's been avoiding the studio because he can't face Haruka — he knows she blames him for not doing more. He's been drinking more than he should, and his articles have gotten sloppy. He wants to believe Yuki is alive, but he's starting to fear that he knows the truth and is too afraid to face it."
+      "mood": "Restless and guilty, caught between wanting to help and being afraid of what he might find. He's been avoiding the studio because he can't face Haruka — he knows she blames him for not doing more. He's been drinking more than he should, and his articles have gotten sloppy. He wants to believe Yuki is alive, but he's starting to fear that he knows the truth and is too afraid to face it.",
+      "can_reveal": [
+        "yuki_last_assignment",
+        "kenji_last_meeting",
+        "kenji_article"
+      ]
     },
     "Obasan": {
       "name": "Obāsan (おばさん)",
@@ -99,7 +110,10 @@
       "appearance": "An elderly woman in her late seventies with silver hair pinned neatly at the back. She wears a simple kimono-style top in muted colors and a faded apron. Her hands are gnarled but steady, the hands of someone who has spent a lifetime doing careful work. Her eyes are warm and wrinkled at the corners from decades of smiling, but there's a sharpness behind them — the kind of perception that comes from watching a neighborhood change for fifty years. She moves slowly but with purpose.",
       "background": "Obāsan has lived in this neighborhood for fifty years. She ran a small confectionery shop next to Yuki's studio until it closed a few months ago — not because business was bad, but because her body finally gave out. She watched Yuki's studio open, thrive, and now close. She cared for Yuki like a grandchild: she was the one who brought Yuki soup when they had pneumonia, who mended their camera strap when it snapped, who left small sweets on the studio counter 'for energy.' When Yuki disappeared, she was the one who called the police. She's been watching the studio every night from her window, hoping to see something — anything — that will tell her what happened.",
       "temperament": "Gossipy and warm, with a grandmotherly manner that makes people open up almost involuntarily. But beneath the warmth is sharp, almost unsettling perception — she's seen everything in fifty years and knows when something is wrong. She speaks in a soft, measured way, often with proverbs and old sayings that seem simple but carry layers of meaning. She never pushes, but she never lets go either. When she's thinking, she strokes her chin with her thumb and forefinger.",
-      "mood": "Worried and helpless, carrying a quiet grief she won't admit to herself. She feels responsible for not noticing sooner — she saw Yuki the last time, and something was off, but she was too polite to push. She's been watching the studio every night, telling herself it's just habit, but she knows it's hope. She wants someone to come along and fix this, but she knows the world doesn't work that way."
+      "mood": "Worried and helpless, carrying a quiet grief she won't admit to herself. She feels responsible for not noticing sooner — she saw Yuki the last time, and something was off, but she was too polite to push. She's been watching the studio every night, telling herself it's just habit, but she knows it's hope. She wants someone to come along and fix this, but she knows the world doesn't work that way.",
+      "can_reveal": [
+        "studio_lights"
+      ]
     }
   },
   "clues": {
@@ -427,11 +441,6 @@
           "id": "approach_studio",
           "label": "Walk toward the studio",
           "target": "studio_entrance"
-        },
-        {
-          "id": "explore_neighborhood",
-          "label": "Walk down the street a bit further",
-          "target": "neighborhood"
         }
       ],
       "on_enter": {
@@ -445,13 +454,11 @@
         "sfx/footsteps_outdoor.mp3",
         "sfx/wind_ambient.wav"
       ],
-      "characters": [
-        "Obasan"
-      ],
+      "characters": [],
       "dialogue": [
         {
-          "speaker": "Obasan",
-          "text": "Oh? You must be the one they sent. I've been watching for someone. Please, come sit — the bench is warm from the afternoon sun."
+          "speaker": "",
+          "text": "You stand before the shuttered studio. The hand-painted sign is faded but still legible: 'Sato Photo Studio — Est. 1987.' A chain lock secures the door."
         }
       ],
       "choices": [
@@ -462,6 +469,11 @@
           "set_flags": {
             "entered_studio": true
           }
+        },
+        {
+          "id": "explore_neighborhood",
+          "label": "Walk down the street a bit further",
+          "target": "neighborhood"
         }
       ],
       "on_enter": {
@@ -491,19 +503,19 @@
       ],
       "choices": [
         {
-          "id": "explain_purpose",
-          "label": "Explain you were hired by Yuki's family",
-          "target": "studio_interior"
-        },
-        {
-          "id": "explore_studio",
-          "label": "Look around the studio",
-          "target": "studio_interior"
-        },
-        {
           "id": "ask_about_darkroom",
-          "label": "Ask about the darkroom",
+          "label": "Head to the darkroom",
           "target": "darkroom"
+        },
+        {
+          "id": "inspect_haruka_room",
+          "label": "Inspect the 2nd floor",
+          "target": "haruka_room",
+          "requires_flags": {
+            "talked_to_obasan": true,
+            "entered_darkroom": true
+
+          }
         },
         {
           "id": "leave_to_talk",
@@ -542,21 +554,6 @@
       ],
       "choices": [
         {
-          "id": "examine_photographs",
-          "label": "Examine the photographs on the rack",
-          "target": "darkroom"
-        },
-        {
-          "id": "examine_trays",
-          "label": "Check the developing trays",
-          "target": "darkroom"
-        },
-        {
-          "id": "ask_about_last_photo",
-          "label": "Ask Haruka about Yuki's last photograph",
-          "target": "darkroom"
-        },
-        {
           "id": "leave_darkroom",
           "label": "Leave the darkroom",
           "target": "studio_interior"
@@ -587,21 +584,6 @@
       ],
       "choices": [
         {
-          "id": "examine_room",
-          "label": "Look more closely at the photographs on the walls",
-          "target": "haruka_room"
-        },
-        {
-          "id": "ask_about_yuki_personal",
-          "label": "Ask Haruka about Yuki as a person",
-          "target": "haruka_room"
-        },
-        {
-          "id": "ask_about_locked_box",
-          "label": "Ask about the locked box on the desk",
-          "target": "haruka_room"
-        },
-        {
           "id": "leave_haruka_room",
           "label": "Leave the room",
           "target": "studio_interior"
@@ -628,26 +610,15 @@
       ],
       "dialogue": [
         {
+          "speaker": "",
+          "text": "To your right, an elderly woman sits on a wooden bench outside a closed shop, watching the street with the patient attention of someone who has watched it for decades."
+        },
+        {
           "speaker": "Obasan",
-          "text": "This was my shop — confections, mostly. I made mochi and manjū for the neighborhood children. Yuki was one of them, you know. Not by blood, but by heart. They used to come here every afternoon with their camera and ask me to pose. I was never very good at it — I'd always frown."
+          "text": "Oh? You must be the one they sent. Let me introduce myself. This was my shop — confections, mostly. I made mochi and manjū for the neighborhood children. Yuki was one of them, you know. Not by blood, but by heart. They used to come here every afternoon with their camera and ask me to pose. I was never very good at it — I'd always frown."
         }
       ],
       "choices": [
-        {
-          "id": "ask_about_studio",
-          "label": "Ask Obāsan about the studio and Yuki",
-          "target": "neighborhood"
-        },
-        {
-          "id": "ask_about_lights",
-          "label": "Ask about the lights you saw from the street",
-          "target": "neighborhood"
-        },
-        {
-          "id": "ask_about_disappearance",
-          "label": "Ask about when Yuki disappeared",
-          "target": "neighborhood"
-        },
         {
           "id": "leave_neighborhood",
           "label": "Return to the studio",
@@ -663,7 +634,7 @@
     "cafe_meeting": {
       "description": "A small café tucked between a shuttered bookstore and a closed tailor's shop. The sign outside reads 'カフェ・ルノワール' — Café Renoir — though the paint is peeling and the 'R' has fallen off, leaving 'Café Noair.' Inside, the air smells of roasted beans and old paper. A man sits in the corner booth, nursing a coffee that's long gone cold. He looks up as you enter, and something shifts in his expression — relief, guilt, recognition, all at once.",
       "background": "backgrounds/cafe_exterior.png",
-      "music": "music/cafe_atmosphere.mp3",
+      "music": "music/neighborhood_walk.mp3",
       "sfx": [
         "sfx/door_creak.mp3",
         "sfx/paper_rustle.mp3"
@@ -678,21 +649,6 @@
         }
       ],
       "choices": [
-        {
-          "id": "ask_about_yuki",
-          "label": "Ask Kenji about Yuki",
-          "target": "cafe_meeting"
-        },
-        {
-          "id": "ask_about_last_meeting",
-          "label": "Ask about the last time you saw Yuki",
-          "target": "cafe_meeting"
-        },
-        {
-          "id": "ask_about_investigation",
-          "label": "Ask what Kenji has been doing since Yuki disappeared",
-          "target": "cafe_meeting"
-        },
         {
           "id": "leave_cafe",
           "label": "Leave the café",
@@ -775,7 +731,7 @@
       "choices": [
         {
           "id": "ending_darkroom_light",
-          "label": "Go to the darkroom — find Yuki and hear their story",
+          "label": "Go to the darkroom — find Yuki and hear his story",
           "target": "ending_darkroom_light",
           "requires_flags": {
             "knows_yuki_hiding": true,
@@ -813,7 +769,7 @@
     "ending_darkroom_light": {
       "description": "You push open the darkroom door. The red light is brighter than you expected, and the air is thick with the smell of chemicals. In the corner, hunched over a developing tray, is a figure. They look up — and you see Yuki's face, thinner than before, eyes bright with exhaustion and something else: relief.",
       "background": "backgrounds/ending_darkroom_light.png",
-      "music": "music/ending_theme.mp3",
+      "music": "music/neighborhood_walk.mp3",
       "sfx": [
         "sfx/door_creak.mp3",
         "sfx/darkroom_agitate.wav",
@@ -868,7 +824,7 @@
     "ending_developed_truth": {
       "description": "You call Kenji. He arrives within the hour, looking tired but alert. When you tell him what you've found, his expression shifts — from skepticism to disbelief to something like awe. He spreads Yuki's photographs across the café table, and the red light from the studio catches the edges of each frame.",
       "background": "backgrounds/ending_developed_truth.png",
-      "music": "music/ending_theme.mp3",
+      "music": "music/neighborhood_walk.mp3",
       "sfx": [
         "sfx/page_turn.mp3",
         "sfx/paper_rustle.mp3",
@@ -914,7 +870,7 @@
     "ending_last_exposure": {
       "description": "Haruka leads you back to her room. She sits on the edge of her bed and stares at the locked box on her desk for a long moment. Then she picks it up, opens it, and takes out a single photograph. She holds it in her hands like it's made of glass — fragile, precious, dangerous.",
       "background": "backgrounds/ending_last_exposure.png",
-      "music": "music/ending_theme.mp3",
+      "music": "music/neighborhood_walk.mp3",
       "sfx": [
         "sfx/heartbeat.wav",
         "sfx/chemical_pour.mp3"
@@ -958,7 +914,7 @@
     "ending_fogged_film": {
       "description": "The studio is empty now. The photographs have been packed into boxes. The developing trays have been cleaned. The red light from the darkroom has been turned off. Outside, the neighborhood continues its quiet evening rhythm — indifferent to what has happened here, to what will never be known.",
       "background": "backgrounds/ending_fogged_film.png",
-      "music": "music/ending_theme.mp3",
+      "music": "music/neighborhood_walk.mp3",
       "sfx": [
         "sfx/page_turn.mp3",
         "sfx/wind_ambient.wav",

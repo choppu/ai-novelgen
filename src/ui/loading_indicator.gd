@@ -51,8 +51,9 @@ func _ready() -> void:
 func _build_label() -> void:
 	_label = Label.new()
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_label.add_theme_color_override("font_color", VNTheme.LOADING_COLOR)
-	_label.add_theme_font_size_override("font_size", VNTheme.FONT_SIZE_DIALOGUE)
+	_label.add_theme_color_override("font_color", VNTheme.get_loading_color())
+	_label.add_theme_font_override("font", VNTheme.get_font_dialogue())
+	_label.add_theme_font_size_override("font_size", VNTheme.get_font_size_dialogue())
 	_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	_label.visible = false
 	add_child(_label)

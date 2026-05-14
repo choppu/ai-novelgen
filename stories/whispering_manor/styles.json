@@ -1,0 +1,45 @@
+{
+  "colors": {
+    "bg":           [0.05, 0.05, 0.07, 1.0],
+    "text":         [0.95, 0.95, 0.92, 1.0],
+    "narration":    [0.80, 0.80, 0.78, 1.0],
+    "speaker":      [0.936, 0.967, 1.0, 1.0],
+    "player":       [0.70, 0.85, 1.00, 1.0],
+    "description":  [0.85, 0.85, 0.80, 1.0],
+
+    "dialogue_box_bg":       [0.06, 0.06, 0.10, 0.88],
+    "dialogue_box_border":   [0.30, 0.35, 0.50, 0.9],
+
+    "choice_bg":         [0.12, 0.16, 0.28, 0.92],
+    "choice_hover":      [0.22, 0.30, 0.50, 0.95],
+    "choice_focus":      [0.30, 0.40, 0.65, 0.95],
+
+    "input_bg":           [0.12, 0.12, 0.15, 1.0],
+    "input_border":       [0.25, 0.30, 0.40, 1.0],
+
+    "error_bg":   [0.50, 0.15, 0.15, 0.9],
+    "error_text": [1.0, 0.8, 0.8, 1.0],
+
+    "loading": [0.50, 0.50, 0.55, 1.0]
+  },
+
+  "typography": {
+    "font_size_name":      26,
+    "font_size_dialogue":  22,
+    "font_size_description": 22,
+    "font_size_choice":    20,
+    "font_size_error":     18,
+    "font_size_continue":  20
+  },
+
+  "timing": {
+    "typewriter_speed":     0.035,
+    "blink_interval":       0.6,
+    "description_fade_in":  0.8,
+    "description_fade_out": 1.0,
+    "description_min_hold": 2.0,
+    "description_max_hold": 6.0,
+    "description_char_time": 0.03,
+    "error_auto_dismiss":   5.0
+  }
+}

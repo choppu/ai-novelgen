@@ -28,7 +28,7 @@ var _label: Label
 # ── Public API ──────────────────────────────────────────────────
 
 ## Show an error message. Auto-dismisses after [code]duration[/code] seconds.
-func show_error(message: String, duration: float = VNTheme.ERROR_AUTO_DISMISS) -> void:
+func show_error(message: String, duration: float = VNTheme.get_error_auto_dismiss()) -> void:
 	_label.text = message
 	_label.visible = true
 
@@ -53,10 +53,11 @@ func _ready() -> void:
 func _build_label() -> void:
 	_label = Label.new()
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_label.add_theme_color_override("font_color", VNTheme.ERROR_TEXT_COLOR)
-	_label.add_theme_font_size_override("font_size", VNTheme.FONT_SIZE_ERROR)
+	_label.add_theme_color_override("font_color", VNTheme.get_error_text())
+	_label.add_theme_font_override("font", VNTheme.get_font_narration())
+	_label.add_theme_font_size_override("font_size", VNTheme.get_font_size_error())
 	_label.set_anchors_preset(Control.PRESET_TOP_WIDE)
 	_label.anchor_bottom = 0.08
 	_label.visible = false
-	_label.add_theme_stylebox_override("panel", VNTheme.create_filled_panel(VNTheme.ERROR_BG_COLOR))
+	_label.add_theme_stylebox_override("panel", VNTheme.create_filled_panel(VNTheme.get_error_bg()))
 	add_child(_label)

@@ -72,7 +72,8 @@ func show_end_label() -> void:
 	var end_label = Label.new()
 	end_label.text = "— End of story —"
 	end_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	end_label.add_theme_color_override("font_color", VNTheme.TEXT_COLOR)
+	end_label.add_theme_color_override("font_color", VNTheme.get_text_color())
+	end_label.add_theme_font_override("font", VNTheme.get_font_dialogue())
 	end_label.add_theme_font_size_override("font_size", 26)
 	_button_container.add_child(end_label)
 

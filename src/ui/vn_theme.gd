@@ -1,53 +1,89 @@
 ## VNTheme — Shared colour palette and styling helpers for the VN UI.
 ##
 ## All UI components reference this for consistent theming.
+## Colours, font sizes, and timing values are loaded from the current
+## story's `styles.json` via [StoryStyle].
 ## Attach nothing — use as a utility module via `preload` or `load`.
 
 class_name VNTheme
 
 
 # ── Colours ─────────────────────────────────────────────────────
-const BG_COLOR := Color(0.05, 0.05, 0.07, 1.0)
-const TEXT_COLOR := Color(0.95, 0.95, 0.92, 1.0)
-const NARRATION_COLOR := Color(0.80, 0.80, 0.78, 1.0)
-const SPEAKER_COLOR := Color(0.936, 0.967, 1.0, 1.0)
-const PLAYER_COLOR := Color(0.70, 0.85, 1.00, 1.0)
-const DESCRIPTION_COLOR := Color(0.85, 0.85, 0.80, 1.0)
+## Story-specific colours loaded from styles.json.
 
-const DIALOGUE_BOX_BG := Color(0.06, 0.06, 0.10, 0.88)
-const DIALOGUE_BOX_BORDER := Color(0.30, 0.35, 0.50, 0.9)
+static func get_bg_color()            -> Color: return _style().get_bg_color()
+static func get_text_color()          -> Color: return _style().get_text_color()
+static func get_narration_color()     -> Color: return _style().get_narration_color()
+static func get_speaker_color()       -> Color: return _style().get_speaker_color()
+static func get_player_color()        -> Color: return _style().get_player_color()
+static func get_description_color()   -> Color: return _style().get_description_color()
 
-const CHOICE_BG_COLOR := Color(0.12, 0.16, 0.28, 0.92)
-const CHOICE_HOVER_COLOR := Color(0.22, 0.30, 0.50, 0.95)
-const CHOICE_FOCUS_COLOR := Color(0.30, 0.40, 0.65, 0.95)
+static func get_dialogue_box_bg()     -> Color: return _style().get_dialogue_box_bg()
+static func get_dialogue_box_border() -> Color: return _style().get_dialogue_box_border()
 
-const INPUT_BG_COLOR := Color(0.12, 0.12, 0.15, 1.0)
-const INPUT_BORDER_COLOR := Color(0.25, 0.30, 0.40, 1.0)
+static func get_choice_bg()           -> Color: return _style().get_choice_bg()
+static func get_choice_hover()        -> Color: return _style().get_choice_hover()
+static func get_choice_focus()        -> Color: return _style().get_choice_focus()
 
-const ERROR_BG_COLOR := Color(0.50, 0.15, 0.15, 0.9)
-const ERROR_TEXT_COLOR := Color(1.0, 0.8, 0.8, 1.0)
+static func get_input_bg()            -> Color: return _style().get_input_bg()
+static func get_input_border()        -> Color: return _style().get_input_border()
 
-const LOADING_COLOR := Color(0.50, 0.50, 0.55, 1.0)
+static func get_error_bg()            -> Color: return _style().get_error_bg()
+static func get_error_text()          -> Color: return _style().get_error_text()
+
+static func get_loading_color()       -> Color: return _style().get_loading_color()
 
 
 # ── Typography ──────────────────────────────────────────────────
-const FONT_SIZE_NAME := 26
-const FONT_SIZE_DIALOGUE := 22
-const FONT_SIZE_DESCRIPTION := 22
-const FONT_SIZE_CHOICE := 20
-const FONT_SIZE_ERROR := 18
-const FONT_SIZE_CONTINUE := 20
+## Story-specific font sizes loaded from styles.json.
+
+static func get_font_size_name()         -> int: return _style().get_font_size_name()
+static func get_font_size_dialogue()     -> int: return _style().get_font_size_dialogue()
+static func get_font_size_description()  -> int: return _style().get_font_size_description()
+static func get_font_size_choice()       -> int: return _style().get_font_size_choice()
+static func get_font_size_error()        -> int: return _style().get_font_size_error()
+static func get_font_size_continue()     -> int: return _style().get_font_size_continue()
+
+
+# ── Fonts (story-specific, loaded by FontLoader) ────────────────
+
+## Get the dialogue font (primary font for body text).
+static func get_font_dialogue() -> Font:
+	return FontLoader.get_font(FontLoader.FONT_KEY_DIALOGUE)
+
+## Get the speaker name font.
+static func get_font_name() -> Font:
+	return FontLoader.get_font(FontLoader.FONT_KEY_NAME)
+
+## Get the choice button font.
+static func get_font_choice() -> Font:
+	return FontLoader.get_font(FontLoader.FONT_KEY_CHOICE)
+
+## Get the narration font.
+static func get_font_narration() -> Font:
+	return FontLoader.get_font(FontLoader.FONT_KEY_NARRATION)
 
 
 # ── Timing ──────────────────────────────────────────────────────
-const TYPEWRITER_SPEED := 0.035      # seconds per character
-const BLINK_INTERVAL := 0.6          # seconds per blink
-const DESCRIPTION_FADE_IN := 0.8     # seconds
-const DESCRIPTION_FADE_OUT := 1.0    # seconds
-const DESCRIPTION_MIN_HOLD := 2.0    # seconds
-const DESCRIPTION_MAX_HOLD := 6.0    # seconds
-const DESCRIPTION_CHAR_TIME := 0.03  # seconds per char for hold calc
-const ERROR_AUTO_DISMISS := 5.0      # seconds
+## Story-specific timing values loaded from styles.json.
+
+static func get_typewriter_speed()      -> float: return _style().get_typewriter_speed()
+static func get_blink_interval()        -> float: return _style().get_blink_interval()
+static func get_description_fade_in()   -> float: return _style().get_description_fade_in()
+static func get_description_fade_out()  -> float: return _style().get_description_fade_out()
+static func get_description_min_hold()  -> float: return _style().get_description_min_hold()
+static func get_description_max_hold()  -> float: return _style().get_description_max_hold()
+static func get_description_char_time() -> float: return _style().get_description_char_time()
+static func get_error_auto_dismiss()    -> float: return _style().get_error_auto_dismiss()
+
+
+# ── Internal ────────────────────────────────────────────────────
+static var _style_instance: StoryStyle
+
+static func _style() -> StoryStyle:
+	if _style_instance == null:
+		_style_instance = StoryStyle.instance()
+	return _style_instance
 
 
 # ── Styling helpers ─────────────────────────────────────────────
@@ -55,19 +91,19 @@ const ERROR_AUTO_DISMISS := 5.0      # seconds
 ## Apply the standard VN choice-button style to a [Button].
 static func style_choice_button(btn: Button) -> void:
 	var normal = StyleBoxFlat.new()
-	normal.bg_color = CHOICE_BG_COLOR
+	normal.bg_color = get_choice_bg()
 	normal.set_corner_radius_all(6)
 	normal.set_border_width_all(1)
-	normal.border_color = DIALOGUE_BOX_BORDER
+	normal.border_color = get_dialogue_box_border()
 
 	var hover = StyleBoxFlat.new()
-	hover.bg_color = CHOICE_HOVER_COLOR
+	hover.bg_color = get_choice_hover()
 	hover.set_corner_radius_all(6)
 	hover.set_border_width_all(1)
 	hover.border_color = Color(0.45, 0.50, 0.70, 1.0)
 
 	var focus = StyleBoxFlat.new()
-	focus.bg_color = CHOICE_FOCUS_COLOR
+	focus.bg_color = get_choice_focus()
 	focus.set_corner_radius_all(6)
 	focus.set_border_width_all(1)
 	focus.border_color = Color(0.55, 0.60, 0.85, 1.0)
@@ -75,16 +111,17 @@ static func style_choice_button(btn: Button) -> void:
 	btn.add_theme_stylebox_override("normal", normal)
 	btn.add_theme_stylebox_override("hover", hover)
 	btn.add_theme_stylebox_override("focus", focus)
-	btn.add_theme_color_override("font_color", TEXT_COLOR)
-	btn.add_theme_font_size_override("font_size", FONT_SIZE_CHOICE)
+	btn.add_theme_color_override("font_color", get_text_color())
+	btn.add_theme_font_override("font", get_font_choice())
+	btn.add_theme_font_size_override("font_size", get_font_size_choice())
 
 
 ## Build the dialogue box panel style.
 static func create_dialogue_box_style() -> StyleBoxFlat:
 	var style = StyleBoxFlat.new()
-	style.bg_color = DIALOGUE_BOX_BG
+	style.bg_color = get_dialogue_box_bg()
 	style.set_border_width_all(1)
-	style.border_color = DIALOGUE_BOX_BORDER
+	style.border_color = get_dialogue_box_border()
 	style.set_corner_radius_all(6)
 	return style
 
@@ -95,3 +132,41 @@ static func create_filled_panel(bg_color: Color, corner_radius: int = 6) -> Styl
 	style.bg_color = bg_color
 	style.set_corner_radius_all(corner_radius)
 	return style
+
+
+# ── Backward-compat aliases (const names from old VNTheme) ─────
+## These delegate to the dynamic getters so existing code using
+## `VNTheme.BG_COLOR` etc. still compiles.
+
+static func get_BG_COLOR()            -> Color: return get_bg_color()
+static func get_TEXT_COLOR()          -> Color: return get_text_color()
+static func get_NARRATION_COLOR()     -> Color: return get_narration_color()
+static func get_SPEAKER_COLOR()       -> Color: return get_speaker_color()
+static func get_PLAYER_COLOR()        -> Color: return get_player_color()
+static func get_DESCRIPTION_COLOR()   -> Color: return get_description_color()
+static func get_DIALOGUE_BOX_BG()     -> Color: return get_dialogue_box_bg()
+static func get_DIALOGUE_BOX_BORDER() -> Color: return get_dialogue_box_border()
+static func get_CHOICE_BG_COLOR()     -> Color: return get_choice_bg()
+static func get_CHOICE_HOVER_COLOR()  -> Color: return get_choice_hover()
+static func get_CHOICE_FOCUS_COLOR()  -> Color: return get_choice_focus()
+static func get_INPUT_BG_COLOR()      -> Color: return get_input_bg()
+static func get_INPUT_BORDER_COLOR()  -> Color: return get_input_border()
+static func get_ERROR_BG_COLOR()      -> Color: return get_error_bg()
+static func get_ERROR_TEXT_COLOR()    -> Color: return get_error_text()
+static func get_LOADING_COLOR()       -> Color: return get_loading_color()
+
+static func get_FONT_SIZE_NAME()         -> int: return get_font_size_name()
+static func get_FONT_SIZE_DIALOGUE()     -> int: return get_font_size_dialogue()
+static func get_FONT_SIZE_DESCRIPTION()  -> int: return get_font_size_description()
+static func get_FONT_SIZE_CHOICE()       -> int: return get_font_size_choice()
+static func get_FONT_SIZE_ERROR()        -> int: return get_font_size_error()
+static func get_FONT_SIZE_CONTINUE()     -> int: return get_font_size_continue()
+
+static func get_TYPEWRITER_SPEED()      -> float: return get_typewriter_speed()
+static func get_BLINK_INTERVAL()        -> float: return get_blink_interval()
+static func get_DESCRIPTION_FADE_IN()   -> float: return get_description_fade_in()
+static func get_DESCRIPTION_FADE_OUT()  -> float: return get_description_fade_out()
+static func get_DESCRIPTION_MIN_HOLD()  -> float: return get_description_min_hold()
+static func get_DESCRIPTION_MAX_HOLD()  -> float: return get_description_max_hold()
+static func get_DESCRIPTION_CHAR_TIME() -> float: return get_description_char_time()
+static func get_ERROR_AUTO_DISMISS()    -> float: return get_error_auto_dismiss()

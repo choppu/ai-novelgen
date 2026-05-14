@@ -61,7 +61,7 @@ func set_speaker(speaker_name: String, is_player: bool = false) -> void:
 	else:
 		_name_label.text = speaker_name
 		_name_label.add_theme_color_override("font_color",
-			VNTheme.PLAYER_COLOR if is_player else VNTheme.SPEAKER_COLOR)
+			VNTheme.get_player_color() if is_player else VNTheme.get_speaker_color())
 
 
 ## Start typewriter animation for [code]full_text[/code].
@@ -73,7 +73,7 @@ func start_typing(full_text: String, is_narration: bool = false) -> void:
 	_text_label.text = ""
 
 	_text_label.add_theme_color_override("font_color",
-		VNTheme.NARRATION_COLOR if is_narration else VNTheme.TEXT_COLOR)
+		VNTheme.get_narration_color() if is_narration else VNTheme.get_text_color())
 
 	_continue_indicator.visible = false
 	_stop_blinking()
@@ -128,9 +128,9 @@ func _build_dialogue_panel() -> void:
 	# Name label
 	_name_label = Label.new()
 	_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	_name_label.add_theme_color_override("font_color", VNTheme.SPEAKER_COLOR)
-	_name_label.add_theme_font_size_override("font_size", VNTheme.FONT_SIZE_NAME)
-	_name_label.add_theme_font_override("font", ThemeDB.fallback_font)
+	_name_label.add_theme_color_override("font_color", VNTheme.get_speaker_color())
+	_name_label.add_theme_font_size_override("font_size", VNTheme.get_font_size_name())
+	_name_label.add_theme_font_override("font", VNTheme.get_font_name())
 	_name_label.custom_minimum_size = Vector2(0, 32)
 	inner_vbox.add_child(_name_label)
 
@@ -145,16 +145,18 @@ func _build_dialogue_panel() -> void:
 	_text_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	_text_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_text_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_text_label.add_theme_color_override("font_color", VNTheme.TEXT_COLOR)
-	_text_label.add_theme_font_size_override("font_size", VNTheme.FONT_SIZE_DIALOGUE)
+	_text_label.add_theme_color_override("font_color", VNTheme.get_text_color())
+	_text_label.add_theme_font_override("font", VNTheme.get_font_dialogue())
+	_text_label.add_theme_font_size_override("font_size", VNTheme.get_font_size_dialogue())
 	hbox.add_child(_text_label)
 
 	_continue_indicator = Label.new()
 	_continue_indicator.text = "▼"
 	_continue_indicator.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_continue_indicator.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	_continue_indicator.add_theme_color_override("font_color", VNTheme.TEXT_COLOR)
-	_continue_indicator.add_theme_font_size_override("font_size", VNTheme.FONT_SIZE_CONTINUE)
+	_continue_indicator.add_theme_color_override("font_color", VNTheme.get_text_color())
+	_continue_indicator.add_theme_font_override("font", VNTheme.get_font_dialogue())
+	_continue_indicator.add_theme_font_size_override("font_size", VNTheme.get_font_size_continue())
 	_continue_indicator.custom_minimum_size = Vector2(30, 30)
 	_continue_indicator.visible = false
 	hbox.add_child(_continue_indicator)
@@ -162,13 +164,13 @@ func _build_dialogue_panel() -> void:
 
 func _build_timers() -> void:
 	_typewriter_timer = Timer.new()
-	_typewriter_timer.wait_time = VNTheme.TYPEWRITER_SPEED
+	_typewriter_timer.wait_time = VNTheme.get_typewriter_speed()
 	_typewriter_timer.one_shot = false
 	_typewriter_timer.timeout.connect(_on_typewriter_tick)
 	add_child(_typewriter_timer)
 
 	_blink_timer = Timer.new()
-	_blink_timer.wait_time = VNTheme.BLINK_INTERVAL
+	_blink_timer.wait_time = VNTheme.get_blink_interval()
 	_blink_timer.one_shot = false
 	_blink_timer.timeout.connect(_on_blink_tick)
 	add_child(_blink_timer)

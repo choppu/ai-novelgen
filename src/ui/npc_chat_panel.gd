@@ -59,7 +59,7 @@ func hide_panel() -> void:
 
 ## Append a chat message. Use [code]is_player=true[/code] for player messages.
 func append_message(speaker: String, text: String, is_player: bool = false) -> void:
-	var color = VNTheme.PLAYER_COLOR if is_player else VNTheme.SPEAKER_COLOR
+	var color = VNTheme.get_player_color() if is_player else VNTheme.get_speaker_color()
 	var color_hex = _color_to_html(color)
 
 	var align = "right" if is_player else "left"
@@ -76,7 +76,7 @@ func append_message(speaker: String, text: String, is_player: bool = false) -> v
 
 ## Append a system/narration message (grey, centered).
 func append_system(text: String) -> void:
-	var color_hex = _color_to_html(VNTheme.NARRATION_COLOR)
+	var color_hex = _color_to_html(VNTheme.get_narration_color())
 	var bbcode = "[indent][center][color=%s][i]%s[/i][/color][/center][/indent]\n\n" % [color_hex, text]
 	_chat_rich_text.append_text(bbcode)
 	_scroll_container.scroll_vertical = int(_scroll_container.get_v_scroll_bar().max_value)
@@ -84,7 +84,7 @@ func append_system(text: String) -> void:
 
 ## Show a typing indicator (animated dots).
 func show_typing_indicator(speaker_name: String) -> void:
-	var color_hex = _color_to_html(VNTheme.LOADING_COLOR)
+	var color_hex = _color_to_html(VNTheme.get_loading_color())
 	var bbcode = "[indent][left][b][color=%s]%s[/color][/b] [i]...[/i][/left][/indent]\n" % [color_hex, speaker_name]
 	_chat_rich_text.append_text(bbcode)
 	_scroll_container.scroll_vertical = int(_scroll_container.get_v_scroll_bar().max_value)
@@ -136,7 +136,7 @@ func _ready() -> void:
 
 func _build_background() -> void:
 	_bg = ColorRect.new()
-	_bg.color = VNTheme.BG_COLOR
+	_bg.color = VNTheme.get_bg_color()
 	_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(_bg)
 
@@ -160,9 +160,10 @@ func _build_message_area() -> void:
 	_chat_rich_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_chat_rich_text.scroll_following = true
 
-	# Default text color
-	_chat_rich_text.add_theme_color_override("default_color", VNTheme.TEXT_COLOR)
-	_chat_rich_text.add_theme_font_size_override("normal_font_size", VNTheme.FONT_SIZE_DIALOGUE)
+	# Default text color and font
+	_chat_rich_text.add_theme_color_override("default_color", VNTheme.get_text_color())
+	_chat_rich_text.add_theme_font_override("font", VNTheme.get_font_dialogue())
+	_chat_rich_text.add_theme_font_size_override("normal_font_size", VNTheme.get_font_size_dialogue())
 
 	# Margin inside the rich text
 	var margin = MarginContainer.new()
@@ -211,13 +212,14 @@ func _build_bottom_bar() -> void:
 	_input_line.placeholder_text = "Type a message..."
 	_input_line.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_input_line.text_submitted.connect(func(t): message_sent.emit(t))
-	_input_line.add_theme_color_override("font_color", VNTheme.TEXT_COLOR)
-	_input_line.add_theme_color_override("placeholder_font_color", VNTheme.LOADING_COLOR)
+	_input_line.add_theme_color_override("font_color", VNTheme.get_text_color())
+	_input_line.add_theme_color_override("placeholder_font_color", VNTheme.get_loading_color())
+	_input_line.add_theme_font_override("font", VNTheme.get_font_dialogue())
 	var input_bg = StyleBoxFlat.new()
-	input_bg.bg_color = VNTheme.INPUT_BG_COLOR
+	input_bg.bg_color = VNTheme.get_input_bg()
 	input_bg.set_corner_radius_all(6)
 	input_bg.set_border_width_all(1)
-	input_bg.border_color = VNTheme.INPUT_BORDER_COLOR
+	input_bg.border_color = VNTheme.get_input_border()
 	_input_line.add_theme_stylebox_override("panel", input_bg)
 	_bottom_hbox.add_child(_input_line)
 

@@ -456,11 +456,6 @@
       ],
       "choices": [
         {
-          "id": "talk_to_obasan",
-          "label": "Talk to the elderly woman",
-          "target": "neighborhood"
-        },
-        {
           "id": "enter_studio",
           "label": "Try the studio door",
           "target": "studio_interior",
@@ -667,7 +662,7 @@
     },
     "cafe_meeting": {
       "description": "A small café tucked between a shuttered bookstore and a closed tailor's shop. The sign outside reads 'カフェ・ルノワール' — Café Renoir — though the paint is peeling and the 'R' has fallen off, leaving 'Café Noair.' Inside, the air smells of roasted beans and old paper. A man sits in the corner booth, nursing a coffee that's long gone cold. He looks up as you enter, and something shifts in his expression — relief, guilt, recognition, all at once.",
-      "background": "backgrounds/cafe_interior.png",
+      "background": "backgrounds/cafe_exterior.png",
       "music": "music/cafe_atmosphere.mp3",
       "sfx": [
         "sfx/door_creak.mp3",
@@ -727,11 +722,6 @@
         }
       ],
       "choices": [
-        {
-          "id": "talk_to_haruka",
-          "label": "Talk to Haruka",
-          "target": "studio_interior"
-        },
         {
           "id": "go_to_darkroom",
           "label": "Go to the darkroom",

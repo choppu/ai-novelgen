@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 [autoload]
 
 GameConfig="*res://src/game_config.gd"
+FontLoader="*res://src/font_loader.gd"
 GameState="*res://src/game_state.gd"
 LlmConfig="*res://src/llm_config.gd"
 ServerLifecycle="*res://src/server_lifecycle.gd"

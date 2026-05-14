@@ -26,7 +26,6 @@ var _retry_backoff_ms: int
 
 ## ── Voice settings ──
 var _voice_model_name: String
-var _voice_name: String
 
 ## ── Server lifecycle ──
 ## When true (default), main_controller starts/stops the lemond subprocess.
@@ -80,7 +79,6 @@ func _parse_config() -> void:
 
 	var voice = _config.get("voice_model", {})
 	_voice_model_name = voice.get("name", "kokoro-v1")
-	_voice_name = voice.get("voice", "ash")
 
 
 func _log_config() -> void:
@@ -144,9 +142,6 @@ func get_max_retries() -> int:
 
 func get_voice_model_name() -> String:
 	return _voice_model_name
-
-func get_voice_name() -> String:
-	return _voice_name
 
 
 # ── Platform-aware path resolution ──

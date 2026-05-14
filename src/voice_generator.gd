@@ -21,8 +21,11 @@ signal generation_finished(success: bool)
 var _http_client: Node
 var _voice_player: AudioStreamPlayer
 
-## Queue of text to generate and play
-var _queue: Array[String] = []
+## Map of speaker name → Kokoro voice id (populated from story characters)
+var _speaker_voices: Dictionary = {}
+
+## Queue of {text, voice} dicts to generate and play
+var _queue: Array[Dictionary] = []
 var _is_processing: bool = false
 var _is_generating: bool = false
 
@@ -50,7 +53,9 @@ func generate_and_play(text: String, speaker_name: String = "") -> void:
 	if speaker_name.is_empty():
 		return
 
-	_queue.append(text)
+	# Look up voice for this speaker
+	var voice = _speaker_voices.get(speaker_name, "")
+	_queue.append({"text": text, "voice": voice})
 	_process_queue()
 
 
@@ -74,11 +79,11 @@ func _process_queue() -> void:
 		return
 
 	_is_processing = true
-	var text = _queue.pop_front()
-	_generate(text)
+	var item = _queue.pop_front()
+	_generate(item)
 
 
-func _generate(text: String) -> void:
+func _generate(item: Dictionary) -> void:
 	if _http_client == null:
 		_is_processing = false
 		_process_queue()
@@ -86,7 +91,7 @@ func _generate(text: String) -> void:
 
 	_is_generating = true
 	generation_started.emit()
-	_http_client.generate_speech(text)
+	_http_client.generate_speech(item.get("text", ""), item.get("voice", ""))
 
 
 func _on_speech_generated(audio_buffer: PackedByteArray, error: String) -> void:
@@ -132,6 +137,15 @@ func _on_voice_finished() -> void:
 func _load_stream(audio_buffer: PackedByteArray) -> AudioStream:
 	return AudioStreamMP3.load_from_buffer(audio_buffer)
 
+
+## Assign a Kokoro voice id to a speaker name.
+## Called by main_controller after story loads.
+func set_speaker_voice(speaker_name: String, voice_id: String) -> void:
+	_speaker_voices[speaker_name] = voice_id
+
+## Clear all speaker voice mappings.
+func clear_speaker_voices() -> void:
+	_speaker_voices.clear()
 
 func _db_from_linear(linear: float) -> float:
 	if linear <= 0.0:

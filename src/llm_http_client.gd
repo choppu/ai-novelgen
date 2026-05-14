@@ -65,14 +65,14 @@ func chat_completion(
 
 ## Generate speech from text via the OpenAI-compatible /v1/audio/speech endpoint.
 ## Returns raw audio bytes (MP3) directly in speech_generated.
-func generate_speech(text: String) -> void:
+func generate_speech(text: String, voice: String = "") -> void:
 	var base_url = LlmConfig.get_base_url()
 	var url = "%s/v1/audio/speech" % base_url
 
 	var body_dict = {
 		"model": LlmConfig.get_voice_model_name(),
 		"input": text,
-		"voice": LlmConfig.get_voice_name(),
+		"voice": voice if not voice.is_empty() else "af_heart",
 		"response_format": "mp3"
 	}
 

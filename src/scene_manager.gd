@@ -211,3 +211,7 @@ func get_clues() -> Dictionary:
 ## Get a specific character card by name.
 func get_character(npc_name: String) -> Dictionary:
 	return _characters.get(npc_name, {}).duplicate()
+
+## Get all character cards.
+func get_characters() -> Dictionary:
+	return _characters.duplicate()

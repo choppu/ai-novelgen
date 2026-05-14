@@ -90,6 +90,8 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if _server != null:
 		_server.stop()
+	if _voice_generator != null:
+		_voice_generator.clear_speaker_voices()
 
 
 # ── UI Creation ────────────────────────────────────────────────
@@ -184,6 +186,7 @@ func _setup_llm_pipeline() -> void:
 	_voice_generator = _VoiceGeneratorScript.new()
 	add_child(_voice_generator)
 	_voice_generator.set_http_client(_http_client)
+	_voice_generator.clear_speaker_voices()
 
 
 # ── Signal handlers ────────────────────────────────────────────
@@ -191,6 +194,7 @@ func _setup_llm_pipeline() -> void:
 func _on_story_loaded(success: bool, error_message: String) -> void:
 	if success:
 		_reload_clue_definitions()
+		_setup_speaker_voices()
 		_set_input_enabled(true)
 	else:
 		_show_error("Error: %s" % error_message)
@@ -566,6 +570,22 @@ func _set_input_enabled(enabled: bool) -> void:
 		_npc_chat_panel.set_input_enabled(enabled)
 	else:
 		pass  # dialogue box has no input in explore mode
+
+
+# ── Speaker Voice Setup ──────────────────────────────────────────
+
+func _setup_speaker_voices() -> void:
+	_voice_generator.clear_speaker_voices()
+	var characters = _scene_manager.get_characters()
+	for character_id in characters:
+		var character = characters[character_id]
+		if character is Dictionary:
+			var name = character.get("name", character_id)
+			var voice = character.get("voice", "")
+			if not voice.is_empty():
+				_voice_generator.set_speaker_voice(name, voice)
+				# Also map by character id in case dialogue uses it
+				_voice_generator.set_speaker_voice(character_id, voice)
 
 
 # ── Audio ───────────────────────────────────────────────────────

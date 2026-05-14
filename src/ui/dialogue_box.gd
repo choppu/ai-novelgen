@@ -202,7 +202,7 @@ func _input(event: InputEvent) -> void:
 	if _is_advance_event(event):
 		if _is_typing:
 			finish_typing()
-		elif _dialogue_state_is_idle():
+		else:
 			advance_requested.emit()
 
 
@@ -213,8 +213,3 @@ func _is_advance_event(event: InputEvent) -> bool:
 		if event.keycode == KEY_SPACE or event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
 			return true
 	return false
-
-
-## Whether the box is waiting for the player to advance (typewriter done, continue blinking).
-func _dialogue_state_is_idle() -> bool:
-	return not _is_typing and _continue_indicator.visible

@@ -51,6 +51,7 @@
   "characters": {
     "Guard": {
       "name": "John Lonewood",
+      "voice": "am_michael",
       "appearance": "A weathered man in a dark uniform, cap pulled low over tired eyes. A scar runs along his jawline. He carries himself with the tension of someone who has been waiting for trouble.",
       "background": "Former estate servant who stayed on as a night guard after the master of the house disappeared. He knows more about what happened than he lets on. He was loyal to Archer Fleming, who confided in him before vanishing.",
       "temperament": "Suspicious, cautious, and guarded with strangers. Slow to trust but deeply loyal once he does. Speaks in short, measured sentences. Has a dry, understated wit that emerges only when comfortable.",
@@ -63,6 +64,7 @@
     },
     "Librarian": {
       "name": "Mrs. Whitmore",
+      "voice": "af_nova",
       "appearance": "An elderly woman with silver hair pinned severely at the back. She wears spectacles on a chain and moves through the library shelves with the unhurried grace of someone who belongs among the books. Her fingers are always stained with ink.",
       "background": "The manor's librarian for over forty years. She has tended every book in this collection and knows their secrets. A.F. was her closest friend and confidant — she was devastated when A.F. disappeared and has been secretly searching for answers ever since.",
       "temperament": "Patient and scholarly, with a gentle warmth that belies a steel resolve. She speaks formally but kindly. She has little patience for foolishness but great patience for genuine curiosity. She values trust above all else.",
@@ -74,6 +76,7 @@
     },
     "A.F.": {
       "name": "Archer Fleming",
+      "voice": "am_eric",
       "appearance": "A man in his late forties with sharp features and intense eyes. He dressed in fine but practical clothing. A silver pocket watch hangs from his waistcoat — the same one seen in the photograph.",
       "background": "The master of Blackwood Manor. A.F. discovered a family secret decades old — one connected to the manor's original owners and a hidden ledger of wrongdoing. He was close to uncovering the truth when he vanished three nights ago. He sent the letter to the player, whom he believed could finish what he started. Whether he is alive or dead remains unknown.",
       "temperament": "Intelligent, driven, and methodical. He speaks with precision and conviction. When discussing the secret, his words carry urgency and fear. He trusts few people and those he does trust, he trusts completely.",

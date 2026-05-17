@@ -137,6 +137,7 @@ func _setup_scene_manager() -> void:
 	_scene_manager = _SceneManagerScript.new()
 	_scene_manager.scene_changed.connect(_on_scene_changed)
 	_scene_manager.story_loaded.connect(_on_story_loaded)
+	_scene_manager.return_to_title_requested.connect(_on_return_to_title)
 
 
 func _load_story() -> void:
@@ -205,6 +206,14 @@ func _on_text_finished() -> void:
 	# Typewriter finished — transition controller state from typing → idle
 	if _dialogue_state == "typing":
 		_dialogue_state = "idle"
+
+
+func _on_return_to_title() -> void:
+	# Stop any in-progress voice generation
+	if _voice_generator:
+		_voice_generator.clear()
+	# Reload the main scene to reset to title/start
+	get_tree().reload_current_scene()
 
 
 func _on_scene_changed(_scene_id: String, scene_data: Dictionary) -> void:
@@ -585,10 +594,10 @@ func _setup_speaker_voices() -> void:
 	for character_id in characters:
 		var character = characters[character_id]
 		if character is Dictionary:
-			var name = character.get("name", character_id)
+			var char_name = character.get("name", character_id)
 			var voice = character.get("voice", "")
 			if not voice.is_empty():
-				_voice_generator.set_speaker_voice(name, voice)
+				_voice_generator.set_speaker_voice(char_name, voice)
 				# Also map by character id in case dialogue uses it
 				_voice_generator.set_speaker_voice(character_id, voice)
 

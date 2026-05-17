@@ -11,6 +11,9 @@ signal story_loaded(success: bool, error_message: String)
 ## Emitted after a successful scene transition.
 signal scene_changed(scene_id: String, scene_data: Dictionary)
 
+## Emitted when a choice targets __return_to_title__.
+signal return_to_title_requested
+
 
 var _story_data: Dictionary = {}
 var _scenes: Dictionary = {}
@@ -103,6 +106,11 @@ func load_story(path: String) -> bool:
 ## Enter a scene by ID. Validates existence, applies on_enter state changes,
 ## updates GameState, and emits scene_changed.
 func enter_scene(scene_id: String) -> bool:
+	# Handle special targets
+	if scene_id == "__return_to_title__":
+		return_to_title_requested.emit()
+		return true
+
 	if not _scenes.has(scene_id):
 		push_warning("Scene not found: %s" % scene_id)
 		return false

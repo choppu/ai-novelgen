@@ -144,7 +144,7 @@ func _build_dialogue_panel() -> void:
 	var text_margin = MarginContainer.new()
 	text_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	text_margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	text_margin.add_theme_constant_override("margin_right", 12)
+	text_margin.add_theme_constant_override("margin_right", 40)
 	hbox.add_child(text_margin)
 
 	_text_label = Label.new()

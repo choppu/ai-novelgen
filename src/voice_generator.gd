@@ -29,11 +29,17 @@ var _queue: Array[Dictionary] = []
 var _is_processing: bool = false
 var _is_generating: bool = false
 
+## Monotonically increasing counter to identify the current generation request.
+## Stale async TTS responses are discarded when this changes.
+var _current_generation_id: int = 0
+
+## Generation id of the last _generate() call, used to detect stale responses.
+var _last_gen_id: int = 0
+
 
 func _ready() -> void:
 	_voice_player = AudioStreamPlayer.new()
 	_voice_player.bus = "SFX"
-	_voice_player.volume_db = _db_from_linear(0.9)  # slightly quieter than SFX default
 	add_child(_voice_player)
 	_voice_player.finished.connect(_on_voice_finished)
 
@@ -65,6 +71,8 @@ func clear() -> void:
 	_is_processing = false
 	_is_generating = false
 	_voice_player.stop()
+	# Increment generation id so any in-flight TTS response is discarded
+	_current_generation_id += 1
 
 
 ## Check if the voice system is currently active.
@@ -90,12 +98,23 @@ func _generate(item: Dictionary) -> void:
 		return
 
 	_is_generating = true
+	# Advance generation id so this request can be matched against stale responses
+	_current_generation_id += 1
+	var gen_id = _current_generation_id
 	generation_started.emit()
 	_http_client.generate_speech(item.get("text", ""), item.get("voice", ""))
+	# Store gen_id on self so _on_speech_generated can check it
+	_last_gen_id = gen_id
 
 
 func _on_speech_generated(audio_buffer: PackedByteArray, error: String) -> void:
 	_is_generating = false
+
+	# Discard stale TTS responses (text was skipped before generation completed)
+	if _last_gen_id != _current_generation_id:
+		_is_processing = false
+		_process_queue()
+		return
 
 	if not error.is_empty():
 		push_warning("[VoiceGenerator] TTS failed: %s" % error)
@@ -111,11 +130,18 @@ func _on_speech_generated(audio_buffer: PackedByteArray, error: String) -> void:
 		_process_queue()
 		return
 
-	call_deferred("_play_audio", audio_buffer)
+	# Pass gen_id to deferred call so it can be re-checked at play time
+	call_deferred("_play_audio", audio_buffer, _last_gen_id)
 	generation_finished.emit(true)
 
 
-func _play_audio(audio_buffer: PackedByteArray) -> void:
+func _play_audio(audio_buffer: PackedByteArray, gen_id: int = -1) -> void:
+	# Re-check generation id in case clear() was called between callback and deferred play
+	if gen_id >= 0 and gen_id != _current_generation_id:
+		_is_processing = false
+		_process_queue()
+		return
+
 	var stream = _load_stream(audio_buffer)
 	if stream == null:
 		push_warning("[VoiceGenerator] Failed to load audio buffer")
@@ -124,6 +150,7 @@ func _play_audio(audio_buffer: PackedByteArray) -> void:
 		return
 
 	_voice_player.stream = stream
+	_voice_player.volume_db = _db_from_linear(SoundManager.voice_volume)
 	_voice_player.play()
 
 

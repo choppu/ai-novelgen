@@ -258,7 +258,7 @@
     "street_approach": {
       "background": "backgrounds/street_approach.png",
       "music": "music/neighborhood_walk.mp3",
-      "sfx": ["sfx/footsteps_outdoor.mp3", "sfx/wind_ambient.wav", "sfx/train_distant.mp3"],
+      "sfx": ["sfx/footsteps_outdoor.mp3", "sfx/wind_ambient.mp3"],
       "characters": [],
       "dialogue": [
         {"speaker": "", "text": "You walk down a narrow street in a fading neighborhood of Tokyo. Autumn leaves scatter across the sidewalk in shades of amber and rust. The air smells of roasted chestnuts and damp stone. On either side, old wooden buildings lean toward each other like tired friends."},

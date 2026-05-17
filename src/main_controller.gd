@@ -312,6 +312,10 @@ func _on_chat_message_sent(text: String) -> void:
 
 
 func _process_player_input(text: String) -> void:
+	# Cancel any in-progress TTS from the previous response
+	if _voice_generator:
+		_voice_generator.clear()
+
 	# Add player message to chat
 	_npc_chat_panel.append_message("You", text, true)
 	_npc_chat_panel.clear_input()
@@ -413,6 +417,9 @@ func _show_current_line() -> void:
 	# Set speaker name
 	_dialogue_box.set_speaker(speaker, speaker == "You")
 
+	# ── Voice: cancel any in-progress TTS from the previous line ──
+	_voice_generator.clear()
+
 	# ── Voice: generate TTS for NPC lines ──
 	if not speaker.is_empty() and speaker != "You":
 		_voice_generator.generate_and_play(text, speaker)
@@ -438,6 +445,8 @@ func _advance_dialogue() -> void:
 	_current_line_index += 1
 	if _current_line_index >= _dialogue_queue.size():
 		# All dialogue lines done
+		if _voice_generator:
+			_voice_generator.clear()
 		_dialogue_state = "choices"
 		_dialogue_box.hide_box()
 		_show_choices()

@@ -12,15 +12,15 @@ extends RefCounted
 ## Positive = the NPC feels better about the player.
 ## Negative = the NPC feels worse about the player.
 const STATE_VALUES: Dictionary = {
-	"curious":    1,
-	"suspicious": -2,
-	"nervous":   -1,
-	"defensive": -2,
+	"curious":    2,
+	"suspicious": -1,
+	"nervous":    0,
+	"defensive":  0,
 	"helpful":    3,
-	"evasive":    0,
-	"angry":     -4,
-	"sad":       -1,
-	"neutral":    0,
+	"evasive":    1,
+	"angry":     -3,
+	"sad":        0,
+	"neutral":    1,
 	"flattered":  4,
 	"happy":      3,
 	"friendly":   3,

@@ -34,8 +34,9 @@ var _is_fading: bool = false
 
 # Volume settings (0.0–1.0)
 var master_volume: float = 1.0
-var bgm_volume: float = 0.7
-var sfx_volume: float = 0.8
+var bgm_volume: float = 0.2
+var sfx_volume: float = 0.7
+var voice_volume: float = 0.9
 
 # Crossfade duration in seconds
 var crossfade_duration: float = 1.5
@@ -109,6 +110,7 @@ func play_bgm(path: String) -> void:
 	else:
 		# No current track — just play
 		_bgm_player.stream = _enable_loop(stream)
+		_bgm_player.volume_db = _db_from_linear(bgm_volume)
 		_bgm_player.play()
 		_current_bgm_path = path
 
@@ -127,7 +129,7 @@ func fade_out_bgm(duration: float = 1.0) -> void:
 	var tween = create_tween()
 	tween.tween_property(_bgm_player, "volume_db", -80.0, duration)
 	tween.tween_callback(_bgm_player.stop)
-	_bgm_player.volume_db = _db_from_linear(bgm_volume * master_volume)
+	_bgm_player.volume_db = _db_from_linear(bgm_volume)
 	_current_bgm_path = ""
 
 
@@ -149,9 +151,9 @@ func _crossfade_bgm(new_stream: AudioStream, new_path: String) -> void:
 	# Fade out current track
 	tween.parallel().tween_property(_bgm_player, "volume_db", -80.0, crossfade_duration)
 
-	# Fade in new track
+	# Fade in new track (master applied by BGM bus)
 	tween.parallel().tween_property(_bgm_fade_player, "volume_db",
-		_db_from_linear(bgm_volume * master_volume), crossfade_duration)
+		_db_from_linear(bgm_volume), crossfade_duration)
 
 	# When fade completes, swap players
 	tween.tween_callback(_on_crossfade_complete.bind(new_path))
@@ -160,7 +162,7 @@ func _crossfade_bgm(new_stream: AudioStream, new_path: String) -> void:
 func _on_crossfade_complete(new_path: String) -> void:
 	_bgm_player.stop()
 	_bgm_player.stream = _bgm_fade_player.stream
-	_bgm_player.volume_db = _db_from_linear(bgm_volume * master_volume)
+	_bgm_player.volume_db = _db_from_linear(bgm_volume)
 	_bgm_player.play()
 
 	_bgm_fade_player.stop()
@@ -182,14 +184,14 @@ func play_sfx(path: String) -> AudioStreamPlayer:
 	for player in _sfx_pool:
 		if not player.playing:
 			player.stream = stream
-			player.volume_db = _db_from_linear(sfx_volume * master_volume)
+			player.volume_db = _db_from_linear(sfx_volume)
 			player.play()
 			return player
 
 	# All voices busy — steal the first one
 	var player = _sfx_pool[0]
 	player.stream = stream
-	player.volume_db = _db_from_linear(sfx_volume * master_volume)
+	player.volume_db = _db_from_linear(sfx_volume)
 	player.play()
 	return player
 
@@ -203,7 +205,7 @@ func play_sfx_volumes(path: String, volume: float) -> AudioStreamPlayer:
 	for player in _sfx_pool:
 		if not player.playing:
 			player.stream = stream
-			player.volume_db = _db_from_linear(volume * master_volume)
+			player.volume_db = _db_from_linear(volume)
 			player.play()
 			return player
 
@@ -227,16 +229,26 @@ func set_sfx_volume(value: float) -> void:
 	_apply_volume()
 
 
+func set_voice_volume(value: float) -> void:
+	voice_volume = clampf(value, 0.0, 1.0)
+
+
 func _apply_volume() -> void:
-	var bgm_db = _db_from_linear(bgm_volume * master_volume)
+	# Player volumes = category volume only (master applied by bus)
+	var bgm_db = _db_from_linear(bgm_volume)
+	var sfx_db = _db_from_linear(sfx_volume)
 
 	if _bgm_player:
-		if not _bgm_player.playing:
-			_bgm_player.volume_db = bgm_db
+		_bgm_player.volume_db = bgm_db
 	if _bgm_fade_player:
-		if not _bgm_fade_player.playing or _is_fading:
-			pass  # Let tweens control during crossfade
-	# Update bus volumes for any currently playing sounds
+		if not _is_fading:
+			_bgm_fade_player.volume_db = bgm_db
+
+	# Update all SFX pool players (including those currently playing)
+	for player in _sfx_pool:
+		player.volume_db = sfx_db
+
+	# Master volume applied at bus level — no double-application
 	var bgm_bus = AudioServer.get_bus_index(BUS_BGM)
 	if bgm_bus != -1:
 		AudioServer.set_bus_volume_db(bgm_bus, _db_from_linear(master_volume))

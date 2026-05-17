@@ -2,7 +2,8 @@
 ##
 ## A standalone label that blinks on/off at a configurable interval.
 ## Drop it into any container next to dialogue text. Always reserves its
-## fixed width so sibling text never overlaps it.
+## fixed width so sibling text never reflows around it — the indicator
+## fades via alpha instead of toggling visibility, keeping layout stable.
 ##
 ## Usage:
 ##   var indicator = ContinueIndicator.new()
@@ -26,7 +27,7 @@ func _ready() -> void:
 	horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	custom_minimum_size = _MIN_SIZE
-	visible = false
+	modulate.a = 0.0
 
 	add_theme_color_override("font_color", VNTheme.get_text_color())
 	add_theme_font_override("font", VNTheme.get_font_dialogue())
@@ -43,17 +44,17 @@ func _ready() -> void:
 
 ## Start the blinking animation.
 func start_blinking() -> void:
-	visible = true
+	modulate.a = 1.0
 	_blink_timer.start()
 
 
-## Stop blinking and hide the indicator (space is still reserved).
+## Stop blinking and fade out the indicator (space is still reserved).
 func stop_blinking() -> void:
 	_blink_timer.stop()
-	visible = false
+	modulate.a = 0.0
 
 
 # ── Timer callback ──────────────────────────────────────────────
 
 func _on_blink_tick() -> void:
-	visible = not visible
+	modulate.a = 1.0 if modulate.a == 0.0 else 0.0

@@ -1,4 +1,11 @@
 {
+  "fonts": {
+    "dialogue":  "fonts/Lecta.otf",
+    "name":      "fonts/Lecta.otf",
+    "choice":    "fonts/Lecta.otf",
+    "narration": "fonts/Lecta.otf"
+  },
+
   "colors": {
     "bg":           [0.01, 0.01, 0.01, 1.0],
     "text":         [0.95, 0.95, 0.92, 1.0],
@@ -24,12 +31,12 @@
   },
 
   "typography": {
-    "font_size_name":      44,
-    "font_size_dialogue":  38,
-    "font_size_description": 38,
-    "font_size_choice":    32,
-    "font_size_error":     30,
-    "font_size_continue":  32
+    "font_size_name":      30,
+    "font_size_dialogue":  28,
+    "font_size_description": 28,
+    "font_size_choice":    24,
+    "font_size_error":     24,
+    "font_size_continue":  24
   },
 
   "timing": {

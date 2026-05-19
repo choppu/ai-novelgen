@@ -1,13 +1,17 @@
 ## FontLoader — Loads story-specific fonts and provides them to UI components.
 ##
-## Autoloaded as "FontLoader". Scans the fonts folder of the current story
-## and loads all font files (.otf, .ttf, .ttc).
+## Autoloaded as "FontLoader". Fonts are loaded in two ways (in order):
+##   1. From the "fonts" section of `styles.json` (explicit key → path mapping)
+##   2. By scanning the story's `fonts/` directory (backward compat, auto-assigned)
 ##
 ## Fonts are stored in a dictionary keyed by a logical name:
 ##   - "dialogue"  → primary font for dialogue and body text
 ##   - "name"      → font for speaker names (may be italic or bold variant)
 ##   - "choice"    → font for choice buttons
 ##   - "narration" → font for narration text
+##
+## `styles.json` "fonts" section format (paths relative to story folder):
+##   { "dialogue": "fonts/MyFont.otf", "name": "fonts/MyFont-Bold.otf" }
 ##
 ## If no story-specific font is found, falls back to ThemeDB.fallback_font.
 ##
@@ -36,6 +40,7 @@ func _ready() -> void:
 
 
 ## Load fonts from the current story's fonts folder.
+## Tries styles.json "fonts" section first, then falls back to directory scan.
 func _load_story_fonts() -> void:
 	var story_name := GameConfig.get_current_story()
 	if story_name.is_empty():
@@ -43,6 +48,15 @@ func _load_story_fonts() -> void:
 		_fonts = _make_fallback_fonts()
 		return
 
+	# Try loading from styles.json "fonts" section first
+	_fonts = _load_fonts_from_styles(story_name)
+	if not _fonts.is_empty():
+		print("[FontLoader] Loaded fonts for story '%s' from styles.json:" % story_name)
+		for key in _fonts:
+			print("  - %s: %s" % [key, _fonts[key].resource_path])
+		return
+
+	# Fall back to directory scan
 	var fonts_dir := "res://stories/%s/fonts/" % story_name
 	_fonts = _load_fonts_from_dir(fonts_dir)
 
@@ -98,6 +112,37 @@ func _load_font_file(path: String) -> FontFile:
 	if font is FontFile:
 		return font
 	return null
+
+## Load fonts from the "fonts" section of styles.json.
+## Expects a dictionary like { "dialogue": "fonts/MyFont.otf", ... }.
+## Paths are relative to the story folder.
+func _load_fonts_from_styles(story_name: String) -> Dictionary:
+	var result: Dictionary = {}
+	var styles_path := "res://stories/%s/styles.json" % story_name
+	var file: FileAccess = FileAccess.open(styles_path, FileAccess.READ)
+	if file == null:
+		return result
+
+	var raw: String = file.get_as_text()
+	file.close()
+
+	var parse_result: Variant = JSON.parse_string(raw)
+	if parse_result is Dictionary:
+		var data: Dictionary = parse_result as Dictionary
+		var fonts_section: Variant = data.get("fonts")
+		if fonts_section is Dictionary:
+			var story_root := "res://stories/%s/" % story_name
+			for key in fonts_section:
+				var relative_path: String = str(fonts_section[key])
+				var full_path := story_root + relative_path
+				var font_file: FontFile = _load_font_file(full_path)
+				if font_file != null:
+					result[key] = font_file
+					print("[FontLoader] Mapped '%s' → %s" % [key, full_path])
+				else:
+					printerr("[FontLoader] Failed to load font at %s for key '%s'" % [full_path, key])
+
+	return result
 
 
 ## Create a fallback font dictionary using the system fallback font.

@@ -39,11 +39,12 @@ func _ensure_loaded() -> void:
 
 	_loaded = true
 
-	# Determine story name
+	# Determine story name (GameConfig is an autoload, accessed as a global symbol)
 	var story_name := ""
-	if Engine.has_singleton("GameConfig"):
-		var gc: Variant = Engine.get_singleton("GameConfig")
-		story_name = gc.get_current_story()
+	# Autoloads are global symbols in Godot — access directly.
+	# Use a try-pattern via variant check for safety if loaded before autoloads are ready.
+	if GameConfig != null:
+		story_name = GameConfig.get_current_story()
 
 	if story_name.is_empty():
 		print("[StoryStyle] No story configured — using defaults.")
@@ -140,6 +141,8 @@ func _get_int(key: String, default: int = 0) -> int:
 	var v: Variant = _get_typography().get(key)
 	if v is int:
 		return v
+	if v is float:
+		return int(v)
 	return default
 
 

@@ -19,6 +19,7 @@ var _story_data: Dictionary = {}
 var _scenes: Dictionary = {}
 var _clues: Dictionary = {}  # clue_id → clue definition dict
 var _characters: Dictionary = {}  # npc_name → character card dict
+var _sprites_data: Dictionary = {}  # top-level sprites config from story.json
 
 
 ## Load a story from a JSON file path.
@@ -67,6 +68,12 @@ func load_story(path: String) -> bool:
 	if characters_raw is Dictionary:
 		_characters = characters_raw
 		print("Loaded %d character definitions" % _characters.size())
+
+	# Register sprites config (default_moods, etc.)
+	_sprites_data.clear()
+	var sprites_raw = _story_data.get("sprites", {})
+	if sprites_raw is Dictionary:
+		_sprites_data = sprites_raw
 
 	# Load audio event mappings from story config
 	var audio_config = _story_data.get("audio", {})
@@ -223,3 +230,45 @@ func get_character(npc_name: String) -> Dictionary:
 ## Get all character cards.
 func get_characters() -> Dictionary:
 	return _characters.duplicate()
+
+## Get the top-level sprites config from story.json.
+## Returns {"default_moods": {"Haruka": "neutral", ...}, ...}
+func get_sprites_data() -> Dictionary:
+	return _sprites_data.duplicate()
+
+## Get the default mood for a character from story.json sprites.default_moods.
+func get_default_mood(character_id: String) -> String:
+	var default_moods = _sprites_data.get("default_moods", {})
+	if default_moods is Dictionary:
+		return default_moods.get(character_id, "neutral")
+	return "neutral"
+
+## Get the scene-level mood override for a character in the current scene.
+## Scenes can define `scene_moods: {"Haruka": "surprised"}` to override defaults.
+## Returns empty string if no override is set for this character.
+func get_scene_character_mood(character_id: String) -> String:
+	var scene_data = get_current_scene()
+	var scene_moods = scene_data.get("scene_moods", {})
+	if scene_moods is Dictionary:
+		var mood = scene_moods.get(character_id, "")
+		if mood is String:
+			return mood
+	return ""
+
+## Get the characters present in the current scene, normalizing
+## both string entries ("Haruka") and dict entries ({"id": "Haruka", "mood": "surprised"}).
+## Returns Array[Dictionary] of {"id": String, "mood": String}.
+func get_scene_characters() -> Array[Dictionary]:
+	var scene_data = get_current_scene()
+	var raw_characters = scene_data.get("characters", [])
+	var result: Array[Dictionary] = []
+	if raw_characters is Array:
+		for entry in raw_characters:
+			if entry is String:
+				result.append({"id": entry, "mood": ""})
+			elif entry is Dictionary:
+				var id = entry.get("id", "")
+				var mood = entry.get("mood", "")
+				if not id.is_empty():
+					result.append({"id": id, "mood": mood})
+	return result

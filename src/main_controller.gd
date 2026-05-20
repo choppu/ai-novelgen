@@ -13,6 +13,7 @@ extends Control
 
 ## ── UI Components ──────────────────────────────────────────────
 var _background: BackgroundRect
+var _character_sprite: CharacterSprite
 var _description_flash: DescriptionFlash
 var _dialogue_box: DialogueBox
 var _npc_chat_panel: NpcChatPanel
@@ -70,6 +71,7 @@ const _VoiceGeneratorScript = preload("res://src/voice_generator.gd")
 
 ## Preload UI components
 const _BackgroundRectScript := preload("res://src/ui/background_rect.gd")
+const _CharacterSpriteScript := preload("res://src/ui/character_sprite.gd")
 const _DescriptionFlashScript := preload("res://src/ui/description_flash.gd")
 const _DialogueBoxScript := preload("res://src/ui/dialogue_box.gd")
 const _ChoiceOverlayScript := preload("res://src/ui/choice_overlay.gd")
@@ -100,6 +102,10 @@ func _create_ui() -> void:
 	# Scene background image (on top of solid bg, behind UI)
 	_background = _BackgroundRectScript.new()
 	add_child(_background)
+
+	# Character sprite (above dialogue box, fades in/out per speaker)
+	_character_sprite = _CharacterSpriteScript.new()
+	add_child(_character_sprite)
 
 	# Scene description flash (top center, auto-fades)
 	_description_flash = _DescriptionFlashScript.new()
@@ -196,6 +202,7 @@ func _on_story_loaded(success: bool, error_message: String) -> void:
 	if success:
 		_reload_clue_definitions()
 		_setup_speaker_voices()
+		_setup_sprite_defaults()
 		_set_input_enabled(true)
 	else:
 		_show_error("Error: %s" % error_message)
@@ -232,6 +239,10 @@ func _on_scene_changed(_scene_id: String, scene_data: Dictionary) -> void:
 
 	# ── Audio: scene music + SFX ──
 	_play_scene_audio(scene_data)
+
+	# ── Hide sprite on scene change (will be shown by first speaker) ──
+	if not exited_dialogue:
+		_character_sprite.hide_character()
 
 	if not exited_dialogue:
 		_display_scene(scene_data)
@@ -417,6 +428,9 @@ func _show_current_line() -> void:
 	# Set speaker name
 	_dialogue_box.set_speaker(speaker, speaker == "You")
 
+	# ── Character sprite ──
+	_update_character_sprite(speaker)
+
 	# ── Voice: cancel any in-progress TTS from the previous line ──
 	_voice_generator.clear()
 
@@ -449,6 +463,7 @@ func _advance_dialogue() -> void:
 			_voice_generator.clear()
 		_dialogue_state = "choices"
 		_dialogue_box.hide_box()
+		_character_sprite.hide_character()
 		_show_choices()
 		return
 
@@ -467,12 +482,12 @@ func _show_choices() -> void:
 		return
 
 	# Explore mode: synthesize "Talk to NPC" + story choices
-	var scene_data = _scene_manager.get_current_scene()
-	var characters = scene_data.get("characters", [])
+	var scene_characters = _scene_manager.get_scene_characters()
 	var has_any_choice = false
 
-	if characters is Array:
-		for npc_name in characters:
+	for char_entry in scene_characters:
+		var npc_name = char_entry.get("id", "")
+		if not npc_name.is_empty():
 			var talk_choice = {
 				"id": "__talk_to__",
 				"label": "Talk to %s" % npc_name,
@@ -508,12 +523,27 @@ func _on_choice_pressed(choice_id: String, npc_name: String) -> void:
 
 # ── Explore / Dialogue Mode ────────────────────────────────────
 
+## Update the character sprite based on the current speaker.
+## Shows the sprite for NPC speakers, hides it for narration.
+## Uses scene-level mood override if set, otherwise falls back to story default.
+func _update_character_sprite(speaker: String) -> void:
+	if speaker.is_empty() or speaker == "You":
+		_character_sprite.hide_character()
+	else:
+		var sprite_config = _get_sprite_config(speaker)
+		var mood = _get_character_mood(speaker)
+		_character_sprite.show_character(speaker, mood, sprite_config)
+
+
 func _display_explore_mode() -> void:
-	pass
+	_character_sprite.hide_character()
 
 
 func _display_dialogue_mode() -> void:
 	_npc_chat_panel.show_panel()
+	var sprite_config = _get_sprite_config(_dialogue_npc)
+	var mood = _get_character_mood(_dialogue_npc)
+	_character_sprite.show_character(_dialogue_npc, mood, sprite_config)
 	# Populate chat with scene dialogue from this NPC
 	var scene_data = _scene_manager.get_current_scene()
 	var dialogue = scene_data.get("dialogue", [])
@@ -550,6 +580,7 @@ func _exit_dialogue_mode() -> void:
 
 	_npc_chat_panel.hide_panel()
 	_npc_chat_panel.clear_messages()
+	_character_sprite.hide_character()
 
 	# Stop any in-progress voice generation
 	if _voice_generator:
@@ -647,3 +678,30 @@ func _load_background(scene_data: Dictionary) -> void:
 			_background.hide_background()
 	else:
 		_background.hide_background()
+
+
+## Get sprite config dict for a character from story.json.
+## Returns {"offset_x": int, "offset_y": int, "flip_h": bool} or empty dict.
+func _get_sprite_config(npc_name: String) -> Dictionary:
+	var character_data = _scene_manager.get_character(npc_name)
+	var sprite_data = character_data.get("sprite", {})
+	if sprite_data is Dictionary and not sprite_data.is_empty():
+		return sprite_data
+	return {}
+
+## Get the effective mood for a character in the current scene.
+## Priority: scene_moods override > story default_moods > "neutral".
+func _get_character_mood(character_id: String) -> String:
+	# Scene-level override takes priority
+	var scene_mood = _scene_manager.get_scene_character_mood(character_id)
+	if not scene_mood.is_empty():
+		return scene_mood
+	# Fall back to story-level default
+	return _scene_manager.get_default_mood(character_id)
+
+## Load sprite defaults from story.json into the sprite renderer.
+func _setup_sprite_defaults() -> void:
+	var sprites_data = _scene_manager.get_sprites_data()
+	var default_moods = sprites_data.get("default_moods", {})
+	if default_moods is Dictionary and not default_moods.is_empty():
+		_character_sprite.set_default_moods(default_moods)

@@ -26,9 +26,17 @@
     "darkroom_agitate": "sfx/darkroom_agitate.wav",
     "chemical_pour": "sfx/chemical_pour.mp3",
     "paper_rustle": "sfx/paper_rustle.mp3",
-    "wind_ambient": "sfx/wind_ambient.wav",
+    "wind_ambient": "sfx/wind_ambient.mp3",
     "train_distant": "sfx/train_distant.mp3",
     "cat_meow": "sfx/cat_meow.mp3"
+  },
+  "sprites": {
+    "default_moods": {
+      "Haruka": "neutral",
+      "Kenji": "determined",
+      "Obasan": "side",
+      "Yuki": "neutral"
+    }
   },
   "flags": {
     "knows_last_assignment": { "initial": false },
@@ -55,10 +63,15 @@
   "characters": {
     "Haruka": {
       "name": "Haruka (春香)",
-      "voice": "af_nova",
+      "voice": "af_heart",
+      "sprite": {
+        "offset_x": 40,
+        "offset_y": -20,
+        "flip_h": true
+      },
       "appearance": "A woman in her late twenties with dark hair pulled back in a simple ponytail. She wears a dark apron over a white shirt, the fabric stained with developer chemicals — cyanotype blue and silver nitrate brown. Her hands are always moving: adjusting a lens cap, organizing contact sheets, wiping a developing tray. Her eyes are tired but alert, the kind of tired that comes from surviving on coffee and determination. There's a small cut on her left thumb, freshly bandaged.",
       "background": "Haruka has worked as Yuki's assistant for three years. She came to the studio as a photography student struggling to find her voice, and Yuki saw something in her work that no one else did — a patience, an eye for the quiet moments that others rush past. She admires Yuki's talent fiercely but has always worried about his obsession with the 'perfect shot.' When Yuki disappeared three weeks ago, she refused to let anyone touch the studio, convinced that Yuki would return. She's been developing Yuki's last roll of film in secret, and the images have haunted her ever since. She hasn't slept properly since.",
-      "temperament": "Quiet and meticulous, with a dry wit that emerges only when she's comfortable. She speaks softly but with precision — every word chosen carefully, like framing a photograph. She's deeply loyal to Yuki and fiercely defensive about their work. She values honesty above all else, which makes her current situation unbearable: she knows things she can't tell anyone, and the silence is eating her alive. When she's anxious, she fiddles with her apron strings.",
+      "temperament": "Quiet and meticulous. She speaks softly and friendly. She's deeply loyal to Yuki and fiercely defensive about their work. She values honesty above all else, which makes her current situation unbearable: she knows things she can't tell anyone, and the silence is eating her alive. When she's anxious, she fiddles with her apron strings.",
       "mood": "Extremely gentle and kind person, but recently anxious and a bit exhausted, holding herself together by sheer will. She wants desperately to believe Yuki will return, but she knows that hope is a luxury she can't afford. She's been talking to photographs instead of people, and she knows it's not healthy. She's looking for someone — anyone — who can help her make sense of what's happened.",
       "can_reveal": [
         "yuki_last_assignment",
@@ -73,6 +86,11 @@
     "Kenji": {
       "name": "Kenji (健二)",
       "voice": "am_michael",
+      "sprite": {
+        "offset_x": 0,
+        "offset_y": 0,
+        "flip_h": false
+      },
       "appearance": "A man in his early thirties with short dark hair that's grown out a little too long. He wears a rumpled navy suit that's seen better days — the kind of suit you wear to jobs you can't afford to lose. His eyes are intelligent but shadowed with fatigue, and there's a nervous energy to his movements: tapping his fingers, shifting his weight, glancing at the door. He carries a leather satchel crammed with notebooks, press passes, and half-finished articles. A coffee stain marks the left breast pocket.",
       "background": "Kenji is a freelance journalist who has been publishing Yuki's photographs for years — street scenes, neighborhood portraits, the kind of work that gives a voice to the parts of the city most people walk right past. Their relationship was professional but warm: he used to bring Yuki coffee when he was developing late into the night, and they'd talk about composition and light until dawn. He was the last person to see Yuki alive, three weeks ago. They had an argument that Kenji won't discuss with anyone. He's been carrying guilt and fear ever since, and he's been secretly investigating what happened — not out of professional duty, but because he owes Yuki more than that.",
       "temperament": "Charming and articulate, with a natural ability to make people comfortable — years of journalism have taught him how to read a room. But there's a hardness underneath, a defensive shell built from years of rejection and near-poverty. He's ambitious and knows how to play people, but he's not cruel. He genuinely cares about Yuki and the truth. When he's uncomfortable, he smiles too much.",
@@ -85,6 +103,11 @@
     "Yuki": {
       "name": "Yuki (優希)",
       "voice": "am_giovanni",
+      "sprite": {
+        "offset_x": 0,
+        "offset_y": 0,
+        "flip_h": true
+      },
       "appearance": "A man in his late twenties with sharp, angular features softened by an almost perpetual half-smile. His hair is dark and slightly overgrown — three weeks without a trim, the edges curling at the nape of his neck. His face is thinner than it should be, the cheekbones more pronounced, the skin paler from weeks in the darkroom's red light. But his eyes are the same: bright, curious, the eyes of someone who has spent a lifetime looking at the world through a viewfinder and seeing more than anyone else. He wears a dark t-shirt stained with developer chemicals, the fabric soft from repeated washing. His hands are calloused from camera work, the fingertips marked with small nicks from handling film.",
       "background": "Yuki Sato is a photographer whose work has been featured in galleries and magazines across Japan. But he never cared about fame — he cared about truth. His photography has always been about the people and places the city forgets: the old woman who runs the corner shop, the stray cat that sleeps on the same bench every day, the crack in the sidewalk where a flower has somehow taken root. Three weeks ago, he discovered a pattern in his photographs — people entering a building in Shinjuku who never came out during the day. He started photographing the building obsessively, building a visual case against whatever was happening inside. The last photograph he took showed a man in a dark suit looking directly at the camera — a man who shouldn't have been able to see the lens from two blocks away. That photograph changed everything. Yuki knew he was in danger, so he went underground — into the darkroom, into the dark, into the only place he knew how to survive.",
       "temperament": "Intense and focused, with a quiet intensity that makes people lean in when he speaks. He's not a loud person, but he's never quiet — there's always a current of thought behind his eyes, always a question he's working through. He speaks carefully, choosing his words the way he chooses his compositions: every element deliberate, every angle considered. He's deeply principled, almost to a fault — he will not compromise his vision, his subjects, or his truth. When he's afraid, he works harder. When he's angry, he gets quieter. When he's happy, he shares his photographs with you and lets you see the world through his lens.",
@@ -98,7 +121,12 @@
     },
     "Obasan": {
       "name": "Obāsan (おばさん)",
-      "voice": "af_bella",
+      "voice": "af_nicole.5+af_kore.4",
+      "sprite": {
+        "offset_x": 40,
+        "offset_y": -20,
+        "flip_h": true
+      },
       "appearance": "An elderly woman in her late seventies with silver hair pinned neatly at the back. She wears a simple kimono-style top in muted colors and a faded apron. Her hands are gnarled but steady, the hands of someone who has spent a lifetime doing careful work. Her eyes are warm and wrinkled at the corners from decades of smiling, but there's a sharpness behind them — the kind of perception that comes from watching a neighborhood change for fifty years. She moves slowly but with purpose.",
       "background": "Obāsan has lived in this neighborhood for fifty years. She ran a small confectionery shop next to Yuki's studio until it closed a few months ago — not because business was bad, but because her body finally gave out. She watched Yuki's studio open, thrive, and now close. She cared for Yuki like a grandchild: she was the one who brought Yuki soup when he had pneumonia, who mended his camera strap when it snapped, who left small sweets on the studio counter 'for energy.' When Yuki disappeared, she was the one who called the police. She's been watching the studio every night from her window, hoping to see something — anything — that will tell her what happened.",
       "temperament": "Gossipy and warm, with a grandmotherly manner that makes people open up almost involuntarily. But beneath the warmth is sharp, almost unsettling perception — she's seen everything in fifty years and knows when something is wrong. She speaks in a soft, measured way, often with proverbs and old sayings that seem simple but carry layers of meaning. She never pushes, but she never lets go either. When she's thinking, she strokes her chin with her thumb and forefinger.",
@@ -118,9 +146,39 @@
       "connections": ["hidden_evidence", "kenji_last_meeting"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "Haruka mentions Yuki was working on something different from his usual street photography — something more focused, more intense", "requires_trust": 0 },
-        { "tier": 2, "text": "Yuki had been photographing a specific building — an old office in Shinjuku — repeatedly over several weeks. He called it 'the truth project.'", "requires_trust": 2, "set_flags": { "knows_last_assignment": true } },
-        { "tier": 3, "text": "Yuki discovered a pattern through his photography: people entering the building at night who never came out during the day. He was building a visual case.", "requires_trust": 4, "set_flags": { "knows_last_assignment": true } }
+        { 
+          "tier": 1, 
+          "text": "Haruka mentions Yuki was working on something different from his usual street photography — something more focused, more intense",
+          "requires_trust": 0,
+          "requires_flags": [
+            "obasan_last_sighting"
+          ]
+        },
+        { 
+          "tier": 2,
+          "text": "Yuki had been photographing a specific building — an old office in Shinjuku — repeatedly over several weeks. He called it 'the truth project.'", 
+          "requires_trust": 2,
+          "requires_flags": [
+            "obasan_last_sighting",
+            "strange_photograph"
+          ],
+          "set_flags": {
+            "knows_last_assignment": true
+          } 
+        },
+        { 
+          "tier": 3, 
+          "text": "Yuki discovered a pattern through his photography: people entering the building at night who never came out during the day. He was building a visual case.", 
+          "requires_trust": 4,
+          "requires_flags": [
+            "obasan_last_sighting",
+            "strange_photograph",
+            "kenji_article"
+          ],
+          "set_flags": { 
+            "knows_last_assignment": true
+          } 
+        }
       ]
     },
     "strange_photograph": {
@@ -287,8 +345,11 @@
     "neighborhood_obasan": {
       "background": "backgrounds/neighborhood.png",
       "music": "music/neighborhood_walk.mp3",
-      "sfx": ["sfx/footsteps_outdoor.mp3", "sfx/wind_ambient.wav", "sfx/cat_meow.mp3"],
+      "sfx": ["sfx/footsteps_outdoor.mp3", "sfx/wind_ambient.mp3", "sfx/cat_meow.mp3"],
       "characters": ["Obasan"],
+      "scene_moods": {
+        "Obasan": "front"
+      },
       "dialogue": [
         {"speaker": "", "text": "You follow the street past the studio. The neighborhood unfolds like a watercolor left in the rain — colors bleeding into each other, edges softening. You approach that elderly woman you saw sitting on a wooden bench outside a closed confectionery shop, watching you with warm, knowing eyes."},
         {"speaker": "Obasan", "text": "Oh? You must be the one they sent. Let me introduce myself. This was my shop — confections, mostly. I made sweets for decades for the neighborhood children. Yuki was one of them, you know. He was like a son. Not by blood, but by heart." }
@@ -329,6 +390,9 @@
     "studio_interior": {
       "background": "backgrounds/studio_interior.png",
       "sfx": ["sfx/footsteps_indoor.mp3", "sfx/paper_rustle.mp3"],
+      "scene_moods": {
+        "Haruka": "neutral"
+      },
       "characters": ["Haruka"],
       "dialogue": [
         { "speaker": "The studio interior — organized chaos, every surface covered with photographs, negatives, and equipment. A large printing easel dominates the center of the room. A woman stands near the easel, her hands frozen mid-motion, dark apron stained with developer chemicals."},
@@ -363,6 +427,9 @@
       "background": "backgrounds/darkroom.png",
       "music": "music/darkroom_atmosphere.mp3",
       "sfx": ["sfx/darkroom_agitate.wav", "sfx/chemical_pour.mp3", "sfx/heartbeat.wav", "sfx/film_advance.mp3"],
+      "scene_moods": {
+        "Haruka": "happy"
+      },
       "characters": ["Haruka"],
       "dialogue": [
         { "speaker": "", "text": "The darkroom is a small, windowless room bathed in deep red light. The air is warm and humid, thick with the smell of developing chemicals. Three developing trays sit on a metal table, each at a different stage. Contact sheets hang from wires strung across the ceiling."},
@@ -393,9 +460,9 @@
       "on_enter": { "set_flags": { "visited_haruka_room": true } }
     },
     "neighborhood_cafe": {
-      "background": "backgrounds/neighborhood_cafe.png",
+      "background": "backgrounds/cafe_exterior.png",
       "music": "music/neighborhood_walk.mp3",
-      "sfx": ["sfx/footsteps_outdoor.mp3", "sfx/wind_ambient.wav"],
+      "sfx": ["sfx/footsteps_outdoor.mp3", "sfx/wind_ambient.mp3"],
       "characters": [],
       "dialogue": [
         {"speaker": "", "text": "The neighborhood starts settling into early evening. As you pass the studio, something catches your eye: a small café down the street, its window displaying a series of photographs you recognize — Yuki's work. Street scenes. Neighborhood portraits."},
@@ -410,7 +477,7 @@
       "on_enter": { "set_flags": { "noticed_cafe_photos": true } }
     },
     "cafe_meeting": {
-      "background": "backgrounds/cafe_exterior.png",
+      "background": "backgrounds/cafe_interior.png",
       "music": "music/neighborhood_walk.mp3",
       "sfx": ["sfx/door_creak.mp3", "sfx/paper_rustle.mp3"],
       "characters": ["Kenji"],
@@ -444,7 +511,7 @@
     "final_confrontation": {
       "background": "backgrounds/final_confrontation.png",
       "music": "music/tension_build.mp3",
-      "sfx": ["sfx/clock_tick.mp3", "sfx/tension_rise.wav", "sfx/heartbeat.wav"],
+      "sfx": ["sfx/clock_tick.mp3", "sfx/tension_rise.wav", "sfx/heartbeat.mp3"],
       "characters": ["Haruka"],
       "dialogue": [
         {"speaker": "", "text": "The studio at dusk. The light is fading, turning the photographs on the walls into silhouettes. Haruka stands in the center of the room, her hands clasped tightly in front of her. The red light from the darkroom spills into the hallway, casting everything in an otherworldly glow."},
@@ -546,7 +613,7 @@
     "ending_fogged_film": {
       "background": "backgrounds/ending_fogged_film.png",
       "music": "music/neighborhood_walk.mp3",
-      "sfx": ["sfx/page_turn.mp3", "sfx/wind_ambient.wav", "sfx/train_distant.wav"],
+      "sfx": ["sfx/page_turn.mp3", "sfx/wind_ambient.mp3", "sfx/train_distant.wav"],
       "characters": ["Haruka", "Kenji"],
       "dialogue": [
         {"speaker": "", "text": "The studio is empty now. The photographs have been packed into boxes. The developing trays have been cleaned. The red light from the darkroom has been turned off. Outside, the neighborhood continues its quiet evening rhythm."},

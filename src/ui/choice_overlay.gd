@@ -54,8 +54,24 @@ func add_choice(choice: Dictionary) -> void:
 	var btn = Button.new()
 	btn.text = choice.get("label", "")
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	btn.custom_minimum_size = Vector2(0, 56)
-	VNTheme.style_choice_button(btn)
+	btn.custom_minimum_size = Vector2(VNTheme.get_choice_button_min_width(), VNTheme.get_choice_button_min_height())
+	btn.add_theme_constant_override("margin_left", VNTheme.get_choice_button_padding_horizontal())
+	btn.add_theme_constant_override("margin_right", VNTheme.get_choice_button_padding_horizontal())
+	btn.add_theme_constant_override("margin_top", VNTheme.get_choice_button_padding_vertical())
+	btn.add_theme_constant_override("margin_bottom", VNTheme.get_choice_button_padding_vertical())
+
+	# ── Story-specific button texture ──
+	var btn_texture = VNTheme.load_ui_bg_texture("choice_button")
+	if btn_texture:
+		var style = VNTheme.create_button_stylebox(btn_texture)
+		btn.add_theme_stylebox_override("normal", style)
+		btn.add_theme_stylebox_override("hover", style)
+		btn.add_theme_stylebox_override("focus", style)
+		btn.add_theme_color_override("font_color", VNTheme.get_text_color())
+		btn.add_theme_font_override("font", VNTheme.get_font_choice())
+		btn.add_theme_font_size_override("font_size", VNTheme.get_font_size_choice())
+	else:
+		VNTheme.style_choice_button(btn)
 
 	var choice_id = choice.get("id", "")
 	var npc_name = choice.get("npc_name", "")
@@ -98,10 +114,10 @@ func _build_backdrop() -> void:
 func _build_button_container() -> void:
 	_button_container = VBoxContainer.new()
 	_button_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	_button_container.anchor_top = 0.3
-	_button_container.anchor_bottom = 0.85
+	_button_container.anchor_top = VNTheme.get_choice_overlay_top()
+	_button_container.anchor_bottom = VNTheme.get_choice_overlay_bottom()
 	_button_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_button_container.grow_vertical = Control.GROW_DIRECTION_BOTH
-	_button_container.add_theme_constant_override("separation", 12)
+	_button_container.add_theme_constant_override("separation", VNTheme.get_choice_button_separation())
 	_button_container.visible = false
 	add_child(_button_container)

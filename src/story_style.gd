@@ -75,6 +75,11 @@ func _ensure_loaded() -> void:
 func _make_defaults() -> Dictionary:
 	## Mirror of the default values from VNTheme.
 	return {
+		"ui_backgrounds": {
+			"dialogue_box": "",
+			"npc_chat":     "",
+			"choice_button": ""
+		},
 		"colors": {
 			"bg":              [0.05, 0.05, 0.07, 1.0],
 			"text":            [0.95, 0.95, 0.92, 1.0],
@@ -100,6 +105,8 @@ func _make_defaults() -> Dictionary:
 			"font_size_choice":       20,
 			"font_size_error":        18,
 			"font_size_continue":     20,
+			"font_size_chat_name":    28,
+			"font_size_input":        22,
 		},
 		"timing": {
 			"typewriter_speed":      0.035,
@@ -110,6 +117,17 @@ func _make_defaults() -> Dictionary:
 			"description_max_hold":  6.0,
 			"description_char_time": 0.03,
 			"error_auto_dismiss":    5.0,
+		},
+		"layout": {
+			"dialogue_box_height":           220,
+			"choice_button_min_width":       50,
+			"choice_button_min_height":      120,
+			"choice_button_corner_radius":   6,
+			"choice_button_padding_horizontal": 25,
+			"choice_button_padding_vertical": 8,
+			"choice_button_separation":      13,
+			"choice_overlay_top":            0.3,
+			"choice_overlay_bottom":         0.85,
 		},
 	}
 
@@ -127,6 +145,10 @@ func _get_typography() -> Dictionary:
 func _get_timing() -> Dictionary:
 	var t: Variant = _data.get("timing")
 	return t if t is Dictionary else Dictionary()
+
+func _get_layout() -> Dictionary:
+	var l: Variant = _data.get("layout")
+	return l if l is Dictionary else Dictionary()
 
 
 func _get_color(key: String) -> Color:
@@ -188,6 +210,8 @@ func get_font_size_description()  -> int: return _get_int("font_size_description
 func get_font_size_choice()       -> int: return _get_int("font_size_choice")
 func get_font_size_error()        -> int: return _get_int("font_size_error")
 func get_font_size_continue()     -> int: return _get_int("font_size_continue")
+func get_font_size_chat_name()    -> int: return _get_int("font_size_chat_name", 28)
+func get_font_size_input()        -> int: return _get_int("font_size_input", 22)
 
 
 # ── Timing accessors ────────────────────────────────────────────
@@ -200,3 +224,57 @@ func get_description_min_hold()  -> float: return _get_float("description_min_ho
 func get_description_max_hold()  -> float: return _get_float("description_max_hold")
 func get_description_char_time() -> float: return _get_float("description_char_time")
 func get_error_auto_dismiss()    -> float: return _get_float("error_auto_dismiss")
+
+
+# ── UI Background accessors ─────────────────────────────────────
+## Return the story-relative path for a UI background image.
+## Empty string means no image (use solid colour fallback).
+
+func _get_ui_backgrounds() -> Dictionary:
+	var u: Variant = _data.get("ui_backgrounds")
+	return u if u is Dictionary else Dictionary()
+
+func get_ui_bg_path(key: String) -> String:
+	return _get_ui_backgrounds().get(key, "")
+
+## Resolves a story-relative UI background path to a full res:// path.
+## Returns empty string if key not set or path empty.
+func resolve_ui_bg_path(key: String) -> String:
+	var relative: String = get_ui_bg_path(key)
+	if relative.is_empty():
+		return ""
+	var story_name: String = ""
+	if GameConfig != null:
+		story_name = GameConfig.get_current_story()
+	if story_name.is_empty():
+		return ""
+	return "res://stories/%s/%s" % [story_name, relative]
+
+
+# ── Layout accessors ────────────────────────────────────────────
+
+func _get_layout_int(key: String, default: int = 0) -> int:
+	var v: Variant = _get_layout().get(key)
+	if v is int:
+		return v
+	if v is float:
+		return int(v)
+	return default
+
+func _get_layout_float(key: String, default: float = 0.0) -> float:
+	var v: Variant = _get_layout().get(key)
+	if v is float:
+		return v
+	if v is int:
+		return float(v)
+	return default
+
+func get_dialogue_box_height()                     -> int:     return _get_layout_int("dialogue_box_height", 220)
+func get_choice_button_min_width()                 -> int:     return _get_layout_int("choice_button_min_width", 50)
+func get_choice_button_min_height()                -> int:     return _get_layout_int("choice_button_min_height", 120)
+func get_choice_button_corner_radius()             -> int:     return _get_layout_int("choice_button_corner_radius", 6)
+func get_choice_button_padding_horizontal()        -> int:     return _get_layout_int("choice_button_padding_horizontal", 25)
+func get_choice_button_padding_vertical()          -> int:     return _get_layout_int("choice_button_padding_vertical", 8)
+func get_choice_button_separation()                -> int:     return _get_layout_int("choice_button_separation", 13)
+func get_choice_overlay_top()                      -> float:   return _get_layout_float("choice_overlay_top", 0.3)
+func get_choice_overlay_bottom()                   -> float:   return _get_layout_float("choice_overlay_bottom", 0.85)

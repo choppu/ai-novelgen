@@ -28,7 +28,10 @@
     "paper_rustle": "sfx/paper_rustle.mp3",
     "wind_ambient": "sfx/wind_ambient.mp3",
     "train_distant": "sfx/train_distant.mp3",
-    "cat_meow": "sfx/cat_meow.mp3"
+    "cat_meow": "sfx/cat_meow.mp3",
+    "shinjuku_ambient": "sfx/shinjuku_ambient.mp3",
+    "stairwell_echo": "sfx/stairwell_echo.mp3",
+    "buzzer_broken": "sfx/buzzer_broken.mp3"
   },
   "sprites": {
     "default_moods": {
@@ -47,12 +50,21 @@
     "knows_haruka_hiding": { "initial": false },
     "knows_kenji_article": { "initial": false },
     "knows_yuki_hiding": { "initial": false },
+    "knows_company_name": { "initial": false },
     "has_key": { "initial": false },
     "noticed_cafe_photos": { "initial": false },
     "entered_darkroom": { "initial": false },
     "visited_haruka_room": { "initial": false },
     "talked_to_obasan": { "initial": false },
-    "met_kenji": { "initial": false }
+    "met_kenji": { "initial": false },
+    "has_address": { "initial": false },
+    "visited_shinjuku": { "initial": false },
+    "found_yuki_photo_304": { "initial": false },
+    "found_kuroda_folder": { "initial": false },
+    "found_surveillance_camera": { "initial": false },
+    "found_victim_files": { "initial": false },
+    "found_ledger": { "initial": false },
+    "escaped_shinjuku": { "initial": false }
   },
   "relationships": {
     "Haruka": 0,
@@ -156,7 +168,7 @@
         },
         { 
           "tier": 2,
-          "text": "Yuki had been photographing a specific building — an old office in Shinjuku — repeatedly over several weeks. He called it 'the truth project.'", 
+          "text": "Yuki had been photographing a specific building — an old office in Shinjuku — repeatedly over several weeks. He called it 'the truth project.'",
           "requires_trust": 2,
           "requires_flags": [
             "obasan_last_sighting",
@@ -168,12 +180,11 @@
         },
         { 
           "tier": 3, 
-          "text": "Yuki discovered a pattern through his photography: people entering the building at night who never came out during the day. He was building a visual case.", 
+          "text": "Yuki discovered a pattern through his photography: people entering the building at night who never came out during the day. He was building a visual case.",
           "requires_trust": 4,
           "requires_flags": [
             "obasan_last_sighting",
-            "strange_photograph",
-            "kenji_article"
+            "strange_photograph"
           ],
           "set_flags": { 
             "knows_last_assignment": true
@@ -187,9 +198,34 @@
       "connections": ["haruka_last_photo", "hidden_evidence"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "Haruka mentions Yuki's last photograph was 'different' — not in the way they usually are. It made them quiet for days.", "requires_trust": 0 },
-        { "tier": 2, "text": "The last photograph captured something it shouldn't have been able to capture — a figure in a doorway that shouldn't have been there, at a time when the room should have been empty.", "requires_trust": 2, "set_flags": { "knows_last_photo": true } },
-        { "tier": 3, "text": "The photograph shows a man in a dark suit standing in a doorway, looking directly at the camera. But Yuki was across the street, two blocks away, when he took it. The man in the photograph is looking at the lens from inside a room that no one has been in for years.", "requires_trust": 4, "set_flags": { "knows_last_photo": true } }
+        { "tier": 1,
+        "text": "Haruka mentions Yuki's last photograph was 'different' — not in the way they usually are. It made them quiet for days.",
+        "requires_trust": 0,
+        "requires_flags": [
+          "yuki_last_assignment"
+        ]
+      },
+        {
+          "tier": 2,
+          "text": "The last photograph captured something it shouldn't have been able to capture — a figure in a doorway that shouldn't have been there, at a time when the room should have been empty.", 
+          "requires_trust": 2,
+          "requires_flags": [
+          "yuki_last_assignment"
+          ],
+          "set_flags": {
+            "knows_last_photo": true
+            }
+          },
+        {
+          "tier": 3,
+          "text": "The photograph shows a man in a dark suit standing in a doorway, looking directly at the camera. But Yuki was across the street, two blocks away, when he took it. The man in the photograph is looking at the lens from inside a room that no one has been in for years.", 
+          "requires_trust": 4,
+          "requires_flags": [
+          "yuki_last_assignment"
+          ],
+          "set_flags": {
+            "knows_last_photo": true
+          } }
       ]
     },
     "haruka_nightmares": {
@@ -198,9 +234,30 @@
       "connections": ["strange_photograph", "haruka_last_photo"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "Haruka seems exhausted — dark circles under her eyes, hands that tremble slightly when she thinks no one is looking", "requires_trust": 1 },
-        { "tier": 2, "text": "Haruka admits she's been having nightmares about the last photograph. She sees the figure in the doorway every time she closes her eyes. She's been developing the same frame over and over, trying to understand what she's seeing.", "requires_trust": 3 },
-        { "tier": 3, "text": "Haruka describes the photograph in detail: the man in the doorway, the way he's looking at the camera, the impossible geometry of the room. She says Yuki took the photograph three days before he disappeared, and she's been unable to stop looking at it since. She thinks the photograph is 'watching her back.'", "requires_trust": 4 }
+        {
+          "tier": 1,
+          "text": "Haruka seems exhausted — dark circles under her eyes, hands that tremble slightly when she thinks no one is looking",
+          "requires_flags": [
+            "strange_photograph"
+          ],
+          "requires_trust": 1
+        },
+        {
+          "tier": 2,
+          "text": "Haruka admits she's been having nightmares about the last photograph. She sees the figure in the doorway every time she closes her eyes. She's been developing the same frame over and over, trying to understand what she's seeing.", 
+          "requires_flags": [
+            "strange_photograph"
+          ],
+          "requires_trust": 3
+        },
+        {
+          "tier": 3,
+          "text": "Haruka describes the photograph in detail: the man in the doorway, the way he's looking at the camera, the impossible geometry of the room. She says Yuki took the photograph three days before he disappeared, and she's been unable to stop looking at it since. She thinks the photograph is 'watching her back.'", 
+          "requires_flags": [
+            "strange_photograph"
+          ],
+          "requires_trust": 4
+        }
       ]
     },
     "kenji_last_meeting": {
@@ -310,6 +367,50 @@
         { "tier": 2, "text": "The developing trays are warm. The chemical smell is fresh. Someone has been in the darkroom recently — within the last few hours. The darkroom light is still warm to the touch.", "requires_trust": 3, "set_flags": { "knows_yuki_hiding": true } },
         { "tier": 3, "text": "Yuki is still in the studio. You can suddenly hear the faint sound of a developing tray being agitated from behind the darkroom door. Yuki has been living here, developing photographs, building his case — in the dark, for three weeks.", "requires_trust": 4, "set_flags": { "knows_yuki_hiding": true } }
       ]
+    },
+    "shinjuku_building": {
+      "description": "The Shinjuku building Yuki was photographing — the center of the conspiracy",
+      "sources": ["Kenji"],
+      "connections": ["shell_company", "victim_files", "yuki_last_assignment"],
+      "is_red_herring": false,
+      "tiers": [
+        { "tier": 1, "text": "Kenji gives you the address of a building in Shinjuku that Yuki was photographing obsessively. It's a seven-story beige concrete building, unremarkable from the outside, in a quiet part of the district away from the main stations.", "requires_trust": 0, "set_flags": { "has_address": true } },
+        { "tier": 2, "text": "Inside the building, the lobby is dim and neglected. A broken security camera displays a frozen image from days ago. Room 304 on the third floor is the target — the door is slightly ajar, and through the gap you can see a small office with blinds drawn.", "requires_trust": 2, "set_flags": { "visited_shinjuku": true } },
+        { "tier": 3, "text": "On the floor of room 304, half-hidden under the desk, you find one of Yuki's photographs of the building itself. On the back, in his handwriting: '304. 11:47 PM. He was waiting.' Yuki wasn't just photographing the building — he was photographing someone inside it, and that person knew.", "requires_trust": 4, "set_flags": { "found_yuki_photo_304": true } }
+      ]
+    },
+    "shell_company": {
+      "description": "Kuroda Holdings — the shell company operating out of room 304",
+      "sources": [],
+      "connections": ["shinjuku_building", "victim_files"],
+      "is_red_herring": false,
+      "tiers": [
+        { "tier": 1, "text": "On the desk in room 304, you find a folder marked 'Kuroda Holdings.' A corporate registration document reveals the company was registered six months ago with no listed business activities. The registered address is this very room.", "requires_trust": 0, "set_flags": { "found_kuroda_folder": true, "knows_company_name": true } },
+        { "tier": 2, "text": "A small digital camera on the window sill has a cracked lens but still works. Its last image shows a man in a dark coat standing across the street, watching the building. The timestamp: three weeks ago, 11:47 PM — the exact same time Yuki was photographing from the other side. They were watching each other.", "requires_trust": 3, "set_flags": { "found_surveillance_camera": true } },
+        { "tier": 3, "text": "The locked drawer at the bottom of the desk contains a handwritten ledger. The final entry, in different ink: 'Sato, Yuki. Photographer. Subject has been photographing the building. Risk assessment: HIGH. Recommendation: DISAPPEAR.' Someone at Kuroda Holdings decided Yuki should vanish.", "requires_trust": 4, "set_flags": { "found_ledger": true } }
+      ]
+    },
+    "victim_files": {
+      "description": "Personnel files documenting the people who disappeared — including Yuki",
+      "sources": [],
+      "connections": ["shinjuku_building", "shell_company", "yuki_last_assignment"],
+      "is_red_herring": false,
+      "tiers": [
+        { "tier": 1, "text": "The filing cabinet in room 304 contains personnel files — but not for employees. For clients. Names, addresses, dates. Most are from the neighborhood around Yuki's studio.", "requires_trust": 0, "set_flags": { "found_victim_files": true } },
+        { "tier": 2, "text": "There are twelve files. Eight are marked 'completed.' Four are marked 'in progress.' The word 'completed' takes on a dark meaning in context — these are the people who entered the building and never came out during the day.", "requires_trust": 3, "set_flags": { "found_victim_files": true } },
+        { "tier": 3, "text": "One file is marked 'Sato, Yuki.' Status: 'in progress.' Date: three weeks ago. Yuki was in their system. They knew he was watching them. He wasn't just investigating — he was being investigated, and his own file was waiting in that cabinet.", "requires_trust": 4, "set_flags": { "found_victim_files": true } }
+      ]
+    },
+    "shinjuku_escape": {
+      "description": "Your narrow escape from the Shinjuku building — they know someone was there",
+      "sources": [],
+      "connections": ["shinjuku_building", "shell_company", "victim_files"],
+      "is_red_herring": false,
+      "tiers": [
+        { "tier": 1, "text": "As you turn to leave room 304 with the evidence, you hear footsteps in the hallway. Someone is coming. You slip out and descend the stairwell quickly, two steps at a time, your breathing loud in the concrete shaft.", "requires_trust": 0, "set_flags": { "escaped_shinjuku": true } },
+        { "tier": 2, "text": "Behind you, a man's voice calls out — sharp and angry. The footsteps change direction and start coming down the stairs after you. You reach the ground floor and push through the lobby door into the busy Shinjuku evening.", "requires_trust": 2, "set_flags": { "escaped_shinjuku": true } },
+        { "tier": 3, "text": "You blend into the crowd, heart racing, evidence secured in your bag. Behind you, the building's door closes. The footsteps stop. You made it — but you know they know someone was there. The window for action is closing.", "requires_trust": 4, "set_flags": { "escaped_shinjuku": true } }
+      ]
     }
   },
   "scenes": {
@@ -336,10 +437,10 @@
       "dialogue": [
         {"speaker": "", "text": "You stand before the shuttered studio. The hand-painted sign is faded but still legible: 'Sato Photo Studio — Est. 1987.' A chain lock secures the door. The wood around the lock is weathered — this has been in place for weeks."},
         { "speaker": "", "text": "You knock the door. No one is answering." },
-        { "speaker": "", "text": "Few buildings apart, to your right, an elderly woman sits on a wooden bench outside a closed shop, watching the street with patient attention. Further down the street, the neighborhood stretches on — old wooden shops, a small shrine at a crossroads." }
+        { "speaker": "", "text": "Few buildings apart, to your right, an elderly woman is sitting on a wooden bench outside a closed shop, watching the street with patient attention. Further down the street, the neighborhood stretches on — old wooden shops, a small shrine at a crossroads." }
       ],
       "choices": [
-        { "id": "talk_to_obasan", "label": "Talk to the elderly woman on the bench", "target": "neighborhood_obasan", "requires_flags": { "talked_to_obasan": false } }      ],
+        { "id": "talk_to_obasan", "label": "Talk to the elderly woman", "target": "neighborhood_obasan", "requires_flags": { "talked_to_obasan": false } }      ],
       "on_enter": { "set_flags": {} }
     },
     "neighborhood_obasan": {
@@ -352,7 +453,24 @@
       },
       "dialogue": [
         {"speaker": "", "text": "You follow the street past the studio. The neighborhood unfolds like a watercolor left in the rain — colors bleeding into each other, edges softening. You approach that elderly woman you saw sitting on a wooden bench outside a closed confectionery shop, watching you with warm, knowing eyes."},
-        {"speaker": "Obasan", "text": "Oh? You must be the one they sent. Let me introduce myself. This was my shop — confections, mostly. I made sweets for decades for the neighborhood children. Yuki was one of them, you know. He was like a son. Not by blood, but by heart." }
+        {"speaker": "Obasan", "text": "Oh? You must be the one they sent. Let me introduce myself. This was my shop. I made sweets for decades for the neighborhood children. Yuki was one of them, you know. He was like a son. Not by blood, but by heart." }
+      ],
+      "choices": [
+        { "id": "return_to_entrance", "label": "Return to the studio entrance", "target": "return_studio_entrance" },
+        { "id": "explore_neighborhood", "label": "Walk down the street", "target": "neighborhood_cafe", "requires_flags": { "talked_to_obasan": true } }
+      ],
+      "on_enter": { "set_flags": { "talked_to_obasan": true } }
+    },
+    "neighborhood_obasan_return": {
+      "background": "backgrounds/neighborhood.png",
+      "music": "music/neighborhood_walk.mp3",
+      "sfx": ["sfx/footsteps_outdoor.mp3", "sfx/wind_ambient.mp3", "sfx/cat_meow.mp3"],
+      "characters": ["Obasan"],
+      "scene_moods": {
+        "Obasan": "front"
+      },
+      "dialogue": [
+        {"speaker": "", "text": "You follow the street past the studio. The neighborhood unfolds like a watercolor left in the rain — colors bleeding into each other, edges softening. You approach that elderly woman you saw sitting on a wooden bench outside a closed confectionery shop, watching you with warm, knowing eyes."}
       ],
       "choices": [
         { "id": "return_to_entrance", "label": "Return to the studio entrance", "target": "return_studio_entrance" },
@@ -368,9 +486,12 @@
         {"speaker": "", "text": "You stand before the studio. The hand-painted sign is faded but still legible: 'Sato Photo Studio — Est. 1987.'"}
       ],
       "choices": [
-        { "id": "talk_to_obasan", "label": "Talk to Obasan", "target": "neighborhood_obasan"},
-        { "id": "find_key", "label": "Look under the third step", "target": "studio_enter", "set_flags": { "has_key": true }, "requires_flags": { "talked_to_obasan": true } },
-        { "id": "explore_neighborhood", "label": "Walk down the street", "target": "neighborhood_cafe", "requires_flags": { "talked_to_obasan": true, "visited_haruka_room": true } }
+        { "id": "talk_to_obasan", "label": "Talk to Obasan", "target": "neighborhood_obasan_return", "requires_flags": { "knows_studio_lights": false }},
+        { "id": "find_key", "label": "Look under the third step", "target": "studio_enter", "set_flags": { "has_key": true }, "requires_flags": { "has_key": false, "talked_to_obasan": true } },
+        { "id": "explore_neighborhood", "label": "Walk down the street", "target": "neighborhood_cafe", "requires_flags": { "talked_to_obasan": true } },
+        { "id": "go_to_shinjuku_from_entrance", "label": "Take the train to Shinjuku", "target": "shinjuku_arrival", "requires_flags": { "has_address": true, "visited_shinjuku": false } },
+        { "id": "enter_the_studio", "label": "Enter the studio", "target": "return_studio_interior", "requires_flags": { "has_key": true, "visited_shinjuku": false } }
+
       ],
       "on_enter": { "set_flags": {} }
     },
@@ -395,7 +516,7 @@
       },
       "characters": ["Haruka"],
       "dialogue": [
-        { "speaker": "The studio interior — organized chaos, every surface covered with photographs, negatives, and equipment. A large printing easel dominates the center of the room. A woman stands near the easel, her hands frozen mid-motion, dark apron stained with developer chemicals."},
+        { "speaker": "", "text": "The studio interior — organized chaos, every surface covered with photographs, negatives, and equipment. A large printing easel dominates the center of the room. A woman stands near the easel, her hands frozen mid-motion, dark apron stained with developer chemicals."},
         { "speaker": "", "text": "Beyond the main room, a door marked '暗室' — Darkroom — stands slightly ajar, spilling red light into the hallway." },
         { "speaker": "Haruka", "text": "Who are you? How did you get in here?" },
         { "speaker": "", "text": "You see a young woman in her late twenties, dark hair pulled back in a ponytail, eyes tired but alert. Her hands are stained cyanotype blue and silver nitrate brown. There's a small cut on her left thumb, freshly bandaged." },
@@ -417,8 +538,8 @@
         { "speaker": "", "text": "Beyond the main room, a door marked '暗室' — Darkroom — stands slightly ajar, spilling red light into the hallway." }
       ],
       "choices": [
-        { "id": "go_upstairs", "label": "Ask about the second floor", "target": "studio_interior", "requires_flags": { "entered_darkroom": true,  "studio_lights": true} },
-        { "id": "go_to_darkroom", "label": "Explore the darkroom", "target": "darkroom" },
+        { "id": "go_upstairs", "label": "Ask about the second floor", "target": "studio_interior", "requires_flags": { "visited_haruka_room": false, "entered_darkroom": true,  "studio_lights": true} },
+        { "id": "go_to_darkroom", "label": "Explore the darkroom", "requires_flags": {"visited_darkroom": false}, "target": "darkroom" },
         { "id": "leave_studio", "label": "Leave studio", "target": "return_studio_entrance" }
       ],
       "on_enter": {}
@@ -472,6 +593,7 @@
       ],
       "choices": [
         { "id": "enter_cafe", "label": "Enter the café", "target": "cafe_meeting" },
+        { "id": "go_to_shinjuku_from_cafe_ext", "label": "Take the train to Shinjuku", "target": "shinjuku_arrival", "requires_flags": { "has_address": true, "visited_shinjuku": false } },
         { "id": "return_to_studio_entrance", "label": "Return to the studio", "target": "return_studio_entrance" }
       ],
       "on_enter": { "set_flags": { "noticed_cafe_photos": true } }
@@ -486,9 +608,13 @@
         { "speaker": "Kenji", "text": "Oh. You're... you're the investigator, are you? You are investigating Yuki's disappearance? I'm Kenji. Kenji Tanaka. I've been... I've been waiting for someone to come at some time. His parents are so obsessed to find the truth." },
         { "speaker": "", "text": "He wears a rumpled navy suit, carries a leather satchel crammed with notebooks. A coffee stain marks his breast pocket. His eyes are intelligent but shadowed with fatigue." },
         { "speaker": "Kenji", "text": "I used to publish Yuki's photographs. Street scenes, neighborhood portraits. I think I was the last person to see him, three weeks ago. We had an argument. I won't — I can't talk about it yet.." },
-        { "speaker": "Kenji", "text": "But I've been investigating. On my own. What happened to Yuki wasn't a voluntary disappearance. I know that much." }
+        { "speaker": "Kenji", "text": "But I've been investigating. On my own. What happened to Yuki wasn't a voluntary disappearance. I know that much." },
+        { "speaker": "Kenji", "text": "Yuki became obsessed with a building in Shinjuku — an old office, room 304. He went there every day for weeks, photographing it from across the street. The day he disappeared, he gave me the address. He said, 'If anything happens to me, go here. But be careful.'" },
+        { "speaker": "", "text": "He reaches into his satchel and pulls out a folded piece of paper. His hands are shaking slightly. He slides it across the table." },
+        { "speaker": "Kenji", "text": "I went once — just from the outside. The building is old, unremarkable. But I could never go inside. I'm a journalist, not a detective. Will you go? Will you see what Yuki saw?" }
       ],
       "choices": [
+        { "id": "go_to_shinjuku", "label": "Take the address — go to the Shinjuku building", "target": "shinjuku_arrival", "set_flags": { "has_address": true } },
         { "id": "return_from_cafe", "label": "Return to the studio", "target": "return_studio_entrance" },
         { "id": "go_to_confrontation", "label": "You've learned enough — return to Haruka", "target": "final_confrontation", "requires_flags": { "met_kenji": true, "met_haruka": true, "entered_darkroom": true, "knows_hidden_evidence": true } }
       ],
@@ -504,9 +630,110 @@
         { "speaker": "Kenji", "text": "Oh. You're... you're back." }
       ],
       "choices": [
+        { "id": "go_to_shinjuku", "label": "Take the address — go to the Shinjuku building", "target": "shinjuku_arrival", "set_flags": { "has_address": true }, "requires_flags": { "has_address": false } },
         { "id": "go_to_confrontation", "label": "You've learned enough — return to Haruka", "target": "final_confrontation", "requires_flags": { "met_kenji": true, "met_haruka": true, "entered_darkroom": true, "met_obasan": true } }
       ],
       "on_enter": { "set_flags": {} }
+    },
+    "shinjuku_arrival": {
+      "background": "backgrounds/shinjuku_exterior.png",
+      "music": "music/tension_build.mp3",
+      "sfx": ["sfx/footsteps_outdoor.mp3", "sfx/train_distant.mp3"],
+      "characters": [],
+      "dialogue": [
+        {"speaker": "", "text": "You take the train to Shinjuku. The city transforms around you — the fading wooden neighborhood gives way to glass towers, neon signs, the relentless energy of Tokyo's commercial heart."},
+        {"speaker": "", "text": "The address leads to a quieter part of Shinjuku, away from the main stations, into a district of older office buildings where the post-bubble economy left its scars."},
+        {"speaker": "", "text": "The building is exactly as Kenji described: seven stories of faded beige concrete, unremarkable, existing to be forgotten. The ground floor houses a closed convenience store and laundromat. The entrance to the stairwell is behind a glass door — the buzzer is broken, held in place with electrical tape."},
+        {"speaker": "", "text": "The door opens with a push, though it resists, as though reluctant to let anyone in."}
+      ],
+      "choices": [
+        { "id": "enter_lobby", "label": "Push through the door into the lobby", "target": "shinjuku_lobby" }
+      ],
+      "on_enter": { "set_flags": { "visited_shinjuku": true } }
+    },
+    "shinjuku_lobby": {
+      "background": "backgrounds/shinjuku_lobby.png",
+      "music": "music/tension_build.mp3",
+      "sfx": ["sfx/footsteps_indoor.mp3", "sfx/heartbeat.wav"],
+      "characters": [],
+      "dialogue": [
+        {"speaker": "", "text": "The lobby is dim. Fluorescent lights flicker overhead, casting the space in a sickly greenish glow. The walls are covered in peeling paint and layers of old advertisements — tutoring services, massage parlors, immigration lawyers."},
+        {"speaker": "", "text": "A security desk sits to the left, empty. A single monitor displays a frozen image of the front entrance from three days ago. The camera hasn't been recording."},
+        {"speaker": "", "text": "The stairwell is to your right. Concrete steps, metal railings, the smell of stale air and old carpet. You can hear the muffled sound of a television from somewhere above — a news broadcast, the anchor's voice too distant to make out."},
+        {"speaker": "", "text": "Kenji's note says: room 304, third floor."}
+      ],
+      "choices": [
+        { "id": "climb_stairs", "label": "Climb to the third floor", "target": "shinjuku_304" }
+      ],
+      "on_enter": { "set_flags": {} }
+    },
+    "shinjuku_304": {
+      "background": "backgrounds/shinjuku_floor.png",
+      "music": "music/tension_build.mp3",
+      "sfx": ["sfx/footsteps_indoor.mp3", "sfx/heartbeat.wav", "sfx/door_creak.mp3"],
+      "characters": [],
+      "dialogue": [
+        {"speaker": "", "text": "Third floor. The hallway is narrow, carpeted in faded gray. Four doors line the corridor — three with company signs, one without. Room 304 is at the far end, its door slightly ajar."},
+        {"speaker": "", "text": "Through the gap, you can see a small office. A desk, a filing cabinet, a window with blinds drawn. The desk lamp is off, but faint street light filters through the blinds in thin horizontal lines."},
+        {"speaker": "", "text": "Something catches your eye on the floor near the door — a photograph, half-hidden under the desk. You pick it up. It's one of Yuki's. The same building, photographed from across the street. On the back, in Yuki's handwriting: '304. 11:47 PM. He was waiting.'"}
+      ],
+      "choices": [
+        { "id": "examine_desk", "label": "Step inside and examine the desk", "target": "shinjuku_desk" },
+        { "id": "examine_cabinet", "label": "Check the filing cabinet", "target": "shinjuku_cabinet" }
+      ],
+      "on_enter": { "set_flags": { "found_yuki_photo_304": true } }
+    },
+    "shinjuku_desk": {
+      "background": "backgrounds/shinjuku_office.png",
+      "music": "music/tension_build.mp3",
+      "sfx": ["sfx/paper_rustle.mp3", "sfx/camera_shutter.mp3", "sfx/heartbeat.wav"],
+      "characters": [],
+      "dialogue": [
+        {"speaker": "", "text": "The desk is cluttered with papers — mostly invoices and utility bills. But there's a folder marked 'Kuroda Holdings.' Inside, a corporate registration document: the company was registered six months ago with no listed business activities. The registered address is this room."},
+        {"speaker": "", "text": "On the window sill, you find a small digital camera with a cracked lens. You press the button. The screen flickers to life. The last image shows a figure — a man in a dark coat — standing across the street, watching this building. Timestamp: three weeks ago, 11:47 PM."},
+        {"speaker": "", "text": "The same time Yuki was photographing this building from the other side. They were watching each other."},
+        {"speaker": "", "text": "At the bottom of the desk, a locked drawer resists at first, then gives way. Inside: a handwritten ledger. The final entry, in different ink — hurried, angry: 'Sato, Yuki. Photographer. Subject has been photographing the building. Risk assessment: HIGH. Recommendation: DISAPPEAR.'"}
+      ],
+      "choices": [
+        { "id": "check_cabinet_from_desk", "label": "Now check the filing cabinet", "target": "shinjuku_cabinet", "requires_flags": { "found_victim_files": false } },
+        { "id": "leave_office", "label": "Photograph everything and leave", "target": "shinjuku_escape" }
+      ],
+      "on_enter": { "set_flags": { "found_kuroda_folder": true, "knows_company_name": true, "found_surveillance_camera": true, "found_ledger": true } }
+    },
+    "shinjuku_cabinet": {
+      "background": "backgrounds/shinjuku_office.png",
+      "music": "music/tension_build.mp3",
+      "sfx": ["sfx/paper_rustle.mp3", "sfx/camera_shutter.mp3", "sfx/heartbeat.wav", "sfx/realization.wav"],
+      "characters": [],
+      "dialogue": [
+        {"speaker": "", "text": "The filing cabinet is old, metal, the kind that groans when opened. The top drawer slides open easily. Inside: personnel files — but not for employees. For clients. Names, addresses, dates. Most are from the neighborhood around Yuki's studio."},
+        {"speaker": "", "text": "There are twelve files. Eight are marked 'completed.' Four are marked 'in progress.' The word 'completed' sends a chill through you — these are the people who entered this building and never came out during the day."},
+        {"speaker": "", "text": "One file catches your eye: 'Sato, Yuki.' Status: 'in progress.' Date: three weeks ago."},
+        {"speaker": "", "text": "Yuki was in their system. They knew he was watching them. His own file was waiting in this cabinet."}
+      ],
+      "choices": [
+        { "id": "check_desk_from_cabinet", "label": "Now examine the desk", "target": "shinjuku_desk", "requires_flags": { "found_kuroda_folder": false } },
+        { "id": "leave_office", "label": "Photograph everything and leave", "target": "shinjuku_escape" }
+      ],
+      "on_enter": { "set_flags": { "found_victim_files": true } }
+    },
+    "shinjuku_escape": {
+      "background": "backgrounds/shinjuku_stairwell.png",
+      "music": "music/tension_build.mp3",
+      "sfx": ["sfx/footsteps_indoor.mp3", "sfx/heartbeat.wav", "sfx/tension_rise.wav"],
+      "characters": [],
+      "dialogue": [
+        {"speaker": "", "text": "You photograph everything — the files, the ledger, the camera on the window sill. Your hands are steady, but your heart is pounding. You have what you came for."},
+        {"speaker": "", "text": "But as you turn to leave, you hear something behind you. Footsteps. In the hallway. Coming closer."},
+        {"speaker": "", "text": "You don't wait. You slip out of the office, down the hallway, and into the stairwell just as the footsteps reach the door. A man's voice calls out — sharp and angry."},
+        {"speaker": "", "text": "You descend quickly, two steps at a time, your breathing loud in the concrete shaft. Behind you, the footsteps change direction. They're coming down the stairs."},
+        {"speaker": "", "text": "You reach the ground floor and push through the lobby door, out into the cool Shinjuku evening. The street is busy — pedestrians, taxis, neon glow. You blend into the crowd, heart racing, evidence secured in your bag."},
+        {"speaker": "", "text": "Behind you, the building's door closes. The footsteps stop. You made it. But you know — they know someone was there."}
+      ],
+      "choices": [
+        { "id": "return_to_studio_from_shinjuku", "label": "Return to the studio with the evidence", "target": "final_confrontation" }
+      ],
+      "on_enter": { "set_flags": { "escaped_shinjuku": true } }
     },
     "final_confrontation": {
       "background": "backgrounds/final_confrontation.png",
@@ -522,8 +749,8 @@
         { "speaker": "Haruka", "text": "Please. Tell me what to do. Tell me what the right thing is." }
       ],
       "choices": [
-        { "id": "ending_darkroom_light", "label": "Go to the darkroom — find Yuki and hear his story", "target": "ending_darkroom_light", "requires_flags": { "knows_yuki_hiding": true, "knows_hidden_evidence": true, "knows_last_photo": true } },
-        { "id": "ending_developed_truth", "label": "Work with Kenji to publish the photographs and expose the truth", "target": "ending_developed_truth", "requires_flags": { "knows_kenji_article": true, "knows_last_photo": true } },
+        { "id": "ending_darkroom_light", "label": "Go to the darkroom — find Yuki and hear his story", "target": "ending_darkroom_light", "requires_flags": { "knows_yuki_hiding": true, "knows_hidden_evidence": true, "knows_last_photo": true, "escaped_shinjuku": true } },
+        { "id": "ending_developed_truth", "label": "Work with Kenji to publish the evidence and expose Kuroda Holdings", "target": "ending_developed_truth", "requires_flags": { "knows_kenji_article": true, "knows_last_photo": true, "escaped_shinjuku": true } },
         { "id": "ending_last_exposure", "label": "Ask Haruka to show you the last photograph she's been hiding", "target": "ending_last_exposure", "requires_flags": { "knows_haruka_hiding": true } },
         { "id": "ending_fogged_film", "label": "Accept that Yuki wanted to disappear — close the case", "target": "ending_fogged_film" }
       ],
@@ -555,38 +782,41 @@
       "background": "backgrounds/ending_darkroom_light.png",
       "music": "music/neighborhood_walk.mp3",
       "sfx": ["sfx/door_creak.mp3", "sfx/darkroom_agitate.wav", "sfx/realization.wav"],
-      "characters": ["Haruka"],
+      "characters": ["Haruka", "Yuki"],
       "dialogue": [
         {"speaker": "", "text": "You push open the darkroom door. The red light is brighter than you expected, and the air is thick with the smell of chemicals. In the corner, hunched over a developing tray, is a figure. He looks up — and you see Yuki's face, thinner than you can imagine from the photos you saw, eyes bright with exhaustion and relief."},
         { "speaker": "", "text": "Yuki stares at you for a long moment. Then he smiles — a real smile, the first you've seen, and it transforms his face entirely." },
         { "speaker": "Yuki", "text": "You found me. I knew someone would come to rescue me eventually. Haruka has been helping me all the time, but she shouldn't have to do this alone." },
-        { "speaker": "Yuki", "text": "What I've been developing — it's not just photographs. It's evidence. People have been disappearing from this neighborhood. I followed the pattern. I found the building, the company, the people behind it. I have the photographs, the documents, the names. Everything is here." },
-        { "speaker": "Yuki", "text": "But I couldn't come forward. Not yet. If they knew I had this — if they knew I was developing it — they would have destroyed everything. So I stayed. I developed in the dark, literally and figuratively, and now I have enough to bring them down." },
+        { "speaker": "Yuki", "text": "What I've been developing — it's not just photographs. It's evidence. People have been disappearing from this neighborhood. I followed the pattern. I found the building in Shinjuku, Kuroda Holdings, the people behind it. I have the photographs, the documents, the names. Everything is here." },
+        { "speaker": "", "text": "You show him the ledger and files you brought from room 304. His eyes widen. He reads the entry about himself — 'Recommendation: DISAPPEAR' — and something hardens in his expression." },
+        { "speaker": "Yuki", "text": "So they did mark me. I knew it. I knew they knew I was watching. But I couldn't stop. Not until I had enough." },
+        { "speaker": "Yuki", "text": "Between my photographs and your documents — we have everything. The building, the company, the names, the pattern. We can bring them down." },
         { "speaker": "Haruka", "text": "Yuki... the photographs. They're dangerous. What if they come for us?" },
         { "speaker": "Yuki", "text": "They're already coming. That's why I hid. But hiding isn't solving anything. The question is: what do we do with the truth now that we have it?" }
       ],
       "choices": [
-        { "id": "ending_darkroom_light_publish", "label": "Help Yuki publish the evidence — expose the truth, whatever the cost", "target": "ending_darkroom_light" },
+        { "id": "ending_darkroom_light_publish", "label": "Help Yuki publish the evidence — expose Kuroda Holdings, whatever the cost", "target": "ending_darkroom_light" },
         { "id": "ending_darkroom_light_hide", "label": "Help Yuki disappear completely — protect the evidence but stay hidden", "target": "ending_darkroom_light" },
         { "id": "start_new_game", "label": "Start new investigation", "target": "street_approach" }
       ],
       "on_enter": { "set_flags": {} }
     },
     "ending_developed_truth": {
-      "description": "You call Kenji. He arrives within the hour, looking tired but alert. When you tell him what you've found, his expression shifts — from skepticism to disbelief to something like awe.",
+      "description": "You call Kenji. He arrives within the hour. When you show him Yuki's photographs alongside the documents and ledger from the Shinjuku building, his expression shifts — from skepticism to disbelief to awe.",
       "background": "backgrounds/ending_developed_truth.png",
       "music": "music/neighborhood_walk.mp3",
       "sfx": ["sfx/page_turn.mp3", "sfx/paper_rustle.mp3", "sfx/item_found.wav"],
       "characters": ["Kenji", "Haruka"],
       "dialogue": [
-        { "speaker": "Kenji", "text": "These are... these are incredible. I've published Yuki's work for years, but this — this is different. This is journalism. This is truth." },
-        { "speaker": "Kenji", "text": "I have a draft article ready. It connects the disappearances to the Shinjuku building, names the company, lays out the pattern. I just needed the final piece — and this is it." },
-        { "speaker": "Haruka", "text": "If you publish this, they'll know. The people behind this — they'll know someone has the photographs. Yuki will be in danger." },
+        { "speaker": "", "text": "He spreads the evidence across the studio table — Yuki's photographs from one side, the personnel files and Kuroda Holdings ledger from the other. The red light from the darkroom catches the edges of each frame, each page." },
+        { "speaker": "Kenji", "text": "These are... these are incredible. Yuki's photographs show the building from the outside. Your documents show what was happening inside. Together — this is the full story. This is undeniable." },
+        { "speaker": "Kenji", "text": "I have a draft article ready. It connects the disappearances to the Shinjuku building, names Kuroda Holdings, lays out the pattern. I just needed the final piece — the ledger, the files, the names. And now I have it all." },
+        { "speaker": "Haruka", "text": "If you publish this, they'll know. Kuroda Holdings — they'll know someone has everything. Yuki will be in danger." },
         { "speaker": "Kenji", "text": "Yuki is already in danger. That's why he disappeared. Publishing this — it's the only way to protect him, if he is still alive. If the story gets out, if the evidence becomes public, they can't touch Yuki anymore. The truth is the best shield." },
         { "speaker": "Haruka", "text": "Or the worst target. You journalists — you always think the truth protects people. Sometimes the truth just makes them visible." }
       ],
       "choices": [
-        { "id": "ending_developed_truth", "label": "Publish the photographs — let the truth set everyone free", "target": "ending_developed_truth" },
+        { "id": "ending_developed_truth", "label": "Publish the photographs and the ledger — let the truth set everyone free", "target": "ending_developed_truth" },
         { "id": "start_new_game", "label": "Start new investigation", "target": "street_approach" }
       ],
       "on_enter": { "set_flags": {} }

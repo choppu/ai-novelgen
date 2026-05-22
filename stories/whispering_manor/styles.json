@@ -1,4 +1,17 @@
 {
+  "fonts": {
+    "dialogue":  "fonts/Lecta.otf",
+    "name":      "fonts/Lecta.otf",
+    "choice":    "fonts/Lecta.otf",
+    "narration": "fonts/Lecta.otf"
+  },
+
+  "ui_backgrounds": {
+    "dialogue_box":  "ui/dialogue_box.png",
+    "npc_chat":      "ui/npc_chat.png",
+    "choice_button": "ui/choice_button.png"
+  },
+
   "colors": {
     "bg":           [0.05, 0.05, 0.07, 1.0],
     "text":         [0.95, 0.95, 0.92, 1.0],
@@ -29,7 +42,9 @@
     "font_size_description": 22,
     "font_size_choice":    20,
     "font_size_error":     18,
-    "font_size_continue":  20
+    "font_size_continue":  20,
+    "font_size_chat_name": 28,
+    "font_size_input":     24
   },
 
   "timing": {
@@ -41,5 +56,17 @@
     "description_max_hold": 6.0,
     "description_char_time": 0.03,
     "error_auto_dismiss":   5.0
+  },
+
+  "layout": {
+    "dialogue_box_height": 220,
+    "choice_button_min_width": 50,
+    "choice_button_min_height": 120,
+    "choice_button_corner_radius": 6,
+    "choice_button_padding_horizontal": 25,
+    "choice_button_padding_vertical": 8,
+    "choice_button_separation": 13,
+    "choice_overlay_top": 0.3,
+    "choice_overlay_bottom": 0.85
   }
 }

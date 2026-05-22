@@ -43,6 +43,8 @@ static func get_font_size_description()  -> int: return _style().get_font_size_d
 static func get_font_size_choice()       -> int: return _style().get_font_size_choice()
 static func get_font_size_error()        -> int: return _style().get_font_size_error()
 static func get_font_size_continue()     -> int: return _style().get_font_size_continue()
+static func get_font_size_chat_name()    -> int: return _style().get_font_size_chat_name()
+static func get_font_size_input()        -> int: return _style().get_font_size_input()
 
 
 # ── Fonts (story-specific, loaded by FontLoader) ────────────────
@@ -77,6 +79,20 @@ static func get_description_char_time() -> float: return _style().get_descriptio
 static func get_error_auto_dismiss()    -> float: return _style().get_error_auto_dismiss()
 
 
+# ── Layout ──────────────────────────────────────────────────────
+## Story-specific layout values loaded from styles.json.
+
+static func get_dialogue_box_height()                 -> int:   return _style().get_dialogue_box_height()
+static func get_choice_button_min_width()             -> int:   return _style().get_choice_button_min_width()
+static func get_choice_button_min_height()            -> int:   return _style().get_choice_button_min_height()
+static func get_choice_button_corner_radius()         -> int:   return _style().get_choice_button_corner_radius()
+static func get_choice_button_padding_horizontal()    -> int:   return _style().get_choice_button_padding_horizontal()
+static func get_choice_button_padding_vertical()      -> int:   return _style().get_choice_button_padding_vertical()
+static func get_choice_button_separation()            -> int:   return _style().get_choice_button_separation()
+static func get_choice_overlay_top()                  -> float: return _style().get_choice_overlay_top()
+static func get_choice_overlay_bottom()               -> float: return _style().get_choice_overlay_bottom()
+
+
 # ── Internal ────────────────────────────────────────────────────
 static var _style_instance: StoryStyle
 
@@ -90,23 +106,39 @@ static func _style() -> StoryStyle:
 
 ## Apply the standard VN choice-button style to a [Button].
 static func style_choice_button(btn: Button) -> void:
+	var cr = get_choice_button_corner_radius()
+	var ph = get_choice_button_padding_horizontal()
+	var pv = get_choice_button_padding_vertical()
+
 	var normal = StyleBoxFlat.new()
 	normal.bg_color = get_choice_bg()
-	normal.set_corner_radius_all(6)
+	normal.set_corner_radius_all(cr)
 	normal.set_border_width_all(1)
 	normal.border_color = get_dialogue_box_border()
+	normal.content_margin_left = ph
+	normal.content_margin_right = ph
+	normal.content_margin_top = pv
+	normal.content_margin_bottom = pv
 
 	var hover = StyleBoxFlat.new()
 	hover.bg_color = get_choice_hover()
-	hover.set_corner_radius_all(6)
+	hover.set_corner_radius_all(cr)
 	hover.set_border_width_all(1)
 	hover.border_color = Color(0.45, 0.50, 0.70, 1.0)
+	hover.content_margin_left = ph
+	hover.content_margin_right = ph
+	hover.content_margin_top = pv
+	hover.content_margin_bottom = pv
 
 	var focus = StyleBoxFlat.new()
 	focus.bg_color = get_choice_focus()
-	focus.set_corner_radius_all(6)
+	focus.set_corner_radius_all(cr)
 	focus.set_border_width_all(1)
 	focus.border_color = Color(0.55, 0.60, 0.85, 1.0)
+	focus.content_margin_left = ph
+	focus.content_margin_right = ph
+	focus.content_margin_top = pv
+	focus.content_margin_bottom = pv
 
 	btn.add_theme_stylebox_override("normal", normal)
 	btn.add_theme_stylebox_override("hover", hover)
@@ -123,6 +155,39 @@ static func create_dialogue_box_style() -> StyleBoxFlat:
 	style.set_border_width_all(1)
 	style.border_color = get_dialogue_box_border()
 	style.set_corner_radius_all(6)
+	return style
+
+
+## Load a UI background texture from the story's styles.json path.
+## Returns a Texture2D or null if not configured / not found.
+static func load_ui_bg_texture(key: String) -> Texture2D:
+	var path: String = _style().resolve_ui_bg_path(key)
+	if path.is_empty():
+		return null
+	var resource = ResourceLoader.load(path)
+	if resource is Texture2D:
+		return resource
+	return null
+
+
+## Check if a UI background image is configured for the given key.
+static func has_ui_bg(key: String) -> bool:
+	return not _style().resolve_ui_bg_path(key).is_empty()
+
+
+## Build a StyleBoxTexture from a loaded texture for use on buttons.
+## Margins control the 9-patch inset (all sides same value).
+static func create_button_stylebox(texture: Texture2D, margin: int = 12) -> StyleBoxTexture:
+	var style = StyleBoxTexture.new()
+	style.texture = texture
+	style.texture_margin_left = margin
+	style.texture_margin_top = margin
+	style.texture_margin_right = margin
+	style.texture_margin_bottom = margin
+	style.content_margin_left = margin
+	style.content_margin_top = margin
+	style.content_margin_right = margin
+	style.content_margin_bottom = margin
 	return style
 
 

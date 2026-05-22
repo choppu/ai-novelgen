@@ -347,11 +347,171 @@ Yuki was photographing — it's registered to a shell company. I have a draft
 article ready to publish, but I've been waiting for the final piece of
 evidence. I thought it would come from Yuki's photographs."
 
-He looks at you.
+He reaches into his satchel and pulls out a folded piece of paper.
+His hands are shaking slightly.
+
+"The address. Yuki wrote it down for me the day he disappeared. He
+said, 'If anything happens to me, go here. But be careful. Don't let
+anyone see you.' I went once — just from the outside. The building is
+old, unremarkable. Third floor, room 304. But I could never go inside.
+I'm a journalist, not a detective. I don't know how to — how to do
+that kind of thing."
+
+He slides the paper across the table.
+
+"But you — you're the kind of person who can. Will you go? Will you
+see what Yuki saw?"
+
+He looks at you with an intensity that is almost desperate.
 
 "I've been too afraid to publish without confirmation. Because if I'm
 wrong, I destroy someone's life. And if I'm right — if I'm right,
 someone might try to destroy mine."
+
+— — —
+
+THE SHINJUKU BUILDING
+
+— — —
+
+You take the train to Shinjuku. The city transforms around you — the
+fading wooden neighborhood gives way to glass towers, neon signs, the
+relentless energy of Tokyo's commercial heart. The address Kenji gave
+you leads to a quieter part of Shinjuku, away from the main stations
+and shopping arcades, into a district of older office buildings where
+the post-bubble economy left its scars.
+
+The building is exactly as unremarkable as Kenji described. Seven stories
+of faded beige concrete, the kind of structure that exists to be
+forgotten. The ground floor houses a small convenience store and a
+laundromat, both closed for the evening. The entrance to the stairwell
+is behind a glass door with a buzzer system — the buzzer is broken,
+held in place with electrical tape. The door itself opens with a push,
+though it resists, as though reluctant to let anyone in.
+
+Inside, the lobby is dim. Fluorescent lights flicker overhead, casting
+the space in a sickly greenish glow. The walls are covered in peeling
+paint and layers of old advertisements — tutoring services, massage
+parlors, immigration lawyers. A security desk sits to the left, empty,
+a single monitor displaying a frozen image of the front entrance from
+three days ago. The camera hasn't been recording.
+
+The stairwell is to your right. Concrete steps, metal railings, the
+smell of stale air and old carpet. You can hear the muffled sound of
+a television from somewhere above — a news broadcast, the anchor's
+voice too distant to make out.
+
+You start climbing.
+
+— — —
+
+Third floor. The hallway is narrow, carpeted in a patterned gray that
+has faded to brown in the walking paths. Four doors line the corridor —
+three with company signs, one without. Room 304 is at the far end,
+its door slightly ajar.
+
+Through the gap, you can see a small office. A desk, a filing cabinet,
+a window with blinds drawn. The desk lamp is off, but there's a faint
+glow from the street below, filtering through the blinds in thin
+horizontal lines.
+
+Something catches your eye on the floor near the door — a photograph,
+half-hidden under the desk. You pick it up. It's one of Yuki's. The
+same building, photographed from across the street. On the back, in
+Yuki's handwriting: '304. 11:47 PM. He was waiting.'
+
+You step into the room.
+
+— — —
+
+The office is small — maybe six tatami mats worth of space. The desk
+is cluttered with papers, most of them invoices and utility bills. But
+there's a locked drawer at the bottom. On the desk surface, you find a
+folder marked with a company name: 'Kuroda Holdings.' Inside, a
+corporate registration document — the company was registered six months
+ago, with no listed business activities. The registered address is this
+building, room 304.
+
+On the window sill, you find something else: a small digital camera,
+its lens cracked. You press the button. The screen flickers to life.
+The last image on the camera is a photograph taken from inside this
+room, looking out the window. It shows a figure — a man in a dark
+coat — standing across the street, watching this building. The
+timestamp reads: three weeks ago, 11:47 PM.
+
+The same time Yuki was photographing this building from the other side.
+
+They were watching each other.
+
+— — —
+
+You move to the filing cabinet. It's old, metal, the kind that groans
+when opened. The top drawer slides open easily. Inside, you find
+personnel files — but not for employees. For clients. Names, addresses,
+dates. Most of them are from this neighborhood.
+
+You flip through them quickly. There are twelve files. Each one
+documents a person: their name, their address, a date range, and a
+status. Eight of the twelve are marked 'completed.' Four are marked
+'in progress.'
+
+The word 'completed' sends a chill through you. You've seen what
+'completed' means in this context. These are the people Yuki was
+tracking — the people who entered this building and never came out
+during the day.
+
+One file catches your eye: 'Sato, Yuki.' Status: 'in progress.'
+Date: three weeks ago.
+
+Yuki was in their system. They knew he was watching them.
+
+— — —
+
+The locked drawer at the bottom of the desk resists at first, then
+gives way with a sharp twist of your shoulder. Inside, you find a
+ledger — a handwritten record of transactions. Names, amounts, dates.
+The amounts are substantial. The names include several that match the
+personnel files.
+
+But the most damning entry is at the back of the ledger, in different
+ink, as though added later:
+
+'Sato, Yuki. Photographer. Subject has been photographing the
+building. Risk assessment: HIGH. Recommendation: DISAPPEAR.'
+
+The handwriting is different from the rest of the ledger — hurried,
+angry. Someone wrote this in a moment of decision. Someone decided
+that Yuki should disappear.
+
+You take photographs of everything — the files, the ledger, the
+camera on the window sill. Your hands are steady, but your heart is
+pounding. You have what you came for.
+
+But as you turn to leave, you hear something behind you.
+
+Footsteps. In the hallway. Coming closer.
+
+— — —
+
+You don't wait. You slip out of the office, down the hallway, and into
+the stairwell just as the footsteps reach the door. You can hear
+someone calling out — a man's voice, sharp and angry, speaking in
+Japanese. You descend quickly, two steps at a time, your breathing
+loud in the concrete shaft.
+
+Behind you, the footsteps change direction. They're coming down the
+stairs.
+
+You reach the ground floor and push through the lobby door, out into
+the cool Shinjuku evening. The street is busy — pedestrians, taxis,
+the neon glow of nearby signs. You blend into the crowd, your heart
+still racing, the evidence secured in your bag.
+
+Behind you, the building's door closes. The footsteps stop.
+
+You made it. But you know — they know someone was there.
+
+— — —
 
 You return to the studio. The afternoon light has shifted — it's later
 than you thought. The street outside is quieter now, the neighborhood
@@ -465,28 +625,32 @@ If you call Kenji and bring him to the studio with the evidence —
 ENDING TWO: DEVELOPED TRUTH
 
 Kenji arrives within the hour, looking tired but alert. When you show
-him Yuki's photographs, his expression shifts — from skepticism to
+him Yuki's photographs alongside the documents and ledger you found in
+the Shinjuku building, his expression shifts — from skepticism to
 disbelief to something like awe.
 
-He spreads Yuki's photographs across the studio table, and the red light
-from the darkroom catches the edges of each frame.
+He spreads the evidence across the studio table — Yuki's photographs
+from one side, the personnel files and ledger from the other. The red
+light from the darkroom catches the edges of each frame, each page.
 
 "These are — these are incredible," he says. His voice is barely a
-whisper. "I've published Yuki's work for years, but this — this is
-different. This is journalism. This is truth."
+whisper. "Yuki's photographs show the building from the outside. Your
+documents show what was happening inside. Together — this is the full
+story. This is undeniable."
 
 He pulls a folded article from his satchel. Spreads it out.
 
 "I have a draft ready. It connects the disappearances to the Shinjuku
-building, names the company, lays out the pattern. I just needed the
-final piece — and this is it."
+building, names Kuroda Holdings, lays out the pattern. I just needed
+the final piece — the ledger, the files, the names. And now I have it
+all."
 
 Haruka arrives. She looks at the photographs, at Kenji's article, at
 the evidence spread across the table. Her expression is complicated —
 hope and fear and something that might be grief.
 
-"If you publish this," she says, "they'll know. The people behind this
-— they'll know someone has the photographs. Yuki will be in danger."
+"If you publish this," she says, "they'll know. Kuroda Holdings — they'll
+know someone has everything. Yuki will be in danger."
 
 Kenji looks at her. Looks at the photographs.
 
@@ -509,7 +673,7 @@ Haruka watches him pack. She doesn't try to stop him. She just stands
 there, in the red light of the darkroom, and lets the truth develop.
 
 The article is published three days later. It makes headlines. The
-Shinjuku building is raided. The company is investigated. Names are
+Shinjuku building is raided. Kuroda Holdings is investigated. Names are
 published. The disappearances are connected, documented, exposed.
 
 Yuki is never found. But his photographs — his truth — live on.

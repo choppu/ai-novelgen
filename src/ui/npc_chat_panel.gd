@@ -33,6 +33,7 @@ signal back_pressed()
 
 # ── Internal nodes ──────────────────────────────────────────────
 var _bg: ColorRect
+var _bg_texture: TextureRect  # story-specific background image
 var _root_vbox: VBoxContainer
 var _scroll_container: ScrollContainer
 var _chat_rich_text: RichTextLabel
@@ -63,7 +64,8 @@ func append_message(speaker: String, text: String, is_player: bool = false) -> v
 	var color_hex = _color_to_html(color)
 
 	var align = "right" if is_player else "left"
-	var label = "[b][color=%s]%s[/color][/b]" % [color_hex, speaker] if not speaker.is_empty() else ""
+	var name_size = VNTheme.get_font_size_chat_name()
+	var label = "[font_size=%d][b][color=%s]%s[/color][/b][/font_size]" % [name_size, color_hex, speaker] if not speaker.is_empty() else ""
 
 	var bbcode = ""
 	if not label.is_empty():
@@ -85,7 +87,8 @@ func append_system(text: String) -> void:
 ## Show a typing indicator (animated dots).
 func show_typing_indicator(speaker_name: String) -> void:
 	var color_hex = _color_to_html(VNTheme.get_loading_color())
-	var bbcode = "[indent][left][b][color=%s]%s[/color][/b] [i]...[/i][/left][/indent]\n" % [color_hex, speaker_name]
+	var name_size = VNTheme.get_font_size_chat_name()
+	var bbcode = "[indent][left][font_size=%d][b][color=%s]%s[/color][/b] [i]...[/i][/font_size][/left][/indent]\n" % [name_size, color_hex, speaker_name]
 	_chat_rich_text.append_text(bbcode)
 	_scroll_container.scroll_vertical = int(_scroll_container.get_v_scroll_bar().max_value)
 
@@ -140,6 +143,20 @@ func _build_background() -> void:
 	_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(_bg)
 
+	# ── Story-specific background texture ──
+	_bg_texture = TextureRect.new()
+	_bg_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_bg_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_bg_texture.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_bg_texture.visible = false
+	add_child(_bg_texture)
+
+	var chat_bg = VNTheme.load_ui_bg_texture("npc_chat")
+	if chat_bg:
+		_bg_texture.texture = chat_bg
+		_bg_texture.visible = true
+		_bg.visible = false  # hide solid colour when image is present
+
 
 func _build_root() -> void:
 	_root_vbox = VBoxContainer.new()
@@ -162,8 +179,11 @@ func _build_message_area() -> void:
 
 	# Default text color and font
 	_chat_rich_text.add_theme_color_override("default_color", VNTheme.get_text_color())
-	_chat_rich_text.add_theme_font_override("font", VNTheme.get_font_dialogue())
+	_chat_rich_text.add_theme_font_override("normal_font", VNTheme.get_font_dialogue())
 	_chat_rich_text.add_theme_font_size_override("normal_font_size", VNTheme.get_font_size_dialogue())
+	# Name font for speaker labels
+	_chat_rich_text.add_theme_font_override("bold_font", VNTheme.get_font_name())
+	_chat_rich_text.add_theme_font_size_override("bold_font_size", VNTheme.get_font_size_chat_name())
 
 	# Margin inside the rich text
 	var margin = MarginContainer.new()
@@ -200,11 +220,12 @@ func _build_bottom_bar() -> void:
 	# Back button
 	_back_button = Button.new()
 	_back_button.text = "← Back"
-	_back_button.custom_minimum_size = Vector2(90, 0)
+	_back_button.custom_minimum_size = Vector2(120, VNTheme.get_choice_button_min_height())
 	_back_button.pressed.connect(func():
 			SoundEvents.play("back_button")
 			back_pressed.emit())
 	VNTheme.style_choice_button(_back_button)
+	_style_black_button(_back_button)
 	_bottom_hbox.add_child(_back_button)
 
 	# Input field
@@ -215,6 +236,7 @@ func _build_bottom_bar() -> void:
 	_input_line.add_theme_color_override("font_color", VNTheme.get_text_color())
 	_input_line.add_theme_color_override("placeholder_font_color", VNTheme.get_loading_color())
 	_input_line.add_theme_font_override("font", VNTheme.get_font_dialogue())
+	_input_line.add_theme_font_size_override("font_size", VNTheme.get_font_size_input())
 	var input_bg = StyleBoxFlat.new()
 	input_bg.bg_color = VNTheme.get_input_bg()
 	input_bg.set_corner_radius_all(6)
@@ -226,13 +248,23 @@ func _build_bottom_bar() -> void:
 	# Send button
 	_send_button = Button.new()
 	_send_button.text = "Send"
-	_send_button.custom_minimum_size = Vector2(90, 0)
+	_send_button.custom_minimum_size = Vector2(120, VNTheme.get_choice_button_min_height())
 	_send_button.pressed.connect(func(): message_sent.emit(_input_line.text))
 	VNTheme.style_choice_button(_send_button)
+	_style_black_button(_send_button)
 	_bottom_hbox.add_child(_send_button)
 
 
 # ── Helpers ─────────────────────────────────────────────────────
+
+## Override button stylebox colours to solid black while keeping shape.
+func _style_black_button(btn: Button) -> void:
+	var black = Color(0.0, 0.0, 0.0, 1.0)
+	for state in ["normal", "hover", "focus"]:
+		var sb = btn.get_theme_stylebox(state)
+		if sb is StyleBoxFlat:
+			sb.bg_color = black
+			btn.add_theme_stylebox_override(state, sb)
 
 func _color_to_html(color: Color) -> String:
 	return "#%02X%02X%02X" % [

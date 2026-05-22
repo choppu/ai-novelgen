@@ -30,6 +30,7 @@ signal advance_requested()
 
 
 # ── Internal nodes ──────────────────────────────────────────────
+var _bg_texture: TextureRect          # story-specific background image
 var _panel: PanelContainer
 var _margin: MarginContainer
 var _name_label: Label
@@ -107,12 +108,32 @@ func _ready() -> void:
 
 
 func _build_dialogue_panel() -> void:
+	# ── Story-specific background texture (behind the panel) ──
+	_bg_texture = TextureRect.new()
+	_bg_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_bg_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_bg_texture.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	_bg_texture.anchor_top = 1.0
+	_bg_texture.offset_top = -VNTheme.get_dialogue_box_height()
+	_bg_texture.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_bg_texture.visible = false
+	add_child(_bg_texture)
+
+	var dialogue_bg = VNTheme.load_ui_bg_texture("dialogue_box")
+	var has_bg_image = dialogue_bg != null
+	if has_bg_image:
+		_bg_texture.texture = dialogue_bg
+		_bg_texture.visible = true
+
 	_panel = PanelContainer.new()
 	_panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
 	_panel.anchor_top = 1.0
-	_panel.offset_top = -220
+	_panel.offset_top = -VNTheme.get_dialogue_box_height()
 	_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	_panel.add_theme_stylebox_override("panel", VNTheme.create_dialogue_box_style())
+	# Only apply the filled stylebox when no background image is present.
+	# With an image, the TextureRect handles the background and the panel stays transparent.
+	if not has_bg_image:
+		_panel.add_theme_stylebox_override("panel", VNTheme.create_dialogue_box_style())
 	add_child(_panel)
 
 	_margin = MarginContainer.new()

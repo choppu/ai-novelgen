@@ -56,6 +56,7 @@
     "entered_darkroom": { "initial": false },
     "visited_haruka_room": { "initial": false },
     "talked_to_obasan": { "initial": false },
+    "talked_to_haruka": { "initial": false },
     "met_kenji": { "initial": false },
     "has_address": { "initial": false },
     "visited_shinjuku": { "initial": false },
@@ -152,177 +153,35 @@
     }
   },
   "clues": {
-    "yuki_last_assignment": {
-      "description": "What Yuki was working on in their final weeks",
-      "sources": ["Haruka", "Kenji"],
-      "connections": ["hidden_evidence", "kenji_last_meeting"],
-      "is_red_herring": false,
-      "tiers": [
-        { 
-          "tier": 1, 
-          "text": "Haruka mentions Yuki was working on something different from his usual street photography — something more focused, more intense",
-          "requires_trust": 0,
-          "requires_flags": [
-            "obasan_last_sighting"
-          ]
-        },
-        { 
-          "tier": 2,
-          "text": "Yuki had been photographing a specific building — an old office in Shinjuku — repeatedly over several weeks. He called it 'the truth project.'",
-          "requires_trust": 2,
-          "requires_flags": [
-            "obasan_last_sighting",
-            "strange_photograph"
-          ],
-          "set_flags": {
-            "knows_last_assignment": true
-          } 
-        },
-        { 
-          "tier": 3, 
-          "text": "Yuki discovered a pattern through his photography: people entering the building at night who never came out during the day. He was building a visual case.",
-          "requires_trust": 4,
-          "requires_flags": [
-            "obasan_last_sighting",
-            "strange_photograph"
-          ],
-          "set_flags": { 
-            "knows_last_assignment": true
-          } 
-        }
-      ]
-    },
-    "strange_photograph": {
-      "description": "Yuki's last photograph — the one that changed everything",
-      "sources": ["Haruka"],
-      "connections": ["haruka_last_photo", "hidden_evidence"],
-      "is_red_herring": false,
-      "tiers": [
-        { "tier": 1,
-        "text": "Haruka mentions Yuki's last photograph was 'different' — not in the way they usually are. It made them quiet for days.",
-        "requires_trust": 0,
-        "requires_flags": [
-          "yuki_last_assignment"
-        ]
-      },
-        {
-          "tier": 2,
-          "text": "The last photograph captured something it shouldn't have been able to capture — a figure in a doorway that shouldn't have been there, at a time when the room should have been empty.", 
-          "requires_trust": 2,
-          "requires_flags": [
-          "yuki_last_assignment"
-          ],
-          "set_flags": {
-            "knows_last_photo": true
-            }
-          },
-        {
-          "tier": 3,
-          "text": "The photograph shows a man in a dark suit standing in a doorway, looking directly at the camera. But Yuki was across the street, two blocks away, when he took it. The man in the photograph is looking at the lens from inside a room that no one has been in for years.", 
-          "requires_trust": 4,
-          "requires_flags": [
-          "yuki_last_assignment"
-          ],
-          "set_flags": {
-            "knows_last_photo": true
-          } }
-      ]
-    },
-    "haruka_nightmares": {
-      "description": "Haruka's emotional state and what the last photograph has done to her",
-      "sources": ["Haruka"],
-      "connections": ["strange_photograph", "haruka_last_photo"],
-      "is_red_herring": false,
-      "tiers": [
-        {
-          "tier": 1,
-          "text": "Haruka seems exhausted — dark circles under her eyes, hands that tremble slightly when she thinks no one is looking",
-          "requires_flags": [
-            "strange_photograph"
-          ],
-          "requires_trust": 1
-        },
-        {
-          "tier": 2,
-          "text": "Haruka admits she's been having nightmares about the last photograph. She sees the figure in the doorway every time she closes her eyes. She's been developing the same frame over and over, trying to understand what she's seeing.", 
-          "requires_flags": [
-            "strange_photograph"
-          ],
-          "requires_trust": 3
-        },
-        {
-          "tier": 3,
-          "text": "Haruka describes the photograph in detail: the man in the doorway, the way he's looking at the camera, the impossible geometry of the room. She says Yuki took the photograph three days before he disappeared, and she's been unable to stop looking at it since. She thinks the photograph is 'watching her back.'", 
-          "requires_flags": [
-            "strange_photograph"
-          ],
-          "requires_trust": 4
-        }
-      ]
-    },
-    "kenji_last_meeting": {
-      "description": "What happened during Kenji's last meeting with Yuki",
-      "sources": ["Kenji"],
-      "connections": ["yuki_last_assignment", "kenji_article"],
-      "is_red_herring": false,
-      "tiers": [
-        { "tier": 1, "text": "Kenji admits he saw Yuki recently — three weeks ago, at a café near the studio. He seems uncomfortable discussing it.", "requires_trust": 0 },
-        { "tier": 2, "text": "Yuki showed Kenji something on his camera — a photograph he was working on. Kenji says Yuki looked 'scared' for the first time he'd ever seen him. Yuki told him to forgot what he just saw and never come back to the studio.", "requires_trust": 2, "set_flags": { "knows_kenji_meeting": true } },
-        { "tier": 3, "text": "Kenji reveals the truth: Yuki showed him a photograph of a man in a dark suit. Yuki said the man was 'dangerous' and that he needed to disappear. Kenji tried to convince Yuki to come to the police, but Yuki refused. They argued, and Kenji left. It was the last time he saw Yuki alive.", "requires_trust": 4, "set_flags": { "knows_kenji_meeting": true } }
-      ]
-    },
-    "studio_lights": {
-      "description": "Strange lights seen coming from the shuttered studio at night",
+    "obasan_key": {
+      "description": "The key to the studio, hidden under the third step",
       "sources": ["Obasan"],
-      "connections": ["yuki_hiding"],
+      "connections": ["studio_lights"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "Obāsan mentions she's been seeing lights from the studio at night — the red glow of a darkroom, she thinks. But the studio has been locked for weeks.", "requires_trust": 0 },
-        { "tier": 2, "text": "Obāsan has been watching the studio every night for three weeks. The lights come on around midnight and stay on until dawn.", "requires_trust": 2 }
-      ]
-    },
-    "hidden_evidence": {
-      "description": "Evidence of the crime Yuki was investigating, hidden in the studio",
-      "sources": [],
-      "connections": ["yuki_last_assignment", "strange_photograph"],
-      "is_red_herring": false,
-      "tiers": [
-        { "tier": 1, "text": "The darkroom contains more than just Yuki's current work — there are stacks of developed photographs, organized by date, showing the same building from different angles", "requires_trust": 0 },
-        { "tier": 2, "text": "Among the organized photographs, you find a folder containing documents: names, dates, and addresses. Yuki has been building a case — a visual and documentary record of something illegal happening in that Shinjuku building.", "requires_trust": 3, "set_flags": { "knows_hidden_evidence": true } },
-        { "tier": 3, "text": "The documents reveal a pattern: people disappearing from this neighborhood over the past two years. The Shinjuku building is connected to all of them. Yuki had nearly completed his case when he disappeared.", "requires_trust": 4, "set_flags": { "knows_hidden_evidence": true } }
-      ]
-    },
-    "haruka_last_photo": {
-      "description": "Haruka has been hiding Yuki's last photograph from everyone",
-      "sources": ["Haruka"],
-      "connections": ["strange_photograph", "haruka_nightmares"],
-      "is_red_herring": false,
-      "tiers": [
-        { "tier": 1, "text": "Haruka seems to be hiding something — she keeps a small locked box on her desk and glances at it nervously when someone enters the room", "requires_trust": 2 },
-        { "tier": 2, "text": "Haruka admits she has Yuki's last photograph. She developed it herself and has been keeping it locked away because it's 'too dangerous' — she doesn't explain what she means, but her hands are shaking.", "requires_trust": 4, "set_flags": { "knows_haruka_hiding": true } },
-        { "tier": 3, "text": "Haruka shows you the photograph: the man in the doorway, looking directly at the camera. She says Yuki told her, before disappearing, that this photograph is 'the most important thing I've ever taken. Don't let them take it.' Haruka has been protecting it for three weeks, and she's exhausted.", "requires_trust": 5, "set_flags": { "knows_haruka_hiding": true } }
-      ]
-    },
-    "kenji_article": {
-      "description": "Kenji's connection to Yuki's investigation and what he's been doing",
-      "sources": ["Kenji"],
-      "connections": ["kenji_last_meeting", "yuki_last_assignment"],
-      "is_red_herring": false,
-      "tiers": [
-        { "tier": 1, "text": "Kenji has published several of Yuki's photographs in various publications. His work has been featured in three major magazines over the past year.", "requires_trust": 0 },
-        { "tier": 2, "text": "Kenji has been investigating what happened to Yuki on his own. He's visited the Shinjuku building that Yuki was photographing and found that it's registered to a company with no visible business. He's been trying to connect the dots.", "requires_trust": 3, "set_flags": { "knows_kenji_article": true } },
-        { "tier": 3, "text": "Kenji has a draft article ready to publish — it connects the disappearances to the Shinjuku building and names the company behind it. He's been waiting for the final piece of evidence, which he thought would come from Yuki's photographs. He's been too afraid to publish without confirmation.", "requires_trust": 4, "set_flags": { "knows_kenji_article": true } }
+        { "tier": 1, "text": "Obāsan tells you the studio door has a key hidden under the third step. Yuki left it there, she thinks — for someone who would know to look.", "requires_trust": 0, "requires_flags": ["talked_to_obasan"] },
+        { "tier": 2, "text": "Obāsan explains that Yuki always had a key hidden there, as a backup. But Yuki never used it — they always used the front door normally. The fact that it's still there suggests Yuki left it on purpose, for someone who would eventually come looking.", "requires_trust": 2, "requires_flags": ["talked_to_obasan"] }
       ]
     },
     "obasan_last_sighting": {
       "description": "Obāsan's last encounter with Yuki before they disappeared",
       "sources": ["Obasan"],
-      "connections": ["obasan_saw_figure", "yuki_last_assignment"],
+      "connections": ["obasan_saw_figure"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "Obāsan was the one who called the police when Yuki disappeared. She saw Yuki the last time — three weeks ago — walking down the street with someone.", "requires_trust": 0 },
-        { "tier": 2, "text": "Yuki looked different that day — not sad, not scared, but resolved. Like someone who has made a decision and is walking toward it. Yuki smiled and said, 'Obāsan, don't worry. I'm going to take a very important photograph.'", "requires_trust": 2 },
-        { "tier": 3, "text": "Obāsan is certain Yuki was meeting someone. They came walking down the street together, and the other person was the one who seemed nervous. Yuki, however, seemed calm — almost peaceful. Whatever Yuki was about to photograph, he was ready for it.", "requires_trust": 4 }
+        { "tier": 1, "text": "Obāsan was the one who called the police when Yuki disappeared. She saw Yuki the last time — three weeks ago — walking down the street with someone.", "requires_trust": 0, "requires_flags": ["talked_to_obasan"] },
+        { "tier": 2, "text": "Yuki looked different that day — not sad, not scared, but resolved. Like someone who has made a decision and is walking toward it. Yuki smiled and said, 'Obāsan, don't worry. I'm going to take a very important photograph.'", "requires_trust": 2, "requires_flags": ["talked_to_obasan"] },
+        { "tier": 3, "text": "Obāsan is certain Yuki was meeting someone. They came walking down the street together, and the other person was the one who seemed nervous. Yuki, however, seemed calm — almost peaceful. Whatever Yuki was about to photograph, he was ready for it.", "requires_trust": 4, "requires_flags": ["talked_to_obasan"] }
+      ]
+    },
+    "studio_lights": {
+      "description": "Strange lights seen coming from the shuttered studio at night",
+      "sources": ["Obasan"],
+      "connections": ["obasan_saw_figure", "yuki_hiding"],
+      "is_red_herring": false,
+      "tiers": [
+        { "tier": 1, "text": "Obāsan mentions she's been seeing lights from the studio at night — the red glow of a darkroom, she thinks. But the studio has been locked for weeks.", "requires_trust": 0, "requires_flags": ["talked_to_obasan"] },
+        { "tier": 2, "text": "Obāsan has been watching the studio every night for three weeks. The lights come on around midnight and stay on until dawn.", "requires_trust": 2, "requires_flags": ["talked_to_obasan"], "set_flags": { "knows_studio_lights": true } }
       ]
     },
     "obasan_saw_figure": {
@@ -331,19 +190,53 @@
       "connections": ["studio_lights", "yuki_hiding"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "Obāsan admits she's been watching the studio from her window every night. She's seen shadows moving behind the frosted glass.", "requires_trust": 1 },
-        { "tier": 2, "text": "Two nights ago, Obāsan saw a figure in the red light — hunched over a table, moving their hands the way you move them when developing photographs. Agitating the trays. The way Yuki used to move.", "requires_trust": 3 },
-        { "tier": 3, "text": "The figure looked up at Obāsan's window once. She was sure it was Yuki. But she didn't want to scare him, so she looked away. She's been too afraid to tell the police, because what if it really is Yuki — and Yuki is trying to stay hidden for a reason?", "requires_trust": 4, "set_flags": { "knows_yuki_hiding": true } }
+        { "tier": 1, "text": "Obāsan admits she's been watching the studio from her window every night. She's seen shadows moving behind the frosted glass.", "requires_trust": 1, "requires_flags": ["talked_to_obasan"] },
+        { "tier": 2, "text": "Two nights ago, Obāsan saw a figure in the red light — hunched over a table, moving their hands the way you move them when developing photographs. Agitating the trays. The way Yuki used to move.", "requires_trust": 3, "requires_flags": ["talked_to_obasan"] },
+        { "tier": 3, "text": "The figure looked up at Obāsan's window once. She was sure it was Yuki. But she didn't want to scare him, so she looked away. She's been too afraid to tell the police, because what if it really is Yuki — and Yuki is trying to stay hidden for a reason?", "requires_trust": 4, "requires_flags": ["talked_to_obasan"], "set_flags": { "knows_yuki_hiding": true } }
       ]
     },
-    "obasan_key": {
-      "description": "The key to the studio, hidden under the third step",
-      "sources": ["Obasan"],
-      "connections": ["studio_lights"],
+    "yuki_last_assignment": {
+      "description": "What Yuki was working on in their final weeks",
+      "sources": ["Haruka"],
+      "connections": ["strange_photograph", "hidden_evidence", "kenji_last_meeting"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "Obāsan tells you the studio door has a key hidden under the third step. Yuki left it there, she thinks — for someone who would know to look.", "requires_trust": 0 },
-        { "tier": 2, "text": "Obāsan explains that Yuki always had a key hidden there, as a backup. But Yuki never used it — they always used the front door normally. The fact that it's still there suggests Yuki left it on purpose, for someone who would eventually come looking.", "requires_trust": 2 }
+        { "tier": 1, "text": "Haruka mentions Yuki was working on something different from his usual street photography — something more focused, more intense.", "requires_trust": 0, "requires_flags": ["talked_to_haruka"] },
+        { "tier": 2, "text": "Yuki had been photographing a specific building — an old office in Shinjuku — repeatedly over several weeks. He called it 'the truth project.'", "requires_trust": 2, "requires_flags": ["talked_to_haruka"], "set_flags": { "knows_last_assignment": true } },
+        { "tier": 3, "text": "Yuki discovered a pattern through his photography: people entering the building at night who never came out during the day. He was building a visual case.", "requires_trust": 4, "requires_flags": ["talked_to_haruka"], "set_flags": { "knows_last_assignment": true } }
+      ]
+    },
+    "strange_photograph": {
+      "description": "Yuki's last photograph — the one that changed everything",
+      "sources": ["Haruka"],
+      "connections": ["haruka_nightmares", "haruka_last_photo", "hidden_evidence"],
+      "is_red_herring": false,
+      "tiers": [
+        { "tier": 1, "text": "Haruka mentions Yuki's last photograph was 'different' — not like his usual work. It made him quiet for days.", "requires_trust": 0, "requires_flags": ["talked_to_haruka", "knows_last_assignment"] },
+        { "tier": 2, "text": "The last photograph captured something it shouldn't have been able to capture — a figure in a doorway that shouldn't have been there, at a time when the room should have been empty.", "requires_trust": 2, "requires_flags": ["talked_to_haruka", "knows_last_assignment"], "set_flags": { "knows_last_photo": true } },
+        { "tier": 3, "text": "The photograph shows a man in a dark suit standing in a doorway, looking directly at the camera. But Yuki was across the street, two blocks away, when he took it. The man in the photograph is looking at the lens from inside a room that no one has been in for years.", "requires_trust": 4, "requires_flags": ["talked_to_haruka", "knows_last_assignment"], "set_flags": { "knows_last_photo": true } }
+      ]
+    },
+    "haruka_nightmares": {
+      "description": "Haruka's emotional state and what the last photograph has done to her",
+      "sources": ["Haruka"],
+      "connections": ["strange_photograph", "haruka_last_photo"],
+      "is_red_herring": false,
+      "tiers": [
+        { "tier": 1, "text": "Haruka seems exhausted — dark circles under her eyes, hands that tremble slightly when she thinks no one is looking.", "requires_trust": 1, "requires_flags": ["talked_to_haruka", "knows_last_photo"] },
+        { "tier": 2, "text": "Haruka admits she's been having nightmares about the last photograph. She sees the figure in the doorway every time she closes her eyes. She's been developing the same frame over and over, trying to understand what she's seeing.", "requires_trust": 3, "requires_flags": ["talked_to_haruka", "knows_last_photo"] },
+        { "tier": 3, "text": "Haruka describes the photograph in detail: the man in the doorway, the way he's looking at the camera, the impossible geometry of the room. She says Yuki took the photograph three days before he disappeared, and she's been unable to stop looking at it since. She thinks the photograph is 'watching her back.'", "requires_trust": 4, "requires_flags": ["talked_to_haruka", "knows_last_photo"] }
+      ]
+    },
+    "haruka_last_photo": {
+      "description": "Haruka has been hiding Yuki's last photograph from everyone",
+      "sources": ["Haruka"],
+      "connections": ["strange_photograph", "haruka_nightmares", "locked_box"],
+      "is_red_herring": false,
+      "tiers": [
+        { "tier": 1, "text": "Haruka seems to be hiding something — she keeps a small locked box on her desk and glances at it nervously when someone enters the room.", "requires_trust": 2, "requires_flags": ["talked_to_haruka", "knows_last_photo"] },
+        { "tier": 2, "text": "Haruka admits she has Yuki's last photograph. She developed it herself and has been keeping it locked away because it's 'too dangerous' — she doesn't explain what she means, but her hands are shaking.", "requires_trust": 4, "requires_flags": ["talked_to_haruka", "knows_last_photo"], "set_flags": { "knows_haruka_hiding": true } },
+        { "tier": 3, "text": "Haruka shows you the photograph: the man in the doorway, looking directly at the camera. She says Yuki told her, before disappearing, that this photograph is 'the most important thing I've ever taken. Don't let them take it.' Haruka has been protecting it for three weeks, and she's exhausted.", "requires_trust": 5, "requires_flags": ["talked_to_haruka", "knows_last_photo"], "set_flags": { "knows_haruka_hiding": true } }
       ]
     },
     "locked_box": {
@@ -352,9 +245,20 @@
       "connections": ["haruka_last_photo", "hidden_evidence"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "On Haruka's desk upstairs sits a small locked box — something that can contain secrets. Haruka watches you notice it and quickly claims it contains personal things.", "requires_trust": 0 },
-        { "tier": 2, "text": "Haruka's hand goes instinctively to the box when you mention Yuki's last days. She's protective of its contents, but her nervousness suggests it holds something more significant than ordinary personal effects.", "requires_trust": 3 },
-        { "tier": 3, "text": "Haruka admits the box contains the last photograph Yuki took — the one he told her was 'the most important thing I've ever taken.' She's kept it locked away because Yuki said, 'Don't let them take it.' She doesn't explain who 'them' is.", "requires_trust": 5, "set_flags": { "knows_haruka_hiding": true } }
+        { "tier": 1, "text": "On Haruka's desk upstairs sits a small locked box — something that can contain secrets. Haruka watches you notice it and quickly claims it contains personal things.", "requires_trust": 0, "requires_flags": ["visited_haruka_room"] },
+        { "tier": 2, "text": "Haruka's hand goes instinctively to the box when you mention Yuki's last days. She's protective of its contents, but her nervousness suggests it holds something more significant than ordinary personal effects.", "requires_trust": 3, "requires_flags": ["visited_haruka_room"] },
+        { "tier": 3, "text": "Haruka admits the box contains the last photograph Yuki took — the one he told her was 'the most important thing I've ever taken.' She's kept it locked away because Yuki said, 'Don't let them take it.' She doesn't explain who 'them' is.", "requires_trust": 5, "requires_flags": ["visited_haruka_room"], "set_flags": { "knows_haruka_hiding": true } }
+      ]
+    },
+    "hidden_evidence": {
+      "description": "Evidence of the crime Yuki was investigating, hidden in the studio",
+      "sources": [],
+      "connections": ["yuki_last_assignment", "strange_photograph"],
+      "is_red_herring": false,
+      "tiers": [
+        { "tier": 1, "text": "The darkroom contains more than just Yuki's current work — there are stacks of developed photographs, organized by date, showing the same building from different angles.", "requires_trust": 0, "requires_flags": ["entered_darkroom"] },
+        { "tier": 2, "text": "Among the organized photographs, you find a folder containing documents: names, dates, and addresses. Yuki has been building a case — a visual and documentary record of something illegal happening in that Shinjuku building.", "requires_trust": 3, "requires_flags": ["entered_darkroom"], "set_flags": { "knows_hidden_evidence": true } },
+        { "tier": 3, "text": "The documents reveal a pattern: people disappearing from this neighborhood over the past two years. The Shinjuku building is connected to all of them. Yuki had nearly completed his case when he disappeared.", "requires_trust": 4, "requires_flags": ["entered_darkroom"], "set_flags": { "knows_hidden_evidence": true } }
       ]
     },
     "yuki_hiding": {
@@ -363,9 +267,31 @@
       "connections": ["studio_lights", "hidden_evidence"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "There are signs that someone has been living in the studio except Haruka: a sleeping bag in the corner, empty coffee cans, fresh food packaging.", "requires_trust": 0 },
-        { "tier": 2, "text": "The developing trays are warm. The chemical smell is fresh. Someone has been in the darkroom recently — within the last few hours. The darkroom light is still warm to the touch.", "requires_trust": 3, "set_flags": { "knows_yuki_hiding": true } },
-        { "tier": 3, "text": "Yuki is still in the studio. You can suddenly hear the faint sound of a developing tray being agitated from behind the darkroom door. Yuki has been living here, developing photographs, building his case — in the dark, for three weeks.", "requires_trust": 4, "set_flags": { "knows_yuki_hiding": true } }
+        { "tier": 1, "text": "There are signs that someone has been living in the studio besides Haruka: a sleeping bag in the corner, empty coffee cans, fresh food packaging.", "requires_trust": 0, "requires_flags": ["entered_darkroom"] },
+        { "tier": 2, "text": "The developing trays are warm. The chemical smell is fresh. Someone has been in the darkroom recently — within the last few hours. The darkroom light is still warm to the touch.", "requires_trust": 3, "requires_flags": ["entered_darkroom"], "set_flags": { "knows_yuki_hiding": true } },
+        { "tier": 3, "text": "Yuki is still in the studio. You can suddenly hear the faint sound of a developing tray being agitated from behind the darkroom door. Yuki has been living here, developing photographs, building his case — in the dark, for three weeks.", "requires_trust": 4, "requires_flags": ["entered_darkroom"], "set_flags": { "knows_yuki_hiding": true } }
+      ]
+    },
+    "kenji_last_meeting": {
+      "description": "What happened during Kenji's last meeting with Yuki",
+      "sources": ["Kenji"],
+      "connections": ["yuki_last_assignment", "kenji_article"],
+      "is_red_herring": false,
+      "tiers": [
+        { "tier": 1, "text": "Kenji admits he saw Yuki recently — three weeks ago, at a café near the studio. He seems uncomfortable discussing it.", "requires_trust": 0, "requires_flags": ["met_kenji"] },
+        { "tier": 2, "text": "Yuki showed Kenji something on his camera — a photograph he was working on. Kenji says Yuki looked 'scared' for the first time he'd ever seen him. Yuki told him to forget what he just saw and never come back to the studio.", "requires_trust": 2, "requires_flags": ["met_kenji"], "set_flags": { "knows_kenji_meeting": true } },
+        { "tier": 3, "text": "Kenji reveals the truth: Yuki showed him a photograph of a man in a dark suit. Yuki said the man was 'dangerous' and that he needed to disappear. Kenji tried to convince Yuki to come to the police, but Yuki refused. They argued, and Kenji left. It was the last time he saw Yuki alive.", "requires_trust": 4, "requires_flags": ["met_kenji"], "set_flags": { "knows_kenji_meeting": true } }
+      ]
+    },
+    "kenji_article": {
+      "description": "Kenji's connection to Yuki's investigation and what he's been doing",
+      "sources": ["Kenji"],
+      "connections": ["kenji_last_meeting", "yuki_last_assignment"],
+      "is_red_herring": false,
+      "tiers": [
+        { "tier": 1, "text": "Kenji has published several of Yuki's photographs in various publications. His work has been featured in three major magazines over the past year.", "requires_trust": 0, "requires_flags": ["met_kenji"] },
+        { "tier": 2, "text": "Kenji has been investigating what happened to Yuki on his own. He's visited the Shinjuku building that Yuki was photographing and found that it's registered to a company with no visible business. He's been trying to connect the dots.", "requires_trust": 3, "requires_flags": ["met_kenji", "knows_kenji_meeting"], "set_flags": { "knows_kenji_article": true } },
+        { "tier": 3, "text": "Kenji has a draft article ready to publish — it connects the disappearances to the Shinjuku building and names the company behind it. He's been waiting for the final piece of evidence, which he thought would come from Yuki's photographs. He's been too afraid to publish without confirmation.", "requires_trust": 4, "requires_flags": ["met_kenji", "knows_kenji_meeting"], "set_flags": { "knows_kenji_article": true } }
       ]
     },
     "shinjuku_building": {
@@ -374,9 +300,9 @@
       "connections": ["shell_company", "victim_files", "yuki_last_assignment"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "Kenji gives you the address of a building in Shinjuku that Yuki was photographing obsessively. It's a seven-story beige concrete building, unremarkable from the outside, in a quiet part of the district away from the main stations.", "requires_trust": 0, "set_flags": { "has_address": true } },
-        { "tier": 2, "text": "Inside the building, the lobby is dim and neglected. A broken security camera displays a frozen image from days ago. Room 304 on the third floor is the target — the door is slightly ajar, and through the gap you can see a small office with blinds drawn.", "requires_trust": 2, "set_flags": { "visited_shinjuku": true } },
-        { "tier": 3, "text": "On the floor of room 304, half-hidden under the desk, you find one of Yuki's photographs of the building itself. On the back, in his handwriting: '304. 11:47 PM. He was waiting.' Yuki wasn't just photographing the building — he was photographing someone inside it, and that person knew.", "requires_trust": 4, "set_flags": { "found_yuki_photo_304": true } }
+        { "tier": 1, "text": "Kenji gives you the address of a building in Shinjuku that Yuki was photographing obsessively. It's a seven-story beige concrete building, unremarkable from the outside, in a quiet part of the district away from the main stations.", "requires_trust": 0, "requires_flags": ["met_kenji"], "set_flags": { "has_address": true } },
+        { "tier": 2, "text": "Inside the building, the lobby is dim and neglected. A broken security camera displays a frozen image from days ago. Room 304 on the third floor is the target — the door is slightly ajar, and through the gap you can see a small office with blinds drawn.", "requires_trust": 2, "requires_flags": ["met_kenji", "visited_shinjuku"], "set_flags": { "visited_shinjuku": true } },
+        { "tier": 3, "text": "On the floor of room 304, half-hidden under the desk, you find one of Yuki's photographs of the building itself. On the back, in his handwriting: '304. 11:47 PM. He was waiting.' Yuki wasn't just photographing the building — he was photographing someone inside it, and that person knew.", "requires_trust": 4, "requires_flags": ["met_kenji", "visited_shinjuku"], "set_flags": { "found_yuki_photo_304": true } }
       ]
     },
     "shell_company": {
@@ -385,9 +311,9 @@
       "connections": ["shinjuku_building", "victim_files"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "On the desk in room 304, you find a folder marked 'Kuroda Holdings.' A corporate registration document reveals the company was registered six months ago with no listed business activities. The registered address is this very room.", "requires_trust": 0, "set_flags": { "found_kuroda_folder": true, "knows_company_name": true } },
-        { "tier": 2, "text": "A small digital camera on the window sill has a cracked lens but still works. Its last image shows a man in a dark coat standing across the street, watching the building. The timestamp: three weeks ago, 11:47 PM — the exact same time Yuki was photographing from the other side. They were watching each other.", "requires_trust": 3, "set_flags": { "found_surveillance_camera": true } },
-        { "tier": 3, "text": "The locked drawer at the bottom of the desk contains a handwritten ledger. The final entry, in different ink: 'Sato, Yuki. Photographer. Subject has been photographing the building. Risk assessment: HIGH. Recommendation: DISAPPEAR.' Someone at Kuroda Holdings decided Yuki should vanish.", "requires_trust": 4, "set_flags": { "found_ledger": true } }
+        { "tier": 1, "text": "On the desk in room 304, you find a folder marked 'Kuroda Holdings.' A corporate registration document reveals the company was registered six months ago with no listed business activities. The registered address is this very room.", "requires_trust": 0, "requires_flags": ["visited_shinjuku"], "set_flags": { "found_kuroda_folder": true, "knows_company_name": true } },
+        { "tier": 2, "text": "A small digital camera on the window sill has a cracked lens but still works. Its last image shows a man in a dark coat standing across the street, watching the building. The timestamp: three weeks ago, 11:47 PM — the exact same time Yuki was photographing from the other side. They were watching each other.", "requires_trust": 3, "requires_flags": ["visited_shinjuku"], "set_flags": { "found_surveillance_camera": true } },
+        { "tier": 3, "text": "The locked drawer at the bottom of the desk contains a handwritten ledger. The final entry, in different ink: 'Sato, Yuki. Photographer. Subject has been photographing the building. Risk assessment: HIGH. Recommendation: DISAPPEAR.' Someone at Kuroda Holdings decided Yuki should vanish.", "requires_trust": 4, "requires_flags": ["visited_shinjuku"], "set_flags": { "found_ledger": true } }
       ]
     },
     "victim_files": {
@@ -396,9 +322,9 @@
       "connections": ["shinjuku_building", "shell_company", "yuki_last_assignment"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "The filing cabinet in room 304 contains personnel files — but not for employees. For clients. Names, addresses, dates. Most are from the neighborhood around Yuki's studio.", "requires_trust": 0, "set_flags": { "found_victim_files": true } },
-        { "tier": 2, "text": "There are twelve files. Eight are marked 'completed.' Four are marked 'in progress.' The word 'completed' takes on a dark meaning in context — these are the people who entered the building and never came out during the day.", "requires_trust": 3, "set_flags": { "found_victim_files": true } },
-        { "tier": 3, "text": "One file is marked 'Sato, Yuki.' Status: 'in progress.' Date: three weeks ago. Yuki was in their system. They knew he was watching them. He wasn't just investigating — he was being investigated, and his own file was waiting in that cabinet.", "requires_trust": 4, "set_flags": { "found_victim_files": true } }
+        { "tier": 1, "text": "The filing cabinet in room 304 contains personnel files — but not for employees. For clients. Names, addresses, dates. Most are from the neighborhood around Yuki's studio.", "requires_trust": 0, "requires_flags": ["visited_shinjuku"], "set_flags": { "found_victim_files": true } },
+        { "tier": 2, "text": "There are twelve files. Eight are marked 'completed.' Four are marked 'in progress.' The word 'completed' takes on a dark meaning in context — these are the people who entered the building and never came out during the day.", "requires_trust": 3, "requires_flags": ["visited_shinjuku"], "set_flags": { "found_victim_files": true } },
+        { "tier": 3, "text": "One file is marked 'Sato, Yuki.' Status: 'in progress.' Date: three weeks ago. Yuki was in their system. They knew he was watching them. He wasn't just investigating — he was being investigated, and his own file was waiting in that cabinet.", "requires_trust": 4, "requires_flags": ["visited_shinjuku"], "set_flags": { "found_victim_files": true } }
       ]
     },
     "shinjuku_escape": {
@@ -407,9 +333,9 @@
       "connections": ["shinjuku_building", "shell_company", "victim_files"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "As you turn to leave room 304 with the evidence, you hear footsteps in the hallway. Someone is coming. You slip out and descend the stairwell quickly, two steps at a time, your breathing loud in the concrete shaft.", "requires_trust": 0, "set_flags": { "escaped_shinjuku": true } },
-        { "tier": 2, "text": "Behind you, a man's voice calls out — sharp and angry. The footsteps change direction and start coming down the stairs after you. You reach the ground floor and push through the lobby door into the busy Shinjuku evening.", "requires_trust": 2, "set_flags": { "escaped_shinjuku": true } },
-        { "tier": 3, "text": "You blend into the crowd, heart racing, evidence secured in your bag. Behind you, the building's door closes. The footsteps stop. You made it — but you know they know someone was there. The window for action is closing.", "requires_trust": 4, "set_flags": { "escaped_shinjuku": true } }
+        { "tier": 1, "text": "As you turn to leave room 304 with the evidence, you hear footsteps in the hallway. Someone is coming. You slip out and descend the stairwell quickly, two steps at a time, your breathing loud in the concrete shaft.", "requires_trust": 0, "requires_flags": ["visited_shinjuku"], "set_flags": { "escaped_shinjuku": true } },
+        { "tier": 2, "text": "Behind you, a man's voice calls out — sharp and angry. The footsteps change direction and start coming down the stairs after you. You reach the ground floor and push through the lobby door into the busy Shinjuku evening.", "requires_trust": 2, "requires_flags": ["visited_shinjuku"], "set_flags": { "escaped_shinjuku": true } },
+        { "tier": 3, "text": "You blend into the crowd, heart racing, evidence secured in your bag. Behind you, the building's door closes. The footsteps stop. You made it — but you know they know someone was there. The window for action is closing.", "requires_trust": 4, "requires_flags": ["visited_shinjuku"], "set_flags": { "escaped_shinjuku": true } }
       ]
     }
   },
@@ -453,7 +379,7 @@
       },
       "dialogue": [
         {"speaker": "", "text": "You follow the street past the studio. The neighborhood unfolds like a watercolor left in the rain — colors bleeding into each other, edges softening. You approach that elderly woman you saw sitting on a wooden bench outside a closed confectionery shop, watching you with warm, knowing eyes."},
-        {"speaker": "Obasan", "text": "Oh? You must be the one they sent. Let me introduce myself. This was my shop. I made sweets for decades for the neighborhood children. Yuki was one of them, you know. He was like a son. Not by blood, but by heart." }
+        {"speaker": "Obasan", "text": "Oh? You must be the one they sent. Let me introduce myself. This was my shop. I made sweets for decades for the neighborhood children. Yuki was one of them. He was like a son. Not by blood, but by heart." }
       ],
       "choices": [
         { "id": "return_to_entrance", "label": "Return to the studio entrance", "target": "return_studio_entrance" },
@@ -488,9 +414,9 @@
       "choices": [
         { "id": "talk_to_obasan", "label": "Talk to Obasan", "target": "neighborhood_obasan_return", "requires_flags": { "knows_studio_lights": false }},
         { "id": "find_key", "label": "Look under the third step", "target": "studio_enter", "set_flags": { "has_key": true }, "requires_flags": { "has_key": false, "talked_to_obasan": true } },
-        { "id": "explore_neighborhood", "label": "Walk down the street", "target": "neighborhood_cafe", "requires_flags": { "talked_to_obasan": true } },
+        { "id": "explore_neighborhood", "label": "Go to Cafè Renoir", "target": "return_cafe_meeting", "requires_flags": { "talked_to_obasan": true, "knows_kenji_article": false, "knows_kenji_meeting": false} },
         { "id": "go_to_shinjuku_from_entrance", "label": "Take the train to Shinjuku", "target": "shinjuku_arrival", "requires_flags": { "has_address": true, "visited_shinjuku": false } },
-        { "id": "enter_the_studio", "label": "Enter the studio", "target": "return_studio_interior", "requires_flags": { "has_key": true, "visited_shinjuku": false } }
+        { "id": "enter_the_studio", "label": "Enter the studio", "target": "return_studio_interior", "requires_flags": { "has_key": true} }
 
       ],
       "on_enter": { "set_flags": {} }
@@ -547,7 +473,7 @@
     "darkroom": {
       "background": "backgrounds/darkroom.png",
       "music": "music/darkroom_atmosphere.mp3",
-      "sfx": ["sfx/darkroom_agitate.wav", "sfx/chemical_pour.mp3", "sfx/heartbeat.wav", "sfx/film_advance.mp3"],
+      "sfx": ["sfx/darkroom_agitate.wav", "sfx/chemical_pour.mp3", "sfx/heartbeat.mp3", "sfx/film_advance.mp3"],
       "scene_moods": {
         "Haruka": "happy"
       },
@@ -592,7 +518,7 @@
         { "speaker": "", "text": "Obāsan's words echo: 'Yuki was meeting someone the last time I saw him.' Could this be the place?" }
       ],
       "choices": [
-        { "id": "enter_cafe", "label": "Enter the café", "target": "cafe_meeting" },
+        { "id": "enter_cafe", "label": "Enter the café", "target": "cafe_meeting", "requires_flags": {"met_kenji": false} },
         { "id": "go_to_shinjuku_from_cafe_ext", "label": "Take the train to Shinjuku", "target": "shinjuku_arrival", "requires_flags": { "has_address": true, "visited_shinjuku": false } },
         { "id": "return_to_studio_entrance", "label": "Return to the studio", "target": "return_studio_entrance" }
       ],
@@ -616,7 +542,7 @@
       "choices": [
         { "id": "go_to_shinjuku", "label": "Take the address — go to the Shinjuku building", "target": "shinjuku_arrival", "set_flags": { "has_address": true } },
         { "id": "return_from_cafe", "label": "Return to the studio", "target": "return_studio_entrance" },
-        { "id": "go_to_confrontation", "label": "You've learned enough — return to Haruka", "target": "final_confrontation", "requires_flags": { "met_kenji": true, "met_haruka": true, "entered_darkroom": true, "knows_hidden_evidence": true } }
+        { "id": "go_to_confrontation", "label": "You've learned enough — return to Haruka", "target": "final_confrontation", "requires_flags": { "met_kenji": true, "met_haruka": true, "entered_darkroom": true, "knows_hidden_evidence": true, "escaped_shinjuku": true } }
       ],
       "on_enter": { "set_flags": { "met_kenji": true } }
     },
@@ -630,8 +556,8 @@
         { "speaker": "Kenji", "text": "Oh. You're... you're back." }
       ],
       "choices": [
-        { "id": "go_to_shinjuku", "label": "Take the address — go to the Shinjuku building", "target": "shinjuku_arrival", "set_flags": { "has_address": true }, "requires_flags": { "has_address": false } },
-        { "id": "go_to_confrontation", "label": "You've learned enough — return to Haruka", "target": "final_confrontation", "requires_flags": { "met_kenji": true, "met_haruka": true, "entered_darkroom": true, "met_obasan": true } }
+        { "id": "go_to_shinjuku", "label": "Take the address — go to the Shinjuku building", "target": "shinjuku_arrival", "set_flags": { "has_address": true, "visited_shinjuku": false }, "requires_flags": { "has_address": false } },
+        { "id": "go_to_confrontation", "label": "You've learned enough — return to Haruka", "target": "final_confrontation", "requires_flags": { "met_kenji": true, "met_haruka": true, "entered_darkroom": true, "met_obasan": true, "visited_shinjuku": true } }
       ],
       "on_enter": { "set_flags": {} }
     },
@@ -654,7 +580,7 @@
     "shinjuku_lobby": {
       "background": "backgrounds/shinjuku_lobby.png",
       "music": "music/tension_build.mp3",
-      "sfx": ["sfx/footsteps_indoor.mp3", "sfx/heartbeat.wav"],
+      "sfx": ["sfx/footsteps_indoor.mp3", "sfx/heartbeat.mp3"],
       "characters": [],
       "dialogue": [
         {"speaker": "", "text": "The lobby is dim. Fluorescent lights flicker overhead, casting the space in a sickly greenish glow. The walls are covered in peeling paint and layers of old advertisements — tutoring services, massage parlors, immigration lawyers."},
@@ -670,7 +596,7 @@
     "shinjuku_304": {
       "background": "backgrounds/shinjuku_floor.png",
       "music": "music/tension_build.mp3",
-      "sfx": ["sfx/footsteps_indoor.mp3", "sfx/heartbeat.wav", "sfx/door_creak.mp3"],
+      "sfx": ["sfx/footsteps_indoor.mp3", "sfx/heartbeat.mp3", "sfx/door_creak.mp3"],
       "characters": [],
       "dialogue": [
         {"speaker": "", "text": "Third floor. The hallway is narrow, carpeted in faded gray. Four doors line the corridor — three with company signs, one without. Room 304 is at the far end, its door slightly ajar."},
@@ -686,7 +612,7 @@
     "shinjuku_desk": {
       "background": "backgrounds/shinjuku_office.png",
       "music": "music/tension_build.mp3",
-      "sfx": ["sfx/paper_rustle.mp3", "sfx/camera_shutter.mp3", "sfx/heartbeat.wav"],
+      "sfx": ["sfx/paper_rustle.mp3", "sfx/camera_shutter.mp3", "sfx/heartbeat.mp3"],
       "characters": [],
       "dialogue": [
         {"speaker": "", "text": "The desk is cluttered with papers — mostly invoices and utility bills. But there's a folder marked 'Kuroda Holdings.' Inside, a corporate registration document: the company was registered six months ago with no listed business activities. The registered address is this room."},
@@ -703,7 +629,7 @@
     "shinjuku_cabinet": {
       "background": "backgrounds/shinjuku_office.png",
       "music": "music/tension_build.mp3",
-      "sfx": ["sfx/paper_rustle.mp3", "sfx/camera_shutter.mp3", "sfx/heartbeat.wav", "sfx/realization.wav"],
+      "sfx": ["sfx/paper_rustle.mp3", "sfx/camera_shutter.mp3", "sfx/heartbeat.mp3", "sfx/realization.wav"],
       "characters": [],
       "dialogue": [
         {"speaker": "", "text": "The filing cabinet is old, metal, the kind that groans when opened. The top drawer slides open easily. Inside: personnel files — but not for employees. For clients. Names, addresses, dates. Most are from the neighborhood around Yuki's studio."},
@@ -720,7 +646,7 @@
     "shinjuku_escape": {
       "background": "backgrounds/shinjuku_stairwell.png",
       "music": "music/tension_build.mp3",
-      "sfx": ["sfx/footsteps_indoor.mp3", "sfx/heartbeat.wav", "sfx/tension_rise.wav"],
+      "sfx": ["sfx/footsteps_indoor.mp3", "sfx/heartbeat.mp3", "sfx/tension_rise.wav"],
       "characters": [],
       "dialogue": [
         {"speaker": "", "text": "You photograph everything — the files, the ledger, the camera on the window sill. Your hands are steady, but your heart is pounding. You have what you came for."},
@@ -731,7 +657,8 @@
         {"speaker": "", "text": "Behind you, the building's door closes. The footsteps stop. You made it. But you know — they know someone was there."}
       ],
       "choices": [
-        { "id": "return_to_studio_from_shinjuku", "label": "Return to the studio with the evidence", "target": "final_confrontation" }
+        { "id": "return_to_studio_final", "label": "Return to the studio with the evidence", "target": "final_confrontation", "requires_flags": { "talked_to_haruka": true, "entered_darkroom": true }},
+        { "id": "return_to_studio_from_shinjuku", "label": "Return to the studio", "target": "return_studio_entrance"}
       ],
       "on_enter": { "set_flags": { "escaped_shinjuku": true } }
     },
@@ -759,7 +686,7 @@
     "ending_haruka_confession": {
       "background": "backgrounds/haruka_room.png",
       "music": "music/tension_build.mp3",
-      "sfx": ["sfx/heartbeat.wav", "sfx/clock_tick.mp3"],
+      "sfx": ["sfx/heartbeat.mp3", "sfx/clock_tick.mp3"],
       "characters": ["Haruka"],
       "dialogue": [
         {"speaker": "", "text": "Haruka sits on the edge of her bed. The photographs on the walls seem to lean closer, watching. She takes a long breath — the kind of breath someone takes before stepping off a cliff."},
@@ -824,7 +751,7 @@
     "ending_last_exposure": {
       "background": "backgrounds/ending_last_exposure.png",
       "music": "music/neighborhood_walk.mp3",
-      "sfx": ["sfx/heartbeat.wav", "sfx/chemical_pour.mp3"],
+      "sfx": ["sfx/heartbeat.mp3", "sfx/chemical_pour.mp3"],
       "characters": ["Haruka"],
       "dialogue": [
         {"speaker": "", "text": "Haruka leads you back to her room. She sits on the edge of her bed and stares at the locked box on her desk for a long moment. Then she picks it up, opens it, and takes out a single photograph."},

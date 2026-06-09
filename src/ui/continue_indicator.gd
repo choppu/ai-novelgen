@@ -33,18 +33,6 @@ func _ready() -> void:
 	add_theme_font_override("font", VNTheme.get_font_dialogue())
 	add_theme_font_size_override("font_size", VNTheme.get_font_size_continue())
 
-	# Style as a rounded button-like element
-	var style = StyleBoxFlat.new()
-	style.bg_color = VNTheme.get_choice_bg()
-	style.set_corner_radius_all(VNTheme.get_choice_button_corner_radius())
-	style.set_border_width_all(1)
-	style.border_color = VNTheme.get_dialogue_box_border()
-	style.content_margin_left = 6
-	style.content_margin_right = 6
-	style.content_margin_top = 4
-	style.content_margin_bottom = 4
-	self.add_theme_stylebox_override("normal", style)
-
 	_blink_timer = Timer.new()
 	_blink_timer.wait_time = VNTheme.get_blink_interval()
 	_blink_timer.one_shot = false

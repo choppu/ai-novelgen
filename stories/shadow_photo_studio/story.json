@@ -84,8 +84,8 @@
       },
       "appearance": "A woman in her late twenties with dark hair pulled back in a simple ponytail. She wears a dark apron over a white shirt, the fabric stained with developer chemicals — cyanotype blue and silver nitrate brown. Her hands are always moving: adjusting a lens cap, organizing contact sheets, wiping a developing tray. Her eyes are tired but alert, the kind of tired that comes from surviving on coffee and determination. There's a small cut on her left thumb, freshly bandaged.",
       "background": "Haruka has worked as Yuki's assistant for three years. She came to the studio as a photography student struggling to find her voice, and Yuki saw something in her work that no one else did — a patience, an eye for the quiet moments that others rush past. She admires Yuki's talent fiercely but has always worried about his obsession with the 'perfect shot.' When Yuki disappeared three weeks ago, she refused to let anyone touch the studio, convinced that Yuki would return. She's been developing Yuki's last roll of film in secret, and the images have haunted her ever since. She hasn't slept properly since.",
-      "temperament": "Quiet and meticulous. She speaks softly and friendly. She's deeply loyal to Yuki and fiercely defensive about their work. She values honesty above all else, which makes her current situation unbearable: she knows things she can't tell anyone, and the silence is eating her alive. When she's anxious, she fiddles with her apron strings.",
-      "mood": "Extremely gentle and kind person, but recently anxious and a bit exhausted, holding herself together by sheer will. She wants desperately to believe Yuki will return, but she knows that hope is a luxury she can't afford. She's been talking to photographs instead of people, and she knows it's not healthy. She's looking for someone — anyone — who can help her make sense of what's happened.",
+      "temperament": "Quiet and meticulous. She speaks softly and in a friendly manner. She's deeply loyal to Yuki and fiercely defensive about their work. She values honesty above all else, which makes her current situation unbearable: she knows things she can't tell anyone, and the silence is eating her alive. When she's anxious, she fiddles with her apron strings.",
+      "mood": "An extremely gentle and kind person, but recently anxious and a bit exhausted, holding herself together by sheer will. She wants desperately to believe Yuki will return, but she knows that hope is a luxury she can't afford. She's been talking to photographs instead of people, and she knows it's not healthy. She's looking for someone — anyone — who can help her make sense of what's happened.",
       "can_reveal": [
         "yuki_last_assignment",
         "strange_photograph",
@@ -154,12 +154,12 @@
   },
   "clues": {
     "obasan_key": {
-      "description": "The key to the studio, hidden under the third step",
+      "description": "The key to the studio, hidden under a pot near the entrance",
       "sources": ["Obasan"],
       "connections": ["studio_lights"],
       "is_red_herring": false,
       "tiers": [
-        { "tier": 1, "text": "Obāsan tells you the studio door has a key hidden under the third step. Yuki left it there, she thinks — for someone who would know to look.", "requires_trust": 0, "requires_flags": ["talked_to_obasan"] },
+        { "tier": 1, "text": "Obāsan tells you the studio key is hidden under a pot near the entrance. Yuki left it there, she thinks — for someone who would know to look.", "requires_trust": 0, "requires_flags": ["talked_to_obasan"] },
         { "tier": 2, "text": "Obāsan explains that Yuki always had a key hidden there, as a backup. But Yuki never used it — they always used the front door normally. The fact that it's still there suggests Yuki left it on purpose, for someone who would eventually come looking.", "requires_trust": 2, "requires_flags": ["talked_to_obasan"] }
       ]
     },
@@ -362,8 +362,8 @@
       "characters": [],
       "dialogue": [
         {"speaker": "", "text": "You stand before the shuttered studio. The hand-painted sign is faded but still legible: 'Sato Photo Studio — Est. 1987.' A chain lock secures the door. The wood around the lock is weathered — this has been in place for weeks."},
-        { "speaker": "", "text": "You knock the door. No one is answering." },
-        { "speaker": "", "text": "Few buildings apart, to your right, an elderly woman is sitting on a wooden bench outside a closed shop, watching the street with patient attention. Further down the street, the neighborhood stretches on — old wooden shops, a small shrine at a crossroads." }
+        { "speaker": "", "text": "You knock on the door. No one is answering." },
+        { "speaker": "", "text": "A few buildings away, to your right, an elderly woman is sitting on a wooden bench outside a closed shop, watching the street with patient attention. Further down the street, the neighborhood stretches on — old wooden shops, a small shrine at a crossroads." }
       ],
       "choices": [
         { "id": "talk_to_obasan", "label": "Talk to the elderly woman", "target": "neighborhood_obasan", "requires_flags": { "talked_to_obasan": false } }      ],
@@ -413,7 +413,7 @@
       ],
       "choices": [
         { "id": "talk_to_obasan", "label": "Talk to Obasan", "target": "neighborhood_obasan_return", "requires_flags": { "knows_studio_lights": false }},
-        { "id": "find_key", "label": "Look under the third step", "target": "studio_enter", "set_flags": { "has_key": true }, "requires_flags": { "has_key": false, "talked_to_obasan": true } },
+        { "id": "find_key", "label": "Look under the pot near the entrance", "target": "studio_enter", "set_flags": { "has_key": true }, "requires_flags": { "has_key": false, "talked_to_obasan": true } },
         { "id": "explore_neighborhood", "label": "Go to Cafè Renoir", "target": "return_cafe_meeting", "requires_flags": { "talked_to_obasan": true, "knows_kenji_article": false, "knows_kenji_meeting": false} },
         { "id": "go_to_shinjuku_from_entrance", "label": "Take the train to Shinjuku", "target": "shinjuku_arrival", "requires_flags": { "has_address": true, "visited_shinjuku": false } },
         { "id": "enter_the_studio", "label": "Enter the studio", "target": "return_studio_interior", "requires_flags": { "has_key": true} }
@@ -426,7 +426,7 @@
       "sfx": ["sfx/item_found.wav", "sfx/door_creak.mp3", "sfx/footsteps_indoor.mp3"],
       "characters": [],
       "dialogue": [
-        { "speaker": "", "text": "You kneel by the third step and pry at the loose edge. Beneath a thin board, wrapped in oilcloth, you find a small brass key. It fits perfectly. The chain slides free with a metallic rasp. The door opens with a reluctant groan, revealing a world suspended in amber light and chemical haze." },
+        { "speaker": "", "text": "You lift the faded terracotta pot leaning against the studio wall. Beneath it, wrapped in oilcloth, you find a small brass key. It fits perfectly. The chain slides free with a metallic rasp. The door opens with a reluctant groan, revealing a world suspended in amber light and chemical haze." },
         { "speaker": "", "text": "Inside, the air is thick with the smell of developing chemicals — silver nitrate, fixer, the sharp tang of acetate. Floor-to-ceiling shelves are packed with photographs. Contact sheets hang from the ceiling like paper leaves. And from somewhere in the studio, a voice:" }
       ],
       "choices": [
@@ -460,7 +460,7 @@
       "sfx": ["sfx/footsteps_indoor.mp3", "sfx/paper_rustle.mp3"],
       "characters": ["Haruka"],
       "dialogue": [
-        { "speaker": "The studio interior — organized chaos, every surface covered with photographs, negatives, and equipment. A large printing easel dominates the center of the room. A woman stands near the easel, her hands frozen mid-motion, dark apron stained with developer chemicals."},
+        { "speaker": "", "text": "The studio interior — organized chaos, every surface covered with photographs, negatives, and equipment. A large printing easel dominates the center of the room. A woman stands near the easel, her hands frozen mid-motion, dark apron stained with developer chemicals."},
         { "speaker": "", "text": "Beyond the main room, a door marked '暗室' — Darkroom — stands slightly ajar, spilling red light into the hallway." }
       ],
       "choices": [
@@ -531,10 +531,11 @@
       "characters": ["Kenji"],
       "dialogue": [
         {"speaker": "", "text": "The air smells of roasted beans and old paper. A man sits in the corner booth, looking up as you enter with an expression caught between relief and guilt. It seems he was waiting exactly for you. You approach him."},
-        { "speaker": "Kenji", "text": "Oh. You're... you're the investigator, are you? You are investigating Yuki's disappearance? I'm Kenji. Kenji Tanaka. I've been... I've been waiting for someone to come at some time. His parents are so obsessed to find the truth." },
+        { "speaker": "Kenji", "text": "Oh. You're... you're the investigator, are you? You're investigating Yuki's disappearance? I'm Kenji. Kenji Tanaka. I've been... I've been waiting for someone to come. His parents are so obsessed with finding the truth." },
         { "speaker": "", "text": "He wears a rumpled navy suit, carries a leather satchel crammed with notebooks. A coffee stain marks his breast pocket. His eyes are intelligent but shadowed with fatigue." },
-        { "speaker": "Kenji", "text": "I used to publish Yuki's photographs. Street scenes, neighborhood portraits. I think I was the last person to see him, three weeks ago. We had an argument. I won't — I can't talk about it yet.." },
+        
         { "speaker": "Kenji", "text": "But I've been investigating. On my own. What happened to Yuki wasn't a voluntary disappearance. I know that much." },
+        { "speaker": "Kenji", "text": "I won't — I can't talk about it yet." },
         { "speaker": "Kenji", "text": "Yuki became obsessed with a building in Shinjuku — an old office, room 304. He went there every day for weeks, photographing it from across the street. The day he disappeared, he gave me the address. He said, 'If anything happens to me, go here. But be careful.'" },
         { "speaker": "", "text": "He reaches into his satchel and pulls out a folded piece of paper. His hands are shaking slightly. He slides it across the table." },
         { "speaker": "Kenji", "text": "I went once — just from the outside. The building is old, unremarkable. But I could never go inside. I'm a journalist, not a detective. Will you go? Will you see what Yuki saw?" }
@@ -672,7 +673,7 @@
         { "speaker": "Haruka", "text": "You're back. I... I made some coffee. Do you want a cup? You look like you've been carrying something heavy." },
         { "speaker": "Haruka", "text": "I know you discovered something important. Talking to people, investigating the places, asking questions is your job. You've seen things in this studio that are quite suspicious — the lights at night, the photographs, the way everything feels charged, like the air before a storm." },
         { "speaker": "Haruka", "text": "Oh god...I feel like Yuki is still here. I know he is. You know, I can hear him in the darkroom sometimes — the sound of a developing tray, the faint hiss of chemicals." },
-        { "speaker": "Haruka", "text": "I don't know what to do anymore. I am so tired...waiting, be scared, protecting..." },
+        { "speaker": "Haruka", "text": "I don't know what to do anymore. I am so tired... waiting, being scared, protecting..." },
         { "speaker": "Haruka", "text": "Please. Tell me what to do. Tell me what the right thing is." }
       ],
       "choices": [
@@ -775,7 +776,7 @@
       "dialogue": [
         {"speaker": "", "text": "The studio is empty now. The photographs have been packed into boxes. The developing trays have been cleaned. The red light from the darkroom has been turned off. Outside, the neighborhood continues its quiet evening rhythm."},
         { "speaker": "Haruka", "text": "The police have closed the case. Voluntary disappearance. That's what they call it when someone leaves and no one knows why. I suppose it's the truth, in a way." },
-        { "speaker": "Kenji", "text": "I'm going to publish what I have. The photographs Yuki gave me over the years — the street scenes, the neighborhood portraits. Hisphotographs deserve to be seen." },
+        { "speaker": "Kenji", "text": "I'm going to publish what I have. The photographs Yuki gave me over the years — the street scenes, the neighborhood portraits. His photographs deserve to be seen." },
         { "speaker": "Haruka", "text": "Do you think Yuki would be okay with that? With his work being sold off, his studio demolished, his photographs reduced to... content?" },
         { "speaker": "Kenji", "text": "I think Yuki would want someone to remember him. Even if it's just through the photographs. Even if it's just for a little while." },
         { "speaker": "", "text": "You leave the studio for the last time. On the threshold, you glance back. The photographs on the walls are gone. The darkroom is dark. The studio is just a room now — empty, quiet, forgotten." },

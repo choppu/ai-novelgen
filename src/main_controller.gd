@@ -20,6 +20,8 @@ var _npc_chat_panel: NpcChatPanel
 var _choice_overlay: ChoiceOverlay
 var _loading_indicator: LoadingIndicator
 var _error_banner: ErrorBanner
+var _pause_menu: Control
+var _pause_button: Button
 
 
 ## ── Engine ────────────────────────────────────────────────────
@@ -78,18 +80,23 @@ const _ChoiceOverlayScript := preload("res://src/ui/choice_overlay.gd")
 const _LoadingIndicatorScript := preload("res://src/ui/loading_indicator.gd")
 const _ErrorBannerScript := preload("res://src/ui/error_banner.gd")
 const _NpcChatPanelScript := preload("res://src/ui/npc_chat_panel.gd")
+const _PauseMenuScript := preload("res://src/ui/pause_menu.gd")
 
 
 # ── Lifecycle ──────────────────────────────────────────────────
 
 func _ready() -> void:
 	_create_ui()
+	_create_pause_button()
 	_setup_scene_manager()
 	_setup_clue_system()
 	_setup_llm_pipeline()
 	_load_story()
+	_apply_brightness()
 
 func _exit_tree() -> void:
+	# Auto-save on quit
+	_save_on_quit()
 	if _server != null:
 		_server.stop()
 	if _voice_generator != null:
@@ -204,7 +211,24 @@ func _on_story_loaded(success: bool, error_message: String) -> void:
 		_setup_speaker_voices()
 		_setup_sprite_defaults()
 		_set_input_enabled(true)
+		_pause_button.visible = true
+
+		# Check for pending load (from main menu or pause menu)
+		var pending_slot = SaveManager.consume_pending_load()
+		if pending_slot >= 0:
+			if SaveManager.load_slot(pending_slot):
+				# Reload clue state from saved data
+				_clue_tracker.sync_from_game_state()
+				# Transition to the saved scene
+				_scene_manager.enter_scene(GameState.current_scene)
+				print("[MainController] Loaded save from slot %d, scene: %s" % [pending_slot, GameState.current_scene])
+				return
+			else:
+				_show_error("Failed to load save from slot %d" % (pending_slot + 1))
 	else:
+		pass  # Normal new game flow
+
+	if not success:
 		_show_error("Error: %s" % error_message)
 		push_error(error_message)
 
@@ -219,8 +243,10 @@ func _on_return_to_title() -> void:
 	# Stop any in-progress voice generation
 	if _voice_generator:
 		_voice_generator.clear()
-	# Reload the main scene to reset to title/start
-	get_tree().reload_current_scene()
+	# Stop BGM when returning to menu
+	SoundManager.stop_bgm()
+	# Return to main menu
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 
 func _on_scene_changed(_scene_id: String, scene_data: Dictionary) -> void:
@@ -249,7 +275,7 @@ func _on_scene_changed(_scene_id: String, scene_data: Dictionary) -> void:
 
 
 func _on_dialogue_generated(response: Variant) -> void:
-	_show_loading(false)
+	_npc_chat_panel.hide_typing_indicator()
 	_npc_chat_panel.set_input_enabled(true)
 	_waiting_for_llm = false
 
@@ -308,7 +334,7 @@ func _on_dialogue_generated(response: Variant) -> void:
 
 
 func _on_generation_error(error_msg: String) -> void:
-	_show_loading(false)
+	_npc_chat_panel.hide_typing_indicator()
 	_set_input_enabled(true)
 	_waiting_for_llm = false
 	_show_error("Generation error: %s" % error_msg)
@@ -331,7 +357,7 @@ func _process_player_input(text: String) -> void:
 	_npc_chat_panel.append_message("You", text, true)
 	_npc_chat_panel.clear_input()
 	_npc_chat_panel.set_input_enabled(false)
-	_show_loading(true, "Thinking")
+	_npc_chat_panel.show_typing_indicator(_dialogue_npc)
 	_waiting_for_llm = true
 
 	var scene_data = _scene_manager.get_current_scene()
@@ -560,6 +586,11 @@ func _enter_dialogue_mode(npc_name: String) -> void:
 	_npc_emotional_mood = 0
 	_dialogue_npc = npc_name
 
+	# Set the "talked_to_<npc>" flag so clue prerequisites can gate on it
+	var talked_flag = "talked_to_%s" % npc_name
+	if GameState.has_flag(talked_flag):
+		GameState.set_flag(talked_flag, true)
+
 	# Add NPC's opening lines to conversation history
 	var current_scene = _scene_manager.get_current_scene()
 	var history = _dialogue_generator.get_conversation_history()
@@ -624,6 +655,115 @@ func _set_input_enabled(enabled: bool) -> void:
 		_npc_chat_panel.set_input_enabled(enabled)
 	else:
 		pass  # dialogue box has no input in explore mode
+
+
+# ── Pause Menu ─────────────────────────────────────────────────
+
+func _create_pause_button() -> void:
+	_pause_button = Button.new()
+	# Fixed 60x60 button pinned to top-right corner (10px margin)
+	_pause_button.anchor_top = 0.0
+	_pause_button.anchor_right = 1.0
+	_pause_button.anchor_bottom = 0.0
+	_pause_button.anchor_left = 1.0
+	_pause_button.offset_top = 10
+	_pause_button.offset_right = -10
+	_pause_button.offset_bottom = 70  # 10 + 60
+	_pause_button.offset_left = -70  # -10 - 60 = left edge 60px from right edge
+	_pause_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_pause_button.custom_minimum_size = Vector2i(60, 60)
+
+	# Load hamburger menu SVG icon
+	var svg_path = "res://assets/icons/menu.svg"
+	if ResourceLoader.exists(svg_path):
+		var svg = load(svg_path)
+		if svg is Texture2D:
+			_pause_button.icon = svg
+			_pause_button.add_theme_constant_override("icon_max_width", 36)
+			_pause_button.add_theme_constant_override("icon_max_height", 36)
+
+	# Subtle semi-transparent background for visibility (8px padding around icon)
+	var bg = StyleBoxFlat.new()
+	bg.bg_color = Color(0.10, 0.10, 0.15, 0.55)
+	bg.set_corner_radius_all(8)
+	bg.content_margin_left = 8
+	bg.content_margin_right = 8
+	bg.content_margin_top = 8
+	bg.content_margin_bottom = 8
+
+	var bg_hover = StyleBoxFlat.new()
+	bg_hover.bg_color = Color(0.18, 0.18, 0.25, 0.75)
+	bg_hover.set_corner_radius_all(8)
+	bg_hover.content_margin_left = 8
+	bg_hover.content_margin_right = 8
+	bg_hover.content_margin_top = 8
+	bg_hover.content_margin_bottom = 8
+
+	_pause_button.add_theme_stylebox_override("normal", bg)
+	_pause_button.add_theme_stylebox_override("hover", bg_hover)
+	_pause_button.add_theme_color_override("icon_modulate", Color(0.90, 0.90, 0.95, 0.95))
+	_pause_button.add_theme_color_override("font_color", Color.TRANSPARENT)
+
+	_pause_button.pressed.connect(_toggle_pause)
+	_pause_button.visible = false  # Show after story loads
+	add_child(_pause_button)
+	_pause_button.owner = null
+
+	# Hover brightness
+	_pause_button.mouse_entered.connect(func():
+			_pause_button.modulate = Color(1.1, 1.1, 1.1, 1.0)
+			SoundEvents.play("choice_hover"))
+	_pause_button.mouse_exited.connect(func():
+			_pause_button.modulate = Color(1.0, 1.0, 1.0, 1.0))
+
+func _toggle_pause() -> void:
+	if _pause_menu:
+		_pause_menu.close_menu()
+		_pause_menu = null
+		_set_input_enabled(true)
+	else:
+		_pause_menu = _PauseMenuScript.new()
+		add_child(_pause_menu)
+		_pause_menu.save_requested.connect(_on_save_requested)
+		_pause_menu.exit_to_menu_requested.connect(_on_exit_to_menu_from_pause)
+		_pause_menu.closed.connect(func(): _set_input_enabled(true))
+		_pause_menu.show_pause_menu()
+		_set_input_enabled(false)
+
+func _on_save_requested() -> void:
+	# Auto-select first available slot, or slot 0
+	var slot = 0
+	for i in range(SaveManager.MAX_SLOTS):
+		if SaveManager.get_slot_info(i).get("empty", true):
+			slot = i
+			break
+	SaveManager.save_slot(slot)
+	_show_error("Game saved to slot %d" % (slot + 1))
+
+func _on_exit_to_menu_from_pause() -> void:
+	SoundManager.stop_bgm()
+	if _voice_generator:
+		_voice_generator.clear()
+	if _server:
+		_server.stop()
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
+func _save_on_quit() -> void:
+	# Auto-save to a dedicated autosave slot (last slot)
+	SaveManager.save_slot(SaveManager.MAX_SLOTS - 1)
+
+func _apply_brightness() -> void:
+	# Brightness overlay handled by scene-specific ColorRect if needed.
+	pass
+
+
+# ── Input Handling ──────────────────────────────────────────────
+
+func _unhandled_input(event: InputEvent) -> void:
+	# ESC to toggle pause menu
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		_toggle_pause()
+		get_viewport().set_input_as_handled()
 
 
 # ── Speaker Voice Setup ──────────────────────────────────────────

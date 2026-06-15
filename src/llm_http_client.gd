@@ -39,7 +39,7 @@ func chat_completion(
 	tools: Array = []
 ) -> void:
 	var base_url = LlmConfig.get_base_url()
-	var url = "%s/v1/chat/completions" % base_url
+	var url = "%s/api/v1/chat/completions" % base_url
 	
 	var body_dict = {
 		"model": model if not model.is_empty() else LlmConfig.get_model_name(),

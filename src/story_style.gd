@@ -278,3 +278,74 @@ func get_choice_button_padding_vertical()          -> int:     return _get_layou
 func get_choice_button_separation()                -> int:     return _get_layout_int("choice_button_separation", 13)
 func get_choice_overlay_top()                      -> float:   return _get_layout_float("choice_overlay_top", 0.3)
 func get_choice_overlay_bottom()                   -> float:   return _get_layout_float("choice_overlay_bottom", 0.85)
+
+
+# ── Menu accessors ──────────────────────────────────────────────
+## Story-configurable main menu styling.
+
+func _get_menu() -> Dictionary:
+	var m: Variant = _data.get("menu")
+	return m if m is Dictionary else Dictionary()
+
+func _get_menu_color(key: String, default: Color = Color.WHITE) -> Color:
+	var val: Variant = _get_menu().get(key)
+	if val is Array and val.size() >= 3:
+		return Color(float(val[0]), float(val[1]), float(val[2]), float(val[3] if val.size() > 3 else 1.0))
+	return Color.WHITE
+
+func _get_menu_int(key: String, default: int = 0) -> int:
+	var v: Variant = _get_menu().get(key)
+	if v is int: return v
+	if v is float: return int(v)
+	return default
+
+func _get_menu_float(key: String, default: float = 0.0) -> float:
+	var v: Variant = _get_menu().get(key)
+	if v is float: return v
+	if v is int: return float(v)
+	return default
+
+func _get_menu_string(key: String, default: String = "") -> String:
+	var v: Variant = _get_menu().get(key)
+	if v is String: return v
+	return default
+
+## Get the menu's button labels as an array of strings.
+## Returns default labels if not configured.
+func get_menu_button_labels() -> Array[String]:
+	var labels: Variant = _get_menu().get("button_labels")
+	if labels is Array:
+		var result: Array[String] = []
+		for item in labels:
+			result.append(str(item))
+		return result
+	return ["New Game", "Load Game", "Settings", "Quit"]
+
+## Resolve a story-relative menu background path to a full res:// path.
+func get_menu_background_path() -> String:
+	var relative: String = _get_menu_string("background", "")
+	if relative.is_empty():
+		return ""
+	var story_name: String = ""
+	if GameConfig != null:
+		story_name = GameConfig.get_current_story()
+	if story_name.is_empty():
+		return ""
+	return "res://stories/%s/%s" % [story_name, relative]
+
+func get_menu_overlay_color()    -> Color: return _get_menu_color("overlay_color", Color(0.05, 0.05, 0.08, 0.85))
+func get_menu_title_color()      -> Color: return _get_menu_color("title_color", Color(0.95, 0.95, 0.92, 1.0))
+func get_menu_subtitle_color()   -> Color: return _get_menu_color("subtitle_color", Color(0.50, 0.50, 0.55, 1.0))
+func get_menu_button_bg()        -> Color: return _get_menu_color("button_bg", Color(0.12, 0.12, 0.18, 0.9))
+func get_menu_button_hover()     -> Color: return _get_menu_color("button_hover", Color(0.22, 0.22, 0.32, 0.95))
+func get_menu_button_text()      -> Color: return _get_menu_color("button_text", Color(0.85, 0.85, 0.90, 1.0))
+func get_menu_title_size()       -> int:   return _get_menu_int("title_size", 56)
+func get_menu_subtitle_size()    -> int:   return _get_menu_int("subtitle_size", 20)
+func get_menu_button_size()      -> int:   return _get_menu_int("button_size", 32)
+func get_menu_title_y()          -> float: return _get_menu_float("title_y", 0.20)
+func get_menu_subtitle_y()       -> float: return _get_menu_float("subtitle_y", 0.28)
+func get_menu_button_top()       -> float: return _get_menu_float("button_top", 0.45)
+func get_menu_button_bottom()    -> float: return _get_menu_float("button_bottom", 0.72)
+func get_menu_button_width()     -> int:   return _get_menu_int("button_width", 500)
+func get_menu_button_height()    -> int:   return _get_menu_int("button_height", 72)
+func get_menu_button_separation()-> int:   return _get_menu_int("button_separation", 20)

@@ -124,7 +124,7 @@ static func style_choice_button(btn: Button) -> void:
 	hover.bg_color = get_choice_hover()
 	hover.set_corner_radius_all(cr)
 	hover.set_border_width_all(1)
-	hover.border_color = Color(0.45, 0.50, 0.70, 1.0)
+	hover.border_color = Color(0.50, 0.50, 0.50, 1.0)
 	hover.content_margin_left = ph
 	hover.content_margin_right = ph
 	hover.content_margin_top = pv
@@ -134,7 +134,7 @@ static func style_choice_button(btn: Button) -> void:
 	focus.bg_color = get_choice_focus()
 	focus.set_corner_radius_all(cr)
 	focus.set_border_width_all(1)
-	focus.border_color = Color(0.55, 0.60, 0.85, 1.0)
+	focus.border_color = Color(0.55, 0.55, 0.55, 1.0)
 	focus.content_margin_left = ph
 	focus.content_margin_right = ph
 	focus.content_margin_top = pv

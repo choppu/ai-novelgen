@@ -43,6 +43,11 @@ var _input_line: LineEdit
 var _send_button: Button
 
 var _back_callback: Callable
+var _typing_visible: bool = false
+var _typing_speaker: String = ""
+var _dot_phase: int = 0
+var _typing_timer: Timer
+var _messages: Array[String] = []  # stored bbcode for each message
 
 
 # ── Public API ──────────────────────────────────────────────────
@@ -58,44 +63,88 @@ func hide_panel() -> void:
 	self.visible = false
 
 
-## Append a chat message. Use [code]is_player=true[/code] for player messages.
-func append_message(speaker: String, text: String, is_player: bool = false) -> void:
+## Build bbcode for a single chat message.
+func _make_message_bbcode(speaker: String, text: String, is_player: bool) -> String:
 	var color = VNTheme.get_player_color() if is_player else VNTheme.get_speaker_color()
 	var color_hex = _color_to_html(color)
-
 	var align = "right" if is_player else "left"
 	var name_size = VNTheme.get_font_size_chat_name()
 	var label = "[font_size=%d][b][color=%s]%s[/color][/b][/font_size]" % [name_size, color_hex, speaker] if not speaker.is_empty() else ""
-
 	var bbcode = ""
 	if not label.is_empty():
 		bbcode += "[%s]%s[/%s]\n" % [align, label, align]
 	bbcode += "[%s]%s[/%s]\n\n" % [align, text, align]
+	return bbcode
 
-	_chat_rich_text.append_text(bbcode)
+
+## Rebuild the RichTextLabel from the stored messages (+ typing indicator if active).
+func _rebuild_text() -> void:
+	var full = ""
+	for msg in _messages:
+		full += msg
+	if _typing_visible:
+		full += _make_typing_bbcode()
+	_chat_rich_text.text = full
 	_scroll_container.scroll_vertical = int(_scroll_container.get_v_scroll_bar().max_value)
+
+
+## Build the animated typing indicator bbcode.
+func _make_typing_bbcode() -> String:
+	var color_hex = _color_to_html(VNTheme.get_loading_color())
+	var name_size = VNTheme.get_font_size_chat_name()
+	var label = "[font_size=%d][b][color=%s]%s[/color][/b][/font_size]" % [name_size, color_hex, _typing_speaker] if not _typing_speaker.is_empty() else ""
+	var dots = ["•", "•  •", "•  •  •", "  •", "•  •", "•"]
+	var dot_text = dots[_dot_phase % dots.size()]
+	var bbcode = ""
+	if not label.is_empty():
+		bbcode += "[left]%s[/left]\n" % label
+	bbcode += "[left]%s[/left]\n\n" % dot_text
+	return bbcode
+
+
+## Append a chat message. Use [code]is_player=true[/code] for player messages.
+func append_message(speaker: String, text: String, is_player: bool = false) -> void:
+	_typing_visible = false
+	_messages.append(_make_message_bbcode(speaker, text, is_player))
+	_rebuild_text()
 
 
 ## Append a system/narration message (grey, centered).
 func append_system(text: String) -> void:
+	_typing_visible = false
 	var color_hex = _color_to_html(VNTheme.get_narration_color())
 	var bbcode = "[indent][center][color=%s][i]%s[/i][/color][/center][/indent]\n\n" % [color_hex, text]
-	_chat_rich_text.append_text(bbcode)
-	_scroll_container.scroll_vertical = int(_scroll_container.get_v_scroll_bar().max_value)
+	_messages.append(bbcode)
+	_rebuild_text()
 
 
-## Show a typing indicator (animated dots).
+## Show an animated three-dot typing indicator as a chat message.
 func show_typing_indicator(speaker_name: String) -> void:
-	var color_hex = _color_to_html(VNTheme.get_loading_color())
-	var name_size = VNTheme.get_font_size_chat_name()
-	var bbcode = "[indent][left][font_size=%d][b][color=%s]%s[/color][/b] [i]...[/i][/font_size][/left][/indent]\n" % [name_size, color_hex, speaker_name]
-	_chat_rich_text.append_text(bbcode)
-	_scroll_container.scroll_vertical = int(_scroll_container.get_v_scroll_bar().max_value)
+	_typing_speaker = speaker_name
+	_typing_visible = true
+	_dot_phase = 0
+	if not is_instance_valid(_typing_timer):
+		_typing_timer = Timer.new()
+		_typing_timer.wait_time = 0.4
+		_typing_timer.one_shot = false
+		_typing_timer.timeout.connect(_on_typing_timer)
+		add_child(_typing_timer)
+	_typing_timer.start()
+	_rebuild_text()
 
 
-## Remove the last appended text (e.g., to remove typing indicator).
-func remove_last_append() -> void:
-	_chat_rich_text.remove_paragraph(_chat_rich_text.get_paragraph_count() - 1)
+## Hide the typing indicator.
+func hide_typing_indicator() -> void:
+	_typing_visible = false
+	if is_instance_valid(_typing_timer):
+		_typing_timer.stop()
+	_rebuild_text()
+
+
+func _on_typing_timer() -> void:
+	_dot_phase += 1
+	if _typing_visible:
+		_rebuild_text()
 
 
 ## Enable/disable the input controls.
@@ -113,7 +162,11 @@ func clear_input() -> void:
 
 ## Clear all chat messages.
 func clear_messages() -> void:
-	_chat_rich_text.clear()
+	_messages.clear()
+	_typing_visible = false
+	if is_instance_valid(_typing_timer):
+		_typing_timer.stop()
+	_rebuild_text()
 
 
 ## Store a callable to be connected to the back button press.
@@ -185,7 +238,7 @@ func _build_message_area() -> void:
 	_chat_rich_text.add_theme_font_override("bold_font", VNTheme.get_font_name())
 	_chat_rich_text.add_theme_font_size_override("bold_font_size", VNTheme.get_font_size_chat_name())
 
-	# Margin inside the rich text
+	# Margin around the message area
 	var margin = MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -219,6 +272,7 @@ func _build_bottom_bar() -> void:
 
 	# Back button
 	_back_button = Button.new()
+	_back_button.focus_mode = Control.FOCUS_ALL
 	_back_button.text = "← Back"
 	_back_button.custom_minimum_size = Vector2(120, VNTheme.get_choice_button_min_height())
 	_back_button.pressed.connect(func():
@@ -226,6 +280,7 @@ func _build_bottom_bar() -> void:
 			back_pressed.emit())
 	VNTheme.style_choice_button(_back_button)
 	_style_black_button(_back_button)
+	_back_button.mouse_entered.connect(func(): SoundEvents.play("choice_hover"))
 	_bottom_hbox.add_child(_back_button)
 
 	# Input field
@@ -247,24 +302,56 @@ func _build_bottom_bar() -> void:
 
 	# Send button
 	_send_button = Button.new()
+	_send_button.focus_mode = Control.FOCUS_ALL
 	_send_button.text = "Send"
 	_send_button.custom_minimum_size = Vector2(120, VNTheme.get_choice_button_min_height())
 	_send_button.pressed.connect(func(): message_sent.emit(_input_line.text))
 	VNTheme.style_choice_button(_send_button)
 	_style_black_button(_send_button)
+	_send_button.mouse_entered.connect(func(): SoundEvents.play("choice_hover"))
 	_bottom_hbox.add_child(_send_button)
 
 
 # ── Helpers ─────────────────────────────────────────────────────
 
-## Override button stylebox colours to solid black while keeping shape.
+## Override button stylebox colours: black normal, lighter on hover/focus.
 func _style_black_button(btn: Button) -> void:
-	var black = Color(0.0, 0.0, 0.0, 1.0)
-	for state in ["normal", "hover", "focus"]:
-		var sb = btn.get_theme_stylebox(state)
-		if sb is StyleBoxFlat:
-			sb.bg_color = black
-			btn.add_theme_stylebox_override(state, sb)
+	var cr = VNTheme.get_choice_button_corner_radius()
+	var ph = VNTheme.get_choice_button_padding_horizontal()
+	var pv = VNTheme.get_choice_button_padding_vertical()
+
+	var normal = StyleBoxFlat.new()
+	normal.bg_color = Color(0.0, 0.0, 0.0, 1.0)
+	normal.set_corner_radius_all(cr)
+	normal.set_border_width_all(1)
+	normal.border_color = VNTheme.get_dialogue_box_border()
+	normal.content_margin_left = ph
+	normal.content_margin_right = ph
+	normal.content_margin_top = pv
+	normal.content_margin_bottom = pv
+	btn.add_theme_stylebox_override("normal", normal)
+
+	var hover = StyleBoxFlat.new()
+	hover.bg_color = Color(0.20, 0.20, 0.20, 1.0)
+	hover.set_corner_radius_all(cr)
+	hover.set_border_width_all(1)
+	hover.border_color = Color(0.20, 0.20, 0.20, 1.0)
+	hover.content_margin_left = ph
+	hover.content_margin_right = ph
+	hover.content_margin_top = pv
+	hover.content_margin_bottom = pv
+	btn.add_theme_stylebox_override("hover", hover)
+
+	var focus = StyleBoxFlat.new()
+	focus.bg_color = Color(0.28, 0.28, 0.28, 1.0)
+	focus.set_corner_radius_all(cr)
+	focus.set_border_width_all(1)
+	focus.border_color = Color(0.20, 0.20, 0.20, 1.0)
+	focus.content_margin_left = ph
+	focus.content_margin_right = ph
+	focus.content_margin_top = pv
+	focus.content_margin_bottom = pv
+	btn.add_theme_stylebox_override("focus", focus)
 
 func _color_to_html(color: Color) -> String:
 	return "#%02X%02X%02X" % [

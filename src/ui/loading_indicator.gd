@@ -1,9 +1,9 @@
-## LoadingIndicator — Center-screen "Thinking..." label.
+## LoadingIndicator — Center-screen animated three-dot indicator.
 ##
 ## Usage:
 ##   var loading = LoadingIndicator.new()
 ##   add_child(loading)
-##   loading.show_loading("Thinking")
+##   loading.show_loading()
 ##   # ... later ...
 ##   loading.hide_loading()
 
@@ -23,37 +23,62 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 # ── Internal nodes ──────────────────────────────────────────────
-var _label: Label
+var _dot1: Label
+var _dot2: Label
+var _dot3: Label
+var _frame_counter: int = 0
 
 
 # ── Public API ──────────────────────────────────────────────────
 
-## Show the loading indicator with the given message.
-func show_loading(message: String = "Thinking") -> void:
-	_label.text = "%s..." % message
-	_label.visible = true
+## Show the loading indicator.
+func show_loading(_message: String = "") -> void:
+	self.visible = true
 
 
 ## Hide the loading indicator.
 func hide_loading() -> void:
-	_label.text = ""
-	_label.visible = false
+	self.visible = false
 
 
 # ── Construction ────────────────────────────────────────────────
 
 func _ready() -> void:
-	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_build_label()
+	self.visible = false
+	_build_dots()
 
 
-func _build_label() -> void:
-	_label = Label.new()
-	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_label.add_theme_color_override("font_color", VNTheme.get_loading_color())
-	_label.add_theme_font_override("font", VNTheme.get_font_dialogue())
-	_label.add_theme_font_size_override("font_size", VNTheme.get_font_size_dialogue())
-	_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	_label.visible = false
-	add_child(_label)
+func _build_dots() -> void:
+	var hbox = HBoxContainer.new()
+	hbox.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	hbox.add_theme_constant_override("separation", 8)
+	add_child(hbox)
+
+	for i in range(3):
+		var dot = Label.new()
+		dot.text = "\u2022"
+		dot.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		dot.add_theme_color_override("font_color", VNTheme.get_loading_color())
+		dot.add_theme_font_override("font", VNTheme.get_font_dialogue())
+		dot.add_theme_font_size_override("font_size", VNTheme.get_font_size_dialogue() + 8)
+		dot.visible = false
+		hbox.add_child(dot)
+		if i == 0:
+			_dot1 = dot
+		elif i == 1:
+			_dot2 = dot
+		else:
+			_dot3 = dot
+
+
+func _process(_delta: float) -> void:
+	if not visible:
+		return
+
+	var t = float(_frame_counter) / 12.0
+	_frame_counter += 1
+	_dot1.visible = sin(t) > -0.3
+	_dot2.visible = sin(t + 2.094) > -0.3
+	_dot3.visible = sin(t + 4.189) > -0.3

@@ -63,10 +63,21 @@ func add_choice(choice: Dictionary) -> void:
 	# ── Story-specific button texture ──
 	var btn_texture = VNTheme.load_ui_bg_texture("choice_button")
 	if btn_texture:
-		var style = VNTheme.create_button_stylebox(btn_texture)
-		btn.add_theme_stylebox_override("normal", style)
-		btn.add_theme_stylebox_override("hover", style)
-		btn.add_theme_stylebox_override("focus", style)
+		btn.add_theme_stylebox_override("normal", VNTheme.create_button_stylebox(btn_texture))
+		# Hover/focus use colored StyleBoxFlat so the color change is visible
+		# (self_modulate alone is invisible on already-bright textures)
+		var hover = VNTheme.create_filled_panel(Color(0.45, 0.45, 0.45, 0.9))
+		var focus = VNTheme.create_filled_panel(Color(0.50, 0.50, 0.50, 0.95))
+		for sb in [hover, focus]:
+			sb.set_border_width_all(1)
+			sb.content_margin_left = 12
+			sb.content_margin_right = 12
+			sb.content_margin_top = 12
+			sb.content_margin_bottom = 12
+		hover.border_color = VNTheme.get_dialogue_box_border()
+		focus.border_color = Color(0.55, 0.60, 0.85, 1.0)
+		btn.add_theme_stylebox_override("hover", hover)
+		btn.add_theme_stylebox_override("focus", focus)
 		btn.add_theme_color_override("font_color", VNTheme.get_text_color())
 		btn.add_theme_font_override("font", VNTheme.get_font_choice())
 		btn.add_theme_font_size_override("font_size", VNTheme.get_font_size_choice())
@@ -77,8 +88,12 @@ func add_choice(choice: Dictionary) -> void:
 	var npc_name = choice.get("npc_name", "")
 	btn.pressed.connect(func(): choice_pressed.emit(choice_id, npc_name))
 
-	# ── Audio: hover SFX ──
-	btn.mouse_entered.connect(func(): SoundEvents.play("choice_hover"))
+	# ── Hover: SFX + visual brighten ──
+	btn.mouse_entered.connect(func():
+			SoundEvents.play("choice_hover")
+			btn.self_modulate = Color(1.2, 1.2, 1.2, 1.0))
+	btn.mouse_exited.connect(func():
+			btn.self_modulate = Color(1.0, 1.0, 1.0, 1.0))
 
 	_button_container.add_child(btn)
 
@@ -107,6 +122,7 @@ func _build_backdrop() -> void:
 	_backdrop = ColorRect.new()
 	_backdrop.color = Color(0.0, 0.0, 0.0, 0.55)
 	_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_backdrop.visible = false
 	add_child(_backdrop)
 

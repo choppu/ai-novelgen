@@ -107,19 +107,17 @@ func summarize(npc_name: String, history: Array[Dictionary], background: String 
 
 ## Internal handler for summarization responses.
 func _on_summary_response(raw_response: Variant, error: String) -> void:
-	# Ignore responses that aren't for us (e.g., dialogue responses)
-	if raw_response is Dictionary and "tool_call" in raw_response:
-		var tool_call = raw_response["tool_call"]
-		if tool_call.get("name", "") != "summarize_memory":
-			return
-
-	if error.is_empty() == false or raw_response == null:
-		push_error("Memory summarization failed for %s: %s" % [_current_npc_name, error])
+	# Ignore ANY response that isn't a summarize_memory tool call.
+	# Both dialogue_generator and npc_memory share the same chat_completed signal,
+	# so we must silently skip dialogue responses (wrong tool or no tool at all).
+	if not (raw_response is Dictionary and "tool_call" in raw_response):
+		return
+	var tool_call = raw_response["tool_call"]
+	if tool_call.get("name", "") != "summarize_memory":
 		return
 
-	# Strict tool calling — no fallbacks
-	if not (raw_response is Dictionary and "tool_call" in raw_response):
-		push_error("Memory summarization: LLM did not use the summarize_memory tool")
+	if error.is_empty() == false:
+		push_error("Memory summarization failed for %s: %s" % [_current_npc_name, error])
 		return
 
 	var tool_call_result = raw_response["tool_call"]

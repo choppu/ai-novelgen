@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="AI Novelgen"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 
 [autoload]
@@ -20,7 +20,9 @@ GameConfig="*res://src/game_config.gd"
 FontLoader="*res://src/font_loader.gd"
 GameState="*res://src/game_state.gd"
 LlmConfig="*res://src/llm_config.gd"
+SaveManager="*res://src/save_manager.gd"
 ServerLifecycle="*res://src/server_lifecycle.gd"
+SettingsManager="*res://src/settings_manager.gd"
 SoundManager="*res://src/audio/sound_manager.gd"
 
 [display]

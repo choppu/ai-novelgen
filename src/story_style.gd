@@ -333,12 +333,26 @@ func get_menu_background_path() -> String:
 		return ""
 	return "res://stories/%s/%s" % [story_name, relative]
 
+## Resolve a story-relative menu logo path to a full res:// path.
+## Returns empty string if no logo is configured.
+func get_menu_logo_path() -> String:
+	var relative: String = _get_menu_string("logo", "")
+	if relative.is_empty():
+		return ""
+	var story_name: String = ""
+	if GameConfig != null:
+		story_name = GameConfig.get_current_story()
+	if story_name.is_empty():
+		return ""
+	return "res://stories/%s/%s" % [story_name, relative]
+
 func get_menu_overlay_color()    -> Color: return _get_menu_color("overlay_color", Color(0.05, 0.05, 0.08, 0.85))
 func get_menu_title_color()      -> Color: return _get_menu_color("title_color", Color(0.95, 0.95, 0.92, 1.0))
 func get_menu_subtitle_color()   -> Color: return _get_menu_color("subtitle_color", Color(0.50, 0.50, 0.55, 1.0))
 func get_menu_button_bg()        -> Color: return _get_menu_color("button_bg", Color(0.12, 0.12, 0.18, 0.9))
 func get_menu_button_hover()     -> Color: return _get_menu_color("button_hover", Color(0.22, 0.22, 0.32, 0.95))
 func get_menu_button_text()      -> Color: return _get_menu_color("button_text", Color(0.85, 0.85, 0.90, 1.0))
+func get_menu_button_border_color()-> Color:   return _get_menu_color("button_border_color", Color(0.85, 0.85, 0.85, 1.0))
 func get_menu_title_size()       -> int:   return _get_menu_int("title_size", 56)
 func get_menu_subtitle_size()    -> int:   return _get_menu_int("subtitle_size", 20)
 func get_menu_button_size()      -> int:   return _get_menu_int("button_size", 32)
@@ -347,5 +361,6 @@ func get_menu_subtitle_y()       -> float: return _get_menu_float("subtitle_y", 
 func get_menu_button_top()       -> float: return _get_menu_float("button_top", 0.45)
 func get_menu_button_bottom()    -> float: return _get_menu_float("button_bottom", 0.72)
 func get_menu_button_width()     -> int:   return _get_menu_int("button_width", 500)
-func get_menu_button_height()    -> int:   return _get_menu_int("button_height", 72)
+func get_menu_button_height()    -> int:   return _get_menu_int("button_height", 700)
 func get_menu_button_separation()-> int:   return _get_menu_int("button_separation", 20)
+func get_menu_button_border_width()-> int:   return _get_menu_int("button_border_width", 2)

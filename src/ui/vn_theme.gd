@@ -56,6 +56,10 @@ static func get_font_dialogue() -> Font:
 ## Get the speaker name font.
 static func get_font_name() -> Font:
 	return FontLoader.get_font(FontLoader.FONT_KEY_NAME)
+	
+## Get the title font.
+static func get_font_title() -> Font:
+	return FontLoader.get_font(FontLoader.FONT_KEY_TITLE)
 
 ## Get the choice button font.
 static func get_font_choice() -> Font:

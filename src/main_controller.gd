@@ -95,8 +95,6 @@ func _ready() -> void:
 	_apply_brightness()
 
 func _exit_tree() -> void:
-	# Auto-save on quit
-	_save_on_quit()
 	if _server != null:
 		_server.stop()
 	if _voice_generator != null:
@@ -663,15 +661,15 @@ func _create_pause_button() -> void:
 	_pause_button = Button.new()
 	# Fixed 60x60 button pinned to top-right corner (10px margin)
 	_pause_button.anchor_top = 0.0
-	_pause_button.anchor_right = 1.0
+	_pause_button.anchor_right = .5
 	_pause_button.anchor_bottom = 0.0
-	_pause_button.anchor_left = 1.0
+	_pause_button.anchor_left = .94
 	_pause_button.offset_top = 10
 	_pause_button.offset_right = -10
 	_pause_button.offset_bottom = 70  # 10 + 60
 	_pause_button.offset_left = -70  # -10 - 60 = left edge 60px from right edge
 	_pause_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	_pause_button.custom_minimum_size = Vector2i(60, 60)
+	_pause_button.custom_minimum_size = Vector2i(150, 60)
 
 	# Load hamburger menu SVG icon
 	var svg_path = "res://assets/icons/menu.svg"
@@ -679,33 +677,37 @@ func _create_pause_button() -> void:
 		var svg = load(svg_path)
 		if svg is Texture2D:
 			_pause_button.icon = svg
-			_pause_button.add_theme_constant_override("icon_max_width", 36)
-			_pause_button.add_theme_constant_override("icon_max_height", 36)
+			_pause_button.text = ("Menu").to_upper()
+			_pause_button.add_theme_constant_override("icon_max_width", 42)
+			_pause_button.add_theme_constant_override("icon_max_height", 42)
 
 	# Subtle semi-transparent background for visibility (8px padding around icon)
 	var bg = StyleBoxFlat.new()
-	bg.bg_color = Color(0.10, 0.10, 0.15, 0.55)
+	bg.bg_color = Color(0.10, 0.10, 0.10, 0.55)
 	bg.set_corner_radius_all(8)
-	bg.content_margin_left = 8
-	bg.content_margin_right = 8
-	bg.content_margin_top = 8
-	bg.content_margin_bottom = 8
+	bg.content_margin_left = 10
+	bg.content_margin_right = 10
+	bg.content_margin_top = 10
+	bg.content_margin_bottom = 10
 
 	var bg_hover = StyleBoxFlat.new()
-	bg_hover.bg_color = Color(0.18, 0.18, 0.25, 0.75)
+	bg_hover.bg_color = Color(0.18, 0.18, 0.18, 0.75)
 	bg_hover.set_corner_radius_all(8)
-	bg_hover.content_margin_left = 8
-	bg_hover.content_margin_right = 8
-	bg_hover.content_margin_top = 8
-	bg_hover.content_margin_bottom = 8
+	bg_hover.content_margin_left = 10
+	bg_hover.content_margin_right = 10
+	bg_hover.content_margin_top = 10
+	bg_hover.content_margin_bottom = 10
 
 	_pause_button.add_theme_stylebox_override("normal", bg)
 	_pause_button.add_theme_stylebox_override("hover", bg_hover)
 	_pause_button.add_theme_color_override("icon_modulate", Color(0.90, 0.90, 0.95, 0.95))
-	_pause_button.add_theme_color_override("font_color", Color.TRANSPARENT)
+	_pause_button.add_theme_font_override("font", VNTheme.get_font_name())
+	_pause_button.add_theme_color_override("font_color", Color.WHITE)
+	_pause_button.add_theme_font_size_override("font_size", 30)
 
 	_pause_button.pressed.connect(_toggle_pause)
 	_pause_button.visible = false  # Show after story loads
+	_pause_button.focus_mode = Control.FOCUS_NONE  # Prevent Space/Enter from activating it via keyboard focus
 	add_child(_pause_button)
 	_pause_button.owner = null
 
@@ -747,10 +749,6 @@ func _on_exit_to_menu_from_pause() -> void:
 	if _server:
 		_server.stop()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
-
-func _save_on_quit() -> void:
-	# Auto-save to a dedicated autosave slot (last slot)
-	SaveManager.save_slot(SaveManager.MAX_SLOTS - 1)
 
 func _apply_brightness() -> void:
 	# Brightness overlay handled by scene-specific ColorRect if needed.

@@ -3,7 +3,8 @@
 	"dialogue":  "fonts/Lecta.otf",
 	"name":      "fonts/Lecta.otf",
 	"choice":    "fonts/Lecta.otf",
-	"narration": "fonts/Lecta.otf"
+	"narration": "fonts/Lecta.otf",
+	"title": "fonts/ZenKurenaido-Regular.ttf"
   },
 
   "ui_backgrounds": {
@@ -14,18 +15,18 @@
 
   "colors": {
 	"bg":           [0.01, 0.01, 0.01, 0.0],
-	"text":         [0.95, 0.95, 0.92, 1.0],
-	"narration":    [0.80, 0.80, 0.78, 1.0],
-	"speaker":      [0.936, 0.967, 1.0, 1.0],
+	"text":         [0.95, 0.95, 0.95, 1.0],
+	"narration":    [0.80, 0.80, 0.80, 1.0],
+	"speaker":      [0.967, 0.967, 0.967, 1.0],
 	"player":       [0.70, 0.85, 1.00, 1.0],
 	"description":  [0.85, 0.85, 0.80, 1.0],
 
-	"dialogue_box_bg":       [0.06, 0.06, 0.10, 0.88],
-	"dialogue_box_border":   [0.30, 0.35, 0.50, 0.9],
+	"dialogue_box_bg":       [0.06, 0.06, 0.06, 0.88],
+	"dialogue_box_border":   [0.35, 0.35, 0.35, 0.0],
 
-	"choice_bg":         [0.12, 0.16, 0.28, 0.92],
-	"choice_hover":      [0.22, 0.30, 0.50, 0.95],
-	"choice_focus":      [0.30, 0.40, 0.65, 0.95],
+	"choice_bg":         [0.16, 0.16, 0.16, 0.92],
+	"choice_hover":      [0.30, 0.30, 0.30, 0.95],
+	"choice_focus":      [0.40, 0.40, 0.40, 0.95],
 
 	"input_bg":           [0.12, 0.12, 0.15, 1.0],
 	"input_border":       [0.25, 0.30, 0.40, 1.0],
@@ -71,23 +72,26 @@
   },
 
   "menu": {
-	"background": "backgrounds/street_approach.png",
-	"overlay_color": [0.10, 0.10, 0.15, 0.75],
-	"title_color": [0.95, 0.95, 0.92, 1.0],
-	"subtitle_color": [0.50, 0.50, 0.55, 1.0],
-	"button_bg": [0.08, 0.08, 0.14, 0.85],
-	"button_hover": [0.18, 0.22, 0.35, 0.92],
-	"button_text": [0.90, 0.90, 0.88, 1.0],
+	"background": "backgrounds/main_menu_bg.png",
+	"logo": "logo/logo.png",
+	"overlay_color": [0.10, 0.10, 0.10, 0.85],
+	"title_color": [0.95, 0.95, 0.95, 1.0],
+	"subtitle_color": [0.80, 0.80, 0.80, 1.0],
+	"button_bg": [0.08, 0.08, 0.08, 0.0],
+	"button_hover": [1, 1, 1, 0.92],
+	"button_text": [0.90, 0.90, 0.90, 1.0],
 	"button_labels": ["New Game", "Load Game", "Settings", "Quit"],
-	"title_size": 56,
-	"subtitle_size": 20,
-	"button_size": 28,
-	"title_y": 0.20,
-	"subtitle_y": 0.28,
-	"button_top": 0.45,
-	"button_bottom": 0.72,
-	"button_width": 300,
-	"button_height": 50,
-	"button_separation": 14
+	"button_border_color": [0.8, 0.8, 0.8, 1.0],
+	"button_border_width": 4,
+	"title_size": 80,
+	"subtitle_size": 46,
+	"button_size": 42,
+	"title_y": -0.14,
+	"subtitle_y": 0.3,
+	"button_top": 0.43,
+	"button_bottom": 0.85,
+	"button_width": 350,
+	"button_height": 80,
+	"button_separation": 30
   }
 }

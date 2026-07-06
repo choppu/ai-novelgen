@@ -1,7 +1,7 @@
 {
   "metadata": {
-	"title": "影の写眞館 — Shadow Photo Studio",
-	"author": "AI Novelgen",
+	"title": "影の写眞館",
+	"author": "Shadow Photo Studio",
 	"start_scene": "street_approach"
   },
   "audio": {
@@ -390,9 +390,6 @@
 	"studio_interior": {
 	  "background": "backgrounds/studio_interior.png",
 	  "sfx": ["sfx/footsteps_indoor.mp3", "sfx/paper_rustle.mp3"],
-	  "scene_moods": {
-		"Haruka": "neutral"
-	  },
 	  "characters": [],
 	  "dialogue": [
 		{ "speaker": "", "text": "The studio interior — organized chaos, every surface covered with photographs, negatives, and equipment. A large printing easel dominates the center of the room. A woman stands near the easel, her hands frozen mid-motion, dark apron stained with developer chemicals."},
@@ -408,6 +405,9 @@
 	  "background": "backgrounds/studio_interior.png",
 	  "sfx": ["sfx/footsteps_indoor.mp3", "sfx/paper_rustle.mp3"],
 	  "characters": ["Haruka"],
+	  "scene_moods": {
+		"Haruka": "neutral"
+	  },
 	  "dialogue": [
 		{ "speaker": "", "text": "The studio interior — organized chaos, every surface covered with photographs, negatives, and equipment. A large printing easel dominates the center of the room. A woman stands near the easel, her hands frozen mid-motion, dark apron stained with developer chemicals."},
 		{ "speaker": "", "text": "Beyond the main room, a door marked '暗室' — Darkroom — stands slightly ajar, spilling red light into the hallway." }
@@ -423,10 +423,10 @@
 	  "background": "backgrounds/darkroom.png",
 	  "music": "music/darkroom_atmosphere.mp3",
 	  "sfx": ["sfx/darkroom_agitate.wav", "sfx/chemical_pour.mp3", "sfx/heartbeat.mp3", "sfx/film_advance.mp3"],
-	  "scene_moods": {
-		"Haruka": "neutral"
-	  },
 	  "characters": ["Haruka"],
+	  "scene_moods": {
+		"Haruka": "side"
+	  },
 	  "dialogue": [
 		{ "speaker": "", "text": "The darkroom is a small, windowless room bathed in deep red light. The air is warm and humid, thick with the smell of developing chemicals. Three developing trays sit on a metal table, each at a different stage. Contact sheets hang from wires strung across the ceiling."},
 		{ "speaker": "", "text": "The light wraps around you like a blanket. Every surface gleams with chemical residue. The developing trays are still warm." },
@@ -466,6 +466,9 @@
 	  "music": "music/neighborhood_walk.mp3",
 	  "sfx": ["sfx/door_creak.mp3", "sfx/paper_rustle.mp3"],
 	  "characters": ["Kenji"],
+	  "scene_moods": {
+		"Kenji": "neutral"
+	  },
 	  "dialogue": [
 		{"speaker": "", "text": "The air smells of roasted beans and old paper. A man sits in the corner booth, looking up as you enter with an expression caught between relief and guilt. It seems he was waiting exactly for you. You approach him."},
 		{ "speaker": "Kenji", "text": "Oh. You look like an investigator, aren't you? I swear you are here to ask me about Yuki's disapperance. I'm Kenji. Kenji Tanaka. Here, take it, this is my name card." },
@@ -482,6 +485,9 @@
 	  "music": "music/neighborhood_walk.mp3",
 	  "sfx": ["sfx/door_creak.mp3", "sfx/paper_rustle.mp3"],
 	  "characters": ["Kenji"],
+	  "scene_moods": {
+		"Kenji": "neutral"
+	  },
 	  "dialogue": [
 		{"speaker": "", "text": "The air smells of roasted beans and old paper. A man sits in the corner booth, looking up as you enter with an expression caught between relief and guilt. It seems he was waiting exactly for you. You approach him."},
 		{ "speaker": "Kenji", "text": "Oh. You're... you're back." }
@@ -596,6 +602,9 @@
 	  "music": "music/tension_build.mp3",
 	  "sfx": ["sfx/door_creak.mp3", "sfx/footsteps_indoor.mp3", "sfx/paper_rustle.mp3"],
 	  "characters": ["Haruka"],
+	  "scene_moods": {
+		"Haruka": "neutral"
+	  },
 	  "dialogue": [
 		{ "speaker": "", "text": "You push open the studio door. Haruka is at the printing easel. She turns when you enter." },
 		{ "speaker": "Haruka", "text": "You went to Shinjuku. What did you find?" },
@@ -620,6 +629,10 @@
 	  "music": "music/darkroom_atmosphere.mp3",
 	  "sfx": ["sfx/door_creak.mp3", "sfx/darkroom_agitate.wav"],
 	  "characters": ["Yuki", "Haruka"],
+	  "scene_moods": {
+		"Yuki": "neutral",
+		"Haruka": "side"
+	  },
 	  "dialogue": [
 		{ "speaker": "", "text": "You push open the darkroom door. The red light wraps around you. Yuki stands at the developing table, his hands frozen mid-motion." },
 		{ "speaker": "Yuki", "text": "Haruka said you went to Shinjuku. What did you find?" },
@@ -641,6 +654,10 @@
 	  "music": "music/neighborhood_walk.mp3",
 	  "sfx": ["sfx/page_turn.mp3", "sfx/wind_ambient.mp3", "sfx/train_distant.wav"],
 	  "characters": ["Haruka", "Kenji"],
+	  "scene_moods": {
+		"Haruka": "side",
+		"Kenji": "neutral"
+	  },
 	  "dialogue": [
 		{"speaker": "", "text": "The studio is empty now. The photographs have been packed into boxes. The developing trays have been cleaned. The red light from the darkroom has been turned off. Outside, the neighborhood continues its quiet evening rhythm."},
 		{ "speaker": "Haruka", "text": "The police have closed the case. Voluntary disappearance. That's what they call it when someone leaves and no one knows why. I suppose it's the truth, in a way." },
@@ -661,6 +678,10 @@
 	  "music": "music/neighborhood_walk.mp3",
 	  "sfx": ["sfx/darkroom_agitate.wav", "sfx/wind_ambient.mp3"],
 	  "characters": ["Yuki", "Haruka"],
+	  "scene_moods": {
+		"Yuki": "neutral",
+		"Haruka": "side"
+	  },
 	  "dialogue": [
 		{ "speaker": "", "text": "So, that's it. You helped Yuki to disappear." },
 		{ "speaker": "", "text": "The studio closes for good a week later. Haruka leaves the neighborhood. The photographs remain locked in a box, waiting for someone who will never come back to develop them." },
@@ -676,6 +697,11 @@
 	  "music": "music/darkroom_atmosphere.mp3",
 	  "sfx": ["sfx/page_turn.mp3", "sfx/door_creak.mp3", "sfx/footsteps_indoor.mp3"],
 	  "characters": ["Yuki", "Haruka", "Kenji"],
+	  "scene_moods": {
+		"Yuki": "neutral",
+		"Haruka": "side",
+		"Kenji": "side"
+	  },
 	  "dialogue": [
 		{ "speaker": "", "text": "Yuki steps out from behind the developing trays and picks up the studio phone. His hand is steady when he dials — steadier than it has any right to be after three weeks of hiding." },
 		{ "speaker": "Yuki", "text": "Kenji. It's me. I need you to come to the studio. Now. Don't ask questions." },
@@ -709,6 +735,11 @@
 	  "music": "music/neighborhood_walk.mp3",
 	  "sfx": ["sfx/page_turn.mp3", "sfx/camera_shutter.mp3", "sfx/wind_ambient.mp3"],
 	  "characters": ["Yuki", "Haruka", "Kenji"],
+	  "scene_moods": {
+		"Yuki": "neutral",
+		"Haruka": "side",
+		"Kenji": "side"
+	  },
 	  "dialogue": [
 		{ "speaker": "", "text": "The article runs three days later. The headline is simple: 'The Disappearances of Shinjuku — A Photographer's Evidence.' Yuki's photographs fill the pages — the beige building, the man in the doorway, the pattern of shadows that no one noticed until someone took the time to look." },
 		{ "speaker": "", "text": "The police open a formal investigation. Kuroda Holdings denies everything from a rented office in Minato — but the photographs are undeniable. The ledger is undeniable. The twelve names in the personnel files are undeniable." },
@@ -729,6 +760,9 @@
 	  "music": "music/darkroom_atmosphere.mp3",
 	  "sfx": ["sfx/door_creak.mp3", "sfx/paper_rustle.mp3", "sfx/heartbeat.mp3"],
 	  "characters": ["Haruka"],
+	  "scene_moods": {
+		"Haruka": "neutral"
+	  },
 	  "dialogue": [
 		{ "speaker": "", "text": "Haruka looks at you, then at the small locked box on the shelf. She sets down her tongs and walks over to it." },
 		{ "speaker": "", "text": "She opens the box. Inside, wrapped in tissue paper, is a single photograph." },
@@ -754,6 +788,10 @@
 	  "music": "music/darkroom_atmosphere.mp3",
 	  "sfx": ["sfx/footsteps_indoor.mp3", "sfx/heartbeat.mp3"],
 	  "characters": ["Yuki", "Haruka"],
+	  "scene_moods": {
+		"Yuki": "neutral",
+		"Haruka": "side"
+	  },
 	  "dialogue": [
 		{ "speaker": "", "text": "The storage room is small and cluttered. A folding bed in the corner, stacks of contact sheets along the wall, a battery lantern on a shelf. The air smells of dust and developer chemicals." },
 		{ "speaker": "", "text": "A man sits at a small table, looking up as the door opens. He's thinner than he should be, pale from weeks indoors, his hair grown out. But his eyes are sharp and alert." },
@@ -789,6 +827,10 @@
 	  "music": "music/neighborhood_walk.mp3",
 	  "sfx": ["sfx/paper_rustle.mp3", "sfx/wind_ambient.mp3"],
 	  "characters": ["Yuki", "Haruka"],
+	  "scene_moods": {
+		"Yuki": "neutral",
+		"Haruka": "side"
+	  },
 	  "dialogue": [
 		{ "speaker": "Haruka", "text": "You need to leave. Now. Before they find you." },
 		{ "speaker": "Yuki", "text": "And leave all this behind? These photographs — they're the only proof we have." },

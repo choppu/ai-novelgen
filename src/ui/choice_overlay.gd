@@ -75,7 +75,7 @@ func add_choice(choice: Dictionary) -> void:
 			sb.content_margin_top = 12
 			sb.content_margin_bottom = 12
 		hover.border_color = VNTheme.get_dialogue_box_border()
-		focus.border_color = Color(0.55, 0.60, 0.85, 1.0)
+		focus.border_color = Color.TRANSPARENT
 		btn.add_theme_stylebox_override("hover", hover)
 		btn.add_theme_stylebox_override("focus", focus)
 		btn.add_theme_color_override("font_color", VNTheme.get_text_color())

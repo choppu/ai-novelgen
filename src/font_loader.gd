@@ -27,6 +27,7 @@ const FONT_KEY_DIALOGUE := "dialogue"
 const FONT_KEY_NAME := "name"
 const FONT_KEY_CHOICE := "choice"
 const FONT_KEY_NARRATION := "narration"
+const FONT_KEY_TITLE := "title"
 
 
 # ── Loaded fonts ────────────────────────────────────────────────

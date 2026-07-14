@@ -27,6 +27,9 @@ var _retry_backoff_ms: int
 ## ── Voice settings ──
 var _voice_model_name: String
 
+## ── Whisper (speech-to-text) settings ──
+var _whisper_model_name: String
+
 ## ── Server lifecycle ──
 ## When true (default), main_controller starts/stops the lemond subprocess.
 ## When false, the server is assumed to be managed externally.
@@ -79,6 +82,9 @@ func _parse_config() -> void:
 
 	var voice = _config.get("voice_model", {})
 	_voice_model_name = voice.get("name", "kokoro-v1")
+
+	var whisper = _config.get("whisper_model", {})
+	_whisper_model_name = whisper.get("name", "Whisper-Large-v3-Turbo")
 
 
 func _log_config() -> void:
@@ -142,6 +148,12 @@ func get_max_retries() -> int:
 
 func get_voice_model_name() -> String:
 	return _voice_model_name
+
+
+## ── Whisper accessors ──
+
+func get_whisper_model_name() -> String:
+	return _whisper_model_name
 
 
 # ── Platform-aware path resolution ──

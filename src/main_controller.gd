@@ -36,6 +36,7 @@ var _memory_manager: Node
 var _clue_tracker
 var _clue_evaluator
 var _voice_generator
+var _voice_input
 
 ## ── Game Mode ─────────────────────────────────────────────────
 ## "explore" = showing scene choices, input hidden
@@ -70,6 +71,7 @@ const _CluePrerequisiteEvaluatorScript := preload("res://src/clue_prerequisite_e
 const _EmotionalStatesScript = preload("res://src/emotional_states.gd")
 const _NPCMemoryScript = preload("res://src/npc_memory.gd")
 const _VoiceGeneratorScript = preload("res://src/voice_generator.gd")
+const _VoiceInputScript = preload("res://src/voice_input.gd")
 
 ## Preload UI components
 const _BackgroundRectScript := preload("res://src/ui/background_rect.gd")
@@ -131,6 +133,7 @@ func _create_ui() -> void:
 	_npc_chat_panel = _NpcChatPanelScript.new()
 	_npc_chat_panel.message_sent.connect(_on_chat_message_sent)
 	_npc_chat_panel.back_pressed.connect(_exit_dialogue_mode)
+	_npc_chat_panel.mic_pressed.connect(_on_mic_pressed)
 	add_child(_npc_chat_panel)
 
 	# Loading indicator (center screen)
@@ -199,6 +202,17 @@ func _setup_llm_pipeline() -> void:
 	add_child(_voice_generator)
 	_voice_generator.set_http_client(_http_client)
 	_voice_generator.clear_speaker_voices()
+
+	# ── Voice Input (Speech-to-Text via Whisper) ──
+	_voice_input = _VoiceInputScript.new()
+	add_child(_voice_input)
+	_voice_input.set_http_client(_http_client)
+	_voice_input.transcription_ready.connect(_on_voice_transcription_ready)
+	_voice_input.error_occurred.connect(_on_voice_error)
+	_voice_input.recording_started.connect(_on_voice_recording_started)
+	_voice_input.recording_stopped.connect(_on_voice_recording_stopped)
+	_voice_input.transcribing.connect(_on_voice_transcribing)
+	_voice_input.idle.connect(_on_voice_idle)
 
 
 # ── Signal handlers ────────────────────────────────────────────
@@ -336,6 +350,40 @@ func _on_generation_error(error_msg: String) -> void:
 	_set_input_enabled(true)
 	_waiting_for_llm = false
 	_show_error("Generation error: %s" % error_msg)
+
+
+# ── Voice Input (Whisper) handlers ─────────────────────────────
+
+func _on_mic_pressed() -> void:
+	if _voice_input == null:
+		return
+
+	if _voice_input.get_state() == "idle":
+		_voice_input.start_recording()
+	elif _voice_input.get_state() == "recording":
+		_voice_input.stop_and_transcribe()
+	elif _voice_input.get_state() == "transcribing":
+		_voice_input.cancel()
+
+func _on_voice_recording_started() -> void:
+	_npc_chat_panel.set_mic_state("recording")
+
+func _on_voice_recording_stopped() -> void:
+	pass
+
+func _on_voice_transcribing() -> void:
+	_npc_chat_panel.set_mic_state("transcribing")
+
+func _on_voice_idle() -> void:
+	_npc_chat_panel.set_mic_state("idle")
+
+func _on_voice_transcription_ready(text: String) -> void:
+	# Send the transcribed text as player input
+	_process_player_input(text)
+
+func _on_voice_error(message: String) -> void:
+	_npc_chat_panel.set_mic_state("idle")
+	_show_error("Voice input: %s" % message)
 
 
 # ── Player input handling ──────────────────────────────────────

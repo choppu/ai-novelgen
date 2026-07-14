@@ -109,7 +109,7 @@ static func _style() -> StoryStyle:
 # ── Styling helpers ─────────────────────────────────────────────
 
 ## Apply the standard VN choice-button style to a [Button].
-static func style_choice_button(btn: Button) -> void:
+static func style_choice_button(btn) -> void:
 	var cr = get_choice_button_corner_radius()
 	var ph = get_choice_button_padding_horizontal()
 	var pv = get_choice_button_padding_vertical()

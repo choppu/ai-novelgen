@@ -30,6 +30,9 @@ signal message_sent(text: String)
 ## Emitted when the back button is pressed.
 signal back_pressed()
 
+## Emitted when the microphone button is pressed (toggle recording).
+signal mic_pressed()
+
 
 # ── Internal nodes ──────────────────────────────────────────────
 var _bg: ColorRect
@@ -41,6 +44,12 @@ var _bottom_hbox: HBoxContainer
 var _back_button: Button
 var _input_line: LineEdit
 var _send_button: Button
+var _mic_button: TextureButton
+
+# Mic button icon textures
+var _mic_tex_idle: Texture2D = preload("res://assets/icons/mic.svg")
+var _mic_tex_recording: Texture2D = preload("res://assets/icons/mic-recording.svg")
+var _mic_tex_transcribing: Texture2D = preload("res://assets/icons/mic-transcribing.svg")
 
 var _back_callback: Callable
 var _typing_visible: bool = false
@@ -167,6 +176,19 @@ func clear_messages() -> void:
 	if is_instance_valid(_typing_timer):
 		_typing_timer.stop()
 	_rebuild_text()
+
+
+## Set the microphone button visual state.
+func set_mic_state(state: String) -> void:
+	if not is_instance_valid(_mic_button):
+		return
+	match state:
+		"recording":
+			_mic_button.texture_normal = _mic_tex_recording
+		"transcribing":
+			_mic_button.texture_normal = _mic_tex_transcribing
+		"idle":
+			_mic_button.texture_normal = _mic_tex_idle
 
 
 ## Store a callable to be connected to the back button press.
@@ -311,11 +333,25 @@ func _build_bottom_bar() -> void:
 	_send_button.mouse_entered.connect(func(): SoundEvents.play("choice_hover"))
 	_bottom_hbox.add_child(_send_button)
 
+	# Microphone button (voice input)
+	_mic_button = TextureButton.new()
+	_mic_button.focus_mode = Control.FOCUS_ALL
+	_mic_button.texture_normal = _mic_tex_idle
+	_mic_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	_mic_button.custom_minimum_size = Vector2(60, VNTheme.get_choice_button_min_height())
+	_mic_button.pressed.connect(func():
+			SoundEvents.play("choice_click")
+			mic_pressed.emit())
+	VNTheme.style_choice_button(_mic_button)
+	_style_black_button(_mic_button)
+	_mic_button.mouse_entered.connect(func(): SoundEvents.play("choice_hover"))
+	_bottom_hbox.add_child(_mic_button)
+
 
 # ── Helpers ─────────────────────────────────────────────────────
 
 ## Override button stylebox colours: black normal, lighter on hover/focus.
-func _style_black_button(btn: Button) -> void:
+func _style_black_button(btn) -> void:
 	var cr = VNTheme.get_choice_button_corner_radius()
 	var ph = VNTheme.get_choice_button_padding_horizontal()
 	var pv = VNTheme.get_choice_button_padding_vertical()
